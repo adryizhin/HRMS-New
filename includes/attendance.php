@@ -1,8 +1,11 @@
 <?php
 declare(strict_types=1);
 
+<<<<<<< HEAD
 require_once __DIR__ . '/holidays.php';
 
+=======
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 function ensureAttendanceTable(mysqli $conn): void
 {
     static $checked = false;
@@ -19,7 +22,10 @@ function ensureAttendanceTable(mysqli $conn): void
             shift ENUM('morning','night') NOT NULL,
             login_time DATETIME NOT NULL,
             status ENUM('present','late','absent') NOT NULL,
+<<<<<<< HEAD
             late_minutes INT NOT NULL DEFAULT 0,
+=======
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
             UNIQUE KEY unique_user_shift_date (user_id, attendance_date, shift),
@@ -30,11 +36,14 @@ function ensureAttendanceTable(mysqli $conn): void
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
     ");
 
+<<<<<<< HEAD
     $cols = $conn->query("SHOW COLUMNS FROM attendance LIKE 'late_minutes'");
     if ($cols && $cols->num_rows === 0) {
         $conn->query("ALTER TABLE attendance ADD COLUMN late_minutes INT NOT NULL DEFAULT 0 AFTER status");
     }
 
+=======
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     $checked = true;
 }
 
@@ -82,6 +91,7 @@ function getAttendanceMark(DateTimeImmutable $loginTime): array
     ];
 }
 
+<<<<<<< HEAD
 function lateMinutesForLogin(string $loginTime): int
 {
     $login = new DateTimeImmutable($loginTime, new DateTimeZone('Asia/Manila'));
@@ -202,6 +212,8 @@ function markMissingAttendanceAbsent(mysqli $conn): void
     $flushBatch();
 }
 
+=======
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 function recordAttendanceOnLogin(mysqli $conn, int $userId): void
 {
     ensureAttendanceTable($conn);
@@ -210,6 +222,7 @@ function recordAttendanceOnLogin(mysqli $conn, int $userId): void
     $loginTime = new DateTimeImmutable('now', new DateTimeZone('Asia/Manila'));
     $mark = getAttendanceMark($loginTime);
     $loginAt = $loginTime->format('Y-m-d H:i:s');
+<<<<<<< HEAD
     $lateMinutes = 0;
 
     if ($mark['status'] === 'late') {
@@ -222,17 +235,32 @@ function recordAttendanceOnLogin(mysqli $conn, int $userId): void
         VALUES (?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
             late_minutes = IF(login_time > VALUES(login_time), VALUES(late_minutes), late_minutes),
+=======
+
+    $stmt = $conn->prepare("
+        INSERT INTO attendance (user_id, attendance_date, shift, login_time, status)
+        VALUES (?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
             status = IF(login_time > VALUES(login_time), VALUES(status), status),
             login_time = IF(login_time > VALUES(login_time), VALUES(login_time), login_time)
     ");
     $stmt->bind_param(
+<<<<<<< HEAD
         "issssi",
+=======
+        "issss",
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
         $userId,
         $mark['date'],
         $mark['shift'],
         $loginAt,
+<<<<<<< HEAD
         $mark['status'],
         $lateMinutes
+=======
+        $mark['status']
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     );
     $stmt->execute();
 }

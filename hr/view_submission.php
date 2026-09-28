@@ -230,6 +230,7 @@ if (!empty($task['ai_feedback'])) {
 <link rel="stylesheet" href="../hr/dashboard.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
+<<<<<<< HEAD
 .main { margin-left: 240px; padding: 25px; color: var(--text); }
 
 .card-box {
@@ -238,6 +239,16 @@ if (!empty($task['ai_feedback'])) {
     padding: 20px;
     margin-bottom: 20px;
    border: 1px solid var(--border);
+=======
+.main { margin-left: 240px; padding: 25px; color: #e5e7eb; }
+
+.card-box {
+    background: #111827;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #1f2937;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 /* OVERALL SCORE CIRCLE */
@@ -254,8 +265,11 @@ if (!empty($task['ai_feedback'])) {
     margin: 0 auto 20px;
     border: 5px solid;
     transition: background 0.3s;
+<<<<<<< HEAD
     background: transparent;
     color: var(--text);
+=======
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 /* SUB-SCORE GRID */
@@ -267,24 +281,37 @@ if (!empty($task['ai_feedback'])) {
 }
 
 .sub-card {
+<<<<<<< HEAD
     background: var(--card-soft);
     border-radius: 10px;
     padding: 14px;
     text-align: center;
     border: 1px solid var(--border);
+=======
+    background: #0f172a;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+    border: 1px solid #1f2937;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .sub-card .label {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+<<<<<<< HEAD
     color: var(--muted);
+=======
+    color: #9ca3af;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     margin-bottom: 6px;
 }
 
 .sub-card .value {
     font-size: 28px;
     font-weight: 700;
+<<<<<<< HEAD
     color: var(--text);
 }
 
@@ -297,6 +324,19 @@ if (!empty($task['ai_feedback'])) {
     padding: 16px;
     border-radius: 10px;
     color: var(--muted);
+=======
+}
+
+/* SCORE BAR */
+.bar-wrap { background: #1f2937; border-radius: 999px; height: 8px; margin-top: 6px; overflow: hidden; }
+.bar-fill  { height: 100%; border-radius: 999px; transition: width 0.6s ease; }
+
+.feedback {
+    background: #0f172a;
+    padding: 16px;
+    border-radius: 10px;
+    color: #cbd5e1;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     white-space: pre-wrap;
     line-height: 1.6;
     font-size: 14px;
@@ -317,12 +357,20 @@ if (!empty($task['ai_feedback'])) {
     <p><b>Submitted:</b>
         <?= $task['submitted_at']
             ? date("M d, Y h:i A", strtotime($task['submitted_at']))
+<<<<<<< HEAD
             : '<span style="color:var(--muted);">Not yet submitted</span>' ?>
+=======
+            : '<span style="color:#9ca3af;">Not yet submitted</span>' ?>
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     </p>
     <?php if (!empty($task['submission_file'])): ?>
     <a href="../uploads/submissions/<?= htmlspecialchars($task['submission_file']) ?>"
        target="_blank"
+<<<<<<< HEAD
       style="color:var(--accent);font-size:13px;">
+=======
+       style="color:#60a5fa;font-size:13px;">
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
         📄 Download Submission
     </a>
     <?php endif; ?>
@@ -337,7 +385,11 @@ if (!empty($task['ai_feedback'])) {
     <!-- OVERALL SCORE CIRCLE -->
     <div class="score-circle" style="background:<?= $oc ?>22; border-color:<?= $oc ?>; color:<?= $oc ?>;">
         <span><?= $ai['overall_score'] ?></span>
+<<<<<<< HEAD
         <span style="font-size:12px;font-weight:400;color:var(--muted);">/ 100</span>
+=======
+        <span style="font-size:12px;font-weight:400;color:#9ca3af;">/ 100</span>
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     </div>
 
     <!-- SUB-SCORES -->
@@ -363,7 +415,11 @@ if (!empty($task['ai_feedback'])) {
     </div>
 
     <!-- FEEDBACK -->
+<<<<<<< HEAD
     <h4 style="margin-bottom:8px;color:var(--muted);">AI Feedback</h4>
+=======
+    <h4 style="margin-bottom:8px;color:#9ca3af;">AI Feedback</h4>
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     <div class="feedback"><?= $ai['feedback'] ?></div>
 </div>
 

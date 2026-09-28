@@ -1,4 +1,5 @@
 :root {
+<<<<<<< HEAD
   --bg: #f3f4f6;
   --sidebar: #ffffff;
   --card: #ffffff;
@@ -28,6 +29,14 @@
   --shadow: rgba(2, 6, 23, 0.55);
   --button-text: #ffffff;
   --button-dark: #0f172a;
+=======
+  --bg: #0b1220;
+  --sidebar: #020617;
+  --card: #111827;
+  --accent: #3251ff;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 * {
@@ -69,12 +78,20 @@ body {
 
 .sidebar a:hover {
   background:var(--accent);
+<<<<<<< HEAD
   color:var(--button-text);
+=======
+  color:#000;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .sidebar a.active {
   background:var(--green);
+<<<<<<< HEAD
   color:var(--button-dark);
+=======
+  color:#000;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 /* MAIN */
@@ -94,21 +111,35 @@ body {
 .table {
   width:100%;
   border-collapse:collapse;
+<<<<<<< HEAD
   background:linear-gradient(145deg, var(--card), var(--card-soft));
   border-radius:10px;
   overflow:hidden;
   border:1px solid var(--border);
   box-shadow:0 10px 22px var(--shadow);
+=======
+  background:var(--card);
+  border-radius:10px;
+  overflow:hidden;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .table th, .table td {
   padding:12px;
+<<<<<<< HEAD
   border-bottom:1px solid var(--border);
+=======
+  border-bottom:1px solid #1f2937;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   text-align:left;
 }
 
 .table th {
+<<<<<<< HEAD
   background:var(--card-soft);
+=======
+  background:#1f2937;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   color:var(--muted);
 }
 

@@ -8,8 +8,11 @@ require_once __DIR__ . '/../includes/task_schema.php';
 ensureTaskSchema($conn);
 
 $user_id = (int) $_SESSION['user_id'];
+<<<<<<< HEAD
 $today = new DateTimeImmutable('today', new DateTimeZone('Asia/Manila'));
 $todayDate = $today->format('Y-m-d');
+=======
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 
 /* NOTIFICATIONS */
 $notifQuery = $conn->query("
@@ -80,6 +83,7 @@ $assignments = $assignments->get_result();
     border-radius:20px;
     color:#fffff;
     font-weight:bold;
+<<<<<<< HEAD
     font-size:15px;">Employee</div></div>
 </div>
 
@@ -94,6 +98,14 @@ $assignments = $assignments->get_result();
   <div class="task-alert error"><i class="fa-solid fa-triangle-exclamation"></i>
     Submission is not allowed because the evaluation deadline has passed.
   </div>
+=======
+    font-size:15px;">Employee</div>
+</div>
+</div>
+
+<?php if (isset($_GET['success'])): ?>
+  <div class="task-alert success"><i class="fa-solid fa-circle-check"></i> Task submitted successfully.</div>
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 <?php endif; ?>
 
 <div class="task-section-header">
@@ -109,11 +121,18 @@ $assignments = $assignments->get_result();
 <?php if ($assignments && $assignments->num_rows > 0): ?>
 <?php while($a = $assignments->fetch_assoc()): 
     $status = $a['status'] ?: 'pending';
+<<<<<<< HEAD
     $submissionRequestKey = bin2hex(random_bytes(32));
     $statusLabel = $status === 'reviewed' ? 'Reviewed' : ($status === 'submitted' ? 'Submitted' : 'Pending');
     $statusIcon = $status === 'reviewed' ? 'fa-circle-check' : ($status === 'submitted' ? 'fa-clock' : 'fa-hourglass-half');
     $deadlineText = $a['deadline'] ? date("M d, Y", strtotime($a['deadline'])) : 'No deadline';
     $isOverdue = $a['deadline'] && $a['deadline'] < $todayDate;
+=======
+    $statusLabel = $status === 'reviewed' ? 'Reviewed' : ($status === 'submitted' ? 'Submitted' : 'Pending');
+    $statusIcon = $status === 'reviewed' ? 'fa-circle-check' : ($status === 'submitted' ? 'fa-clock' : 'fa-hourglass-half');
+    $deadlineText = $a['deadline'] ? date("M d, Y", strtotime($a['deadline'])) : 'No deadline';
+    $isOverdue = $a['deadline'] && $status === 'pending' && strtotime($a['deadline'] . ' 23:59:59') < time();
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 ?>
 
 <article class="task-card <?= htmlspecialchars($status); ?>">
@@ -172,6 +191,7 @@ $assignments = $assignments->get_result();
         </div>
     <?php endif; ?>
 
+<<<<<<< HEAD
     <?php if ($isOverdue): ?>
         <div class="task-alert error">
             <i class="fa-solid fa-ban"></i>
@@ -181,6 +201,10 @@ $assignments = $assignments->get_result();
     <form class="submission-form" action="submit_assignment.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="assignment_id" value="<?= $a['id']; ?>">
         <input type="hidden" name="submission_request_key" value="<?= htmlspecialchars($submissionRequestKey); ?>">
+=======
+    <form class="submission-form" action="submit_assignment.php" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="assignment_id" value="<?= $a['id']; ?>">
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 
         <label>
             <span><?= !empty($a['submission_file']) ? 'Replace Submission' : 'Upload Submission'; ?></span>
@@ -192,7 +216,10 @@ $assignments = $assignments->get_result();
             <?= !empty($a['submission_file']) ? 'Resubmit' : 'Submit to HR'; ?>
         </button>
     </form>
+<<<<<<< HEAD
     <?php endif; ?>
+=======
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 
 </article>
 

@@ -81,6 +81,7 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="dashboard.css">
+<<<<<<< HEAD
 <style>
 :root {
     --score-bg: #f3f4f6;
@@ -119,6 +120,11 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 }
 
 .main { margin-left: 240px; padding: 20px; background: var(--score-bg); color: var(--score-text); }
+=======
+
+<style>
+.main { margin-left: 240px; padding: 20px; }
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 
 .header {
     margin-bottom: 25px;
@@ -126,12 +132,20 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 
 .header h1 {
     font-size: 28px;
+<<<<<<< HEAD
     color: var(--score-text);
+=======
+    color: #e5e7eb;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     margin-bottom: 8px;
 }
 
 .header p {
+<<<<<<< HEAD
     color: var(--score-muted);
+=======
+    color: #9ca3af;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     font-size: 14px;
 }
 
@@ -148,6 +162,7 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 }
 
 .card {
+<<<<<<< HEAD
     background: var(--score-card);
     border: 1px solid var(--score-border);
     border-radius: 12px;
@@ -157,6 +172,16 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 
 .card h3 {
     color: var(--score-text);
+=======
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.card h3 {
+    color: #e5e7eb;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     font-size: 16px;
     margin-top: 0;
     margin-bottom: 15px;
@@ -166,13 +191,21 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 }
 
 .card h3 i {
+<<<<<<< HEAD
     color: var(--score-accent);
+=======
+    color: #3251ff;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .info-section {
     margin-bottom: 20px;
     padding-bottom: 15px;
+<<<<<<< HEAD
     border-bottom: 1px solid var(--score-border);
+=======
+    border-bottom: 1px solid #1f2937;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .info-section:last-child {
@@ -182,7 +215,11 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 }
 
 .info-label {
+<<<<<<< HEAD
     color: var(--score-muted);
+=======
+    color: #9ca3af;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -190,26 +227,45 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 }
 
 .info-value {
+<<<<<<< HEAD
     color: var(--score-text);
+=======
+    color: #e5e7eb;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     font-size: 14px;
 }
 
 .ai-score-display {
+<<<<<<< HEAD
     background: var(--score-card-alt);
     padding: 15px;
     border-radius: 10px;
     margin-bottom: 15px;
     border: 1px solid var(--score-border);
+=======
+    background: #0b1220;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .score-value {
     font-size: 32px;
     font-weight: bold;
+<<<<<<< HEAD
     color: var(--score-accent);
 }
 
 .score-label {
     color: var(--score-muted);
+=======
+    color: #3251ff;
+}
+
+.score-label {
+    color: #9ca3af;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     font-size: 12px;
     margin-top: 5px;
 }
@@ -220,7 +276,11 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 
 .form-group label {
     display: block;
+<<<<<<< HEAD
     color: var(--score-muted);
+=======
+    color: #9ca3af;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -236,22 +296,37 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 .score-input-container input {
     flex: 1;
     padding: 10px;
+<<<<<<< HEAD
     background: var(--score-input-bg);
     border: 1px solid var(--score-border);
     border-radius: 8px;
     color: var(--score-text);
+=======
+    background: #0b1220;
+    border: 1px solid #1f2937;
+    border-radius: 8px;
+    color: #e5e7eb;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     font-size: 14px;
 }
 
 .score-input-container input:focus {
     outline: none;
+<<<<<<< HEAD
     border-color: var(--score-accent);
+=======
+    border-color: #3251ff;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .score-display-inline {
     font-size: 24px;
     font-weight: bold;
+<<<<<<< HEAD
     color: var(--score-accent);
+=======
+    color: #3251ff;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     min-width: 50px;
     text-align: center;
 }
@@ -259,10 +334,17 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 textarea {
     width: 100%;
     padding: 12px;
+<<<<<<< HEAD
     background: var(--score-input-bg);
     border: 1px solid var(--score-border);
     border-radius: 8px;
     color: var(--score-text);
+=======
+    background: #0b1220;
+    border: 1px solid #1f2937;
+    border-radius: 8px;
+    color: #e5e7eb;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     font-size: 14px;
     min-height: 120px;
     resize: vertical;
@@ -270,7 +352,11 @@ textarea {
 
 textarea:focus {
     outline: none;
+<<<<<<< HEAD
     border-color: var(--score-accent);
+=======
+    border-color: #3251ff;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .form-actions {
@@ -289,17 +375,27 @@ textarea:focus {
 }
 
 .btn-primary {
+<<<<<<< HEAD
     background: var(--score-accent);
     color: var(--score-primary-text);
+=======
+    background: #3251ff;
+    color: white;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     flex: 1;
 }
 
 .btn-primary:hover {
+<<<<<<< HEAD
     background: #1d4ed8;
+=======
+    background: #2540cc;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .btn-secondary {
     background: transparent;
+<<<<<<< HEAD
     color: var(--score-accent);
     border: 1px solid var(--score-border);
 }
@@ -307,6 +403,15 @@ textarea:focus {
 .btn-secondary:hover {
     background: var(--score-card-alt);
     border-color: var(--score-accent);
+=======
+    color: #60a5fa;
+    border: 1px solid #1f2937;
+}
+
+.btn-secondary:hover {
+    background: #111827;
+    border-color: #3251ff;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .alert {
@@ -316,6 +421,7 @@ textarea:focus {
 }
 
 .alert.success {
+<<<<<<< HEAD
     background: var(--score-success-bg);
     color: var(--score-success-text);
 }
@@ -335,6 +441,26 @@ textarea:focus {
 
 .download-section a {
     color: var(--score-accent);
+=======
+    background: #14532d;
+    color: #4ade80;
+}
+
+.alert.error {
+    background: #7f1d1d;
+    color: #fecaca;
+}
+
+.download-section {
+    background: #0b1220;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.download-section a {
+    color: #60a5fa;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     text-decoration: none;
     font-size: 13px;
     display: flex;
@@ -346,7 +472,10 @@ textarea:focus {
     text-decoration: underline;
 }
 </style>
+<<<<<<< HEAD
 
+=======
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 </head>
 
 <body>
@@ -373,7 +502,11 @@ textarea:focus {
                 <div class="info-value">
                     <?= htmlspecialchars($task['employee_name']); ?>
                     <?php if ($task['emp_id']): ?>
+<<<<<<< HEAD
                         <br><span style="color:var(--score-muted);font-size:12px;"><?= htmlspecialchars($task['emp_id']); ?></span>
+=======
+                        <br><span style="color:#9ca3af;font-size:12px;"><?= htmlspecialchars($task['emp_id']); ?></span>
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
                     <?php endif; ?>
                 </div>
             </div>
@@ -398,7 +531,11 @@ textarea:focus {
             <div class="info-section">
                 <div class="info-label">Submitted</div>
                 <div class="info-value">
+<<<<<<< HEAD
                     <?= $task['submitted_at'] ? date("M d, Y h:i A", strtotime($task['submitted_at'])) : '<span style="color:var(--score-muted);">Not submitted</span>' ?>
+=======
+                    <?= $task['submitted_at'] ? date("M d, Y h:i A", strtotime($task['submitted_at'])) : '<span style="color:#9ca3af;">Not submitted</span>' ?>
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
                 </div>
             </div>
 

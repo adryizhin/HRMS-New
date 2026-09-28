@@ -8,8 +8,11 @@ require_once __DIR__ . '/../includes/task_schema.php';
 ensureTaskSchema($conn);
 
 $hr_id = (int) $_SESSION['user_id'];
+<<<<<<< HEAD
 $today = new DateTimeImmutable('today', new DateTimeZone('Asia/Manila'));
 $todayDate = $today->format('Y-m-d');
+=======
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 
 $result = $conn->query("SELECT COUNT(*) AS total FROM users WHERE role='employee'");
 $totalEmployees = $result ? $result->fetch_assoc()['total'] : 0;
@@ -67,6 +70,7 @@ $taskBatches = $conn->query("
 <link rel="stylesheet" href="dashboard.css">
 
 <style>
+<<<<<<< HEAD
 :root {
   --panel: #ffffff;
   --panel-alt: #f8fafc;
@@ -89,6 +93,8 @@ $taskBatches = $conn->query("
   --input: #0b1220;
 }
 
+=======
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 /* ===== CHAT AVATAR ===== */
 #chatAvatar {
     position: fixed;
@@ -100,9 +106,15 @@ $taskBatches = $conn->query("
     overflow: hidden;
     cursor: pointer;
     z-index: 1000;
+<<<<<<< HEAD
     background: var(--panel);
     padding: 4px;
     box-shadow: 0 0 15px rgba(50,81,255,0.6), 0 4px 15px rgba(0,0,0,0.12);
+=======
+    background: #111827;
+    padding: 4px;
+    box-shadow: 0 0 15px rgba(50,81,255,0.6), 0 4px 15px rgba(0,0,0,0.4);
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     animation: pulse 2s infinite;
     transition: 0.2s;
 }
@@ -130,18 +142,30 @@ $taskBatches = $conn->query("
     bottom: 110px;
     right: 25px;
     width: 320px;
+<<<<<<< HEAD
     background: var(--panel-alt);
     border-radius: 12px;
     border: 1px solid var(--border);
+=======
+    background: #0b1220;
+    border-radius: 12px;
+    border: 1px solid #1f2937;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     display: none;
     flex-direction: column;
     z-index: 1000;
 }
 
 .chat-header {
+<<<<<<< HEAD
     background: var(--panel);
     padding: 12px 14px;
     color: var(--text);
+=======
+    background: #111827;
+    padding: 12px 14px;
+    color: white;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -158,7 +182,11 @@ $taskBatches = $conn->query("
 }
 
 .chat-header i:hover {
+<<<<<<< HEAD
     background: var(--panel-strong);
+=======
+    background: #1f2937;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .chat-body {
@@ -168,7 +196,11 @@ $taskBatches = $conn->query("
     display: flex;
     flex-direction: column;
     gap: 8px;
+<<<<<<< HEAD
     background: var(--panel-alt);
+=======
+    background: #0b1220;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .msg {
@@ -179,21 +211,36 @@ $taskBatches = $conn->query("
 }
 
 .msg.user {
+<<<<<<< HEAD
     background: var(--accent);
 color: #ffffff;
+=======
+    background: #3251ff;
+    color: #fff;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     align-self: flex-end;
 }
 
 .msg.bot {
+<<<<<<< HEAD
     background: var(--panel-strong);
     color: var(--text);
+=======
+    background: #1f2937;
+    color: #d1d5db;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     align-self: flex-start;
 }
 
 .chat-footer {
     display: flex;
+<<<<<<< HEAD
     border-top: 1px solid var(--border);
     background: var(--panel);
+=======
+    border-top: 1px solid #1f2937;
+    background: #111827;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .chat-footer input {
@@ -202,11 +249,19 @@ color: #ffffff;
     border: none;
     outline: none;
     background: transparent;
+<<<<<<< HEAD
     color: var(--text);
 }
 
 .chat-footer button {
     background: var(--accent);
+=======
+    color: white;
+}
+
+.chat-footer button {
+    background: #3251ff;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     border: none;
     padding: 10px 14px;
     color: white;
@@ -233,8 +288,13 @@ color: #ffffff;
 }
 
 .task-card {
+<<<<<<< HEAD
   background: var(--panel);
   border: 1px solid var(--border);
+=======
+  background: #111827;
+  border: 1px solid #1f2937;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   border-radius: 14px;
   padding: 16px;
   transition: 0.2s;
@@ -242,18 +302,30 @@ color: #ffffff;
 
 .task-card:hover {
   transform: translateY(-4px);
+<<<<<<< HEAD
   border-color: rgba(37, 99, 235, 0.35);
 }
 
 .task-card h3 {
   color: var(--accent);
+=======
+  border-color: rgba(50,81,255,0.4);
+}
+
+.task-card h3 {
+  color: #3251ff;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   font-size: 15px;
 }
 
 .task-card a {
   display: inline-block;
   margin-top: 8px;
+<<<<<<< HEAD
   color: var(--accent);
+=======
+  color: #60a5fa;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   font-size: 13px;
   text-decoration: none;
 }
@@ -263,8 +335,13 @@ color: #ffffff;
 }
 
 .task-composer {
+<<<<<<< HEAD
   background: var(--panel);
   border: 1px solid var(--border);
+=======
+  background: #111827;
+  border: 1px solid #1f2937;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   border-radius: 12px;
   padding: 18px;
   margin: 22px 0;
@@ -290,16 +367,26 @@ color: #ffffff;
 }
 
 .field label {
+<<<<<<< HEAD
   color: var(--muted);
+=======
+  color: #9ca3af;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   font-size: 12px;
 }
 
 .field input,
 .field textarea {
   width: 100%;
+<<<<<<< HEAD
   background: var(--input);
   color: var(--text);
   border: 1px solid var(--border);
+=======
+  background: #0b1220;
+  color: #e5e7eb;
+  border: 1px solid #1f2937;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   border-radius: 8px;
   padding: 11px 12px;
   outline: none;
@@ -410,9 +497,15 @@ color: #ffffff;
   <div style="display:flex; justify-content:flex-end;">
   <div style= "display:inline-block;
    padding:8px 18px;
+<<<<<<< HEAD
     background:var(--accent);
     border-radius:20px;
     color:#fff;
+=======
+    background:#3251ff;
+    border-radius:20px;
+    color:#fffff;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     font-weight:bold;
     font-size:15px;">Human Resource</div>
 </div>
@@ -446,7 +539,11 @@ color: #ffffff;
 </div>
 
 <!-- CHAT LIST (ADMIN SELECTION) -->
+<<<<<<< HEAD
 <div style="padding:12px; width: 30%; color:var(--text);">
+=======
+<div style="padding:12px; width: 30%; color:white;">
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     <h3>Chat With Admin</h3>
     <br>
     <?php
@@ -456,8 +553,12 @@ color: #ffffff;
         <div onclick="startChat(<?= $admin['id']; ?>, '<?= htmlspecialchars($admin['full_name']) ?>')" style="
             padding:8px;
             margin:5px 0;
+<<<<<<< HEAD
             background:var(--panel-alt);
             color:var(--text);
+=======
+            background:#1f2937;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
             border-radius:8px;
             cursor:pointer;
         ">
@@ -467,6 +568,7 @@ color: #ffffff;
 </div>
 
 <div class="task-composer">
+<<<<<<< HEAD
   <h2><i class="fa-solid fa-paper-plane"></i> Send Evaluation</h2>
 
   <?php if (isset($_GET['task_sent'])): ?>
@@ -480,24 +582,47 @@ color: #ffffff;
     <div class="alert error">Task was not sent. Please select at least one active employee and complete the required fields.</div>
   <?php elseif (isset($_GET['task_date_error'])): ?>
     <div class="alert error">Evaluation was not sent. A deadline in the past is not allowed.</div>
+=======
+  <h2><i class="fa-solid fa-paper-plane"></i> Send Task</h2>
+
+  <?php if (isset($_GET['task_sent'])): ?>
+    <div class="alert success">
+      Task sent to <?= (int) $_GET['task_sent']; ?> employee<?= (int) $_GET['task_sent'] === 1 ? '' : 's'; ?>.
+    </div>
+  <?php elseif (isset($_GET['task_error'])): ?>
+    <div class="alert error">Task was not sent. Please select at least one active employee and complete the required fields.</div>
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   <?php endif; ?>
 
   <form action="post_task.php" method="POST" enctype="multipart/form-data">
     <div class="form-grid">
       <div>
         <div class="field">
+<<<<<<< HEAD
           <label for="title">Evaluation Title</label>
           <input type="text" id="title" name="title" placeholder="Evaluation Title..." required>
+=======
+          <label for="title">Task Title</label>
+          <input type="text" id="title" name="title" required>
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
         </div>
 
         <div class="field">
           <label for="description">Instructions</label>
+<<<<<<< HEAD
           <textarea id="description" name="description" placeholder="Instruction here..." required></textarea>
+=======
+          <textarea id="description" name="description" required></textarea>
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
         </div>
 
         <div class="field">
           <label for="deadline">Deadline</label>
+<<<<<<< HEAD
           <input type="date" id="deadline" name="deadline" min="<?= htmlspecialchars($todayDate); ?>" required>
+=======
+          <input type="date" id="deadline" name="deadline" required>
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
         </div>
 
         <div class="field">
@@ -508,7 +633,11 @@ color: #ffffff;
 
       <div>
         <div class="composer-actions" style="margin-top:0;margin-bottom:8px;">
+<<<<<<< HEAD
           <label style="color:var(--muted);font-size:12px;">Recipients</label>
+=======
+          <label style="color:#9ca3af;font-size:12px;">Recipients</label>
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
           <button type="button" class="select-all" onclick="toggleEmployees()" style="background:none;border:0;">Select All</button>
         </div>
 

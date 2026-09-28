@@ -11,6 +11,7 @@ function ensureTaskSchema(mysqli $conn): void
     $columns = [
         'employee_id' => "ALTER TABLE tasks ADD COLUMN employee_id INT(11) DEFAULT NULL AFTER id",
         'hr_id' => "ALTER TABLE tasks ADD COLUMN hr_id INT(11) DEFAULT NULL AFTER employee_id",
+<<<<<<< HEAD
         'assignment_batch' => "ALTER TABLE tasks ADD COLUMN assignment_batch VARCHAR(80) DEFAULT NULL AFTER hr_id",
         'assignment_key' => "ALTER TABLE tasks ADD COLUMN assignment_key CHAR(64) DEFAULT NULL AFTER assignment_batch",
         'description' => "ALTER TABLE tasks ADD COLUMN description TEXT DEFAULT NULL AFTER title",
@@ -24,6 +25,13 @@ function ensureTaskSchema(mysqli $conn): void
         'created_at' => "ALTER TABLE tasks ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER uploaded_by",
         'submitted_at' => "ALTER TABLE tasks ADD COLUMN submitted_at DATETIME DEFAULT NULL AFTER submission_file",
         'submission_request_key' => "ALTER TABLE tasks ADD COLUMN submission_request_key CHAR(64) DEFAULT NULL AFTER submitted_at",
+=======
+        'description' => "ALTER TABLE tasks ADD COLUMN description TEXT DEFAULT NULL AFTER title",
+        'deadline' => "ALTER TABLE tasks ADD COLUMN deadline DATE DEFAULT NULL AFTER description",
+        'file_attachment' => "ALTER TABLE tasks ADD COLUMN file_attachment VARCHAR(255) DEFAULT NULL AFTER deadline",
+        'submission_file' => "ALTER TABLE tasks ADD COLUMN submission_file VARCHAR(255) DEFAULT NULL AFTER file_attachment",
+        'submitted_at' => "ALTER TABLE tasks ADD COLUMN submitted_at DATETIME DEFAULT NULL AFTER submission_file",
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
         'status' => "ALTER TABLE tasks ADD COLUMN status ENUM('pending','submitted','reviewed') NOT NULL DEFAULT 'pending' AFTER submitted_at",
         'ai_score' => "ALTER TABLE tasks ADD COLUMN ai_score INT(11) DEFAULT NULL AFTER status",
         'grammar_score' => "ALTER TABLE tasks ADD COLUMN grammar_score INT(11) DEFAULT NULL AFTER ai_score",
@@ -45,6 +53,7 @@ function ensureTaskSchema(mysqli $conn): void
 
     foreach ($columns as $column => $sql) {
         if (!isset($existing[$column])) {
+<<<<<<< HEAD
             if (!$conn->query($sql)) {
                 throw new RuntimeException("Unable to add tasks.$column: " . $conn->error);
             }
@@ -69,6 +78,12 @@ function ensureTaskSchema(mysqli $conn): void
         throw new RuntimeException("Unable to enforce idempotent submissions: " . $conn->error);
     }
 
+=======
+            $conn->query($sql);
+        }
+    }
+
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     $done = true;
 }
 ?>

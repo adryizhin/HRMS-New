@@ -19,6 +19,7 @@ $factors = $kpi['factors'];
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="dashboard.css">
 <style>
+<<<<<<< HEAD
 :root {
   --kpi-panel: #ffffff;
   --kpi-panel-alt: #f8fafc;
@@ -47,12 +48,19 @@ $factors = $kpi['factors'];
   align-items: center;
   background: var(--kpi-panel);
   border: 1px solid var(--kpi-border);
+=======
+.kpi-hero {
+  align-items: center;
+  background: #101826;
+  border: 1px solid #263244;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   border-radius: 8px;
   display: grid;
   gap: 22px;
   grid-template-columns: minmax(0, 1fr) 220px;
   margin-bottom: 22px;
   padding: 22px;
+<<<<<<< HEAD
   box-shadow: 0 10px 22px rgba(15, 23, 42, 0.05);
 }
 .kpi-hero h1 { color: var(--kpi-text); font-size: 28px; margin-bottom: 8px; }
@@ -60,25 +68,47 @@ $factors = $kpi['factors'];
 .kpi-score {
   background: var(--kpi-score-bg);
   border: 1px solid var(--kpi-border);
+=======
+}
+.kpi-hero h1 { color: #f8fafc; font-size: 28px; margin-bottom: 8px; }
+.kpi-hero p { color: #94a3b8; font-size: 14px; line-height: 1.5; }
+.kpi-score {
+  background: #0b1220;
+  border: 1px solid #263244;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   border-radius: 8px;
   padding: 20px;
   text-align: center;
 }
 .kpi-score strong { display: block; font-size: 48px; line-height: 1; }
+<<<<<<< HEAD
 .kpi-score span { color: var(--kpi-muted); display: block; font-size: 13px; margin-top: 8px; text-transform: uppercase; }
 .excellent { color: #16a34a; }
 .good { color: var(--kpi-accent); }
 .watch { color: #f59e0b; }
 .risk { color: #dc2626; }
 .muted { color: var(--kpi-muted); }
+=======
+.kpi-score span { color: #cbd5e1; display: block; font-size: 13px; margin-top: 8px; text-transform: uppercase; }
+.excellent { color: #22c55e; }
+.good { color: #60a5fa; }
+.watch { color: #f59e0b; }
+.risk { color: #ef4444; }
+.muted { color: #94a3b8; }
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 .factor-grid {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 .factor-card {
+<<<<<<< HEAD
   background: var(--kpi-panel);
   border: 1px solid var(--kpi-border);
+=======
+  background: #101826;
+  border: 1px solid #263244;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   border-radius: 8px;
   padding: 16px;
 }
@@ -88,25 +118,44 @@ $factors = $kpi['factors'];
   justify-content: space-between;
   gap: 12px;
 }
+<<<<<<< HEAD
 .factor-card h3 { color: var(--kpi-text); font-size: 15px; }
 .factor-weight {
   background: var(--kpi-panel-alt);
   border: 1px solid var(--kpi-border);
   border-radius: 999px;
   color: var(--kpi-muted);
+=======
+.factor-card h3 { color: #f8fafc; font-size: 15px; }
+.factor-weight {
+  background: #0b1220;
+  border: 1px solid #263244;
+  border-radius: 999px;
+  color: #cbd5e1;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   font-size: 12px;
   padding: 5px 9px;
 }
 .factor-value { font-size: 30px; font-weight: 800; margin: 14px 0 8px; }
+<<<<<<< HEAD
 .factor-card p { color: var(--kpi-muted); font-size: 13px; line-height: 1.45; }
 .progress {
   background: var(--kpi-progress);
+=======
+.factor-card p { color: #94a3b8; font-size: 13px; line-height: 1.45; }
+.progress {
+  background: #0b1220;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   border-radius: 999px;
   height: 9px;
   margin-top: 13px;
   overflow: hidden;
 }
+<<<<<<< HEAD
 .progress span { background: var(--kpi-accent); display: block; height: 100%; }
+=======
+.progress span { background: #3251ff; display: block; height: 100%; }
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 @media (max-width: 780px) {
   .kpi-hero { grid-template-columns: 1fr; }
 }

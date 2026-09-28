@@ -20,7 +20,10 @@ function route(string $name): string
         'admin.users' => 'admin/create_user_account.php',
         'admin.departments' => 'admin/departments.php',
         'admin.attendance' => 'admin/attendance.php',
+<<<<<<< HEAD
         'admin.holidays' => 'admin/holidays.php',
+=======
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
         'admin.payroll' => 'admin/payroll.php',
         'admin.login_logs' => 'admin/login_logs.php',
         'hr.dashboard' => 'hr/dashboard.php',

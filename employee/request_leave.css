@@ -1,4 +1,5 @@
 :root {
+<<<<<<< HEAD
   --bg: #f3f4f6;
   --sidebar: #ffffff;
   --card: #ffffff;
@@ -41,6 +42,29 @@ body {
   display:flex;
   background:var(--bg);
   color:var(--text);
+=======
+  --bg: #0b1220;
+  --sidebar: #020617;
+  --card: #111827;
+  --accent: #3251ff;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --green: #22c55e;
+  --red: #ef4444;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  display: flex;
+  background: var(--bg);
+  color: var(--text);
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 /* SIDEBAR */
@@ -70,12 +94,20 @@ body {
 
 .sidebar a:hover {
   background: var(--accent);
+<<<<<<< HEAD
   color: var(--button-text);
+=======
+  color: #000;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .sidebar a.active {
   background: var(--green);
+<<<<<<< HEAD
   color: var(--button-dark);
+=======
+  color: #000;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 /* MAIN */
@@ -101,11 +133,18 @@ body {
 }
 
 .card {
+<<<<<<< HEAD
   background: linear-gradient(145deg, var(--card), var(--card-soft));
   padding: 20px;
   border-radius: 15px;
   border: 1px solid var(--border);
   box-shadow: 0 10px 22px var(--shadow);
+=======
+  background: var(--card);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   position: relative;
 }
 
@@ -134,13 +173,21 @@ body {
 }
 
 .leave-card {
+<<<<<<< HEAD
   background: linear-gradient(145deg, var(--card), var(--card-soft));
+=======
+  background: var(--card);
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   padding: 25px;
   border-radius: 15px;
   width: 100%;
   max-width: 450px;
+<<<<<<< HEAD
   border: 1px solid var(--border);
   box-shadow: 0 10px 22px var(--shadow);
+=======
+  box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .leave-card input,
@@ -149,10 +196,17 @@ body {
   width: 100%;
   padding: 10px;
   margin-bottom: 12px;
+<<<<<<< HEAD
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--card-soft);
   color: var(--text);
+=======
+  border: none;
+  border-radius: 8px;
+  background: #1f2937;
+  color: #fff;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .leave-card button {
@@ -161,7 +215,11 @@ body {
   background: var(--accent);
   border: none;
   border-radius: 10px;
+<<<<<<< HEAD
   color: var(--button-text);
+=======
+  color: #000;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
   font-weight: bold;
   cursor: pointer;
 }

@@ -46,6 +46,7 @@ $submissions = $stmt->get_result();
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="dashboard.css">
+<<<<<<< HEAD
 <style>
 :root {
     --submission-bg: #f3f4f6;
@@ -75,6 +76,14 @@ $submissions = $stmt->get_result();
 
 .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
 .topbar h1 { font-size: 28px; color: var(--submission-text); }
+=======
+
+<style>
+.main { margin-left: 240px; padding: 20px; }
+
+.topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+.topbar h1 { font-size: 28px; color: #e5e7eb; }
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 
 .submissions-grid {
     display: grid;
@@ -84,17 +93,29 @@ $submissions = $stmt->get_result();
 }
 
 .submission-card {
+<<<<<<< HEAD
     background: var(--submission-card);
     border: 1px solid var(--submission-border);
     border-radius: 12px;
     padding: 18px;
     transition: 0.2s;
     box-shadow: 0 10px 22px rgba(15, 23, 42, 0.05);
+=======
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 12px;
+    padding: 18px;
+    transition: 0.2s;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .submission-card:hover {
     transform: translateY(-4px);
+<<<<<<< HEAD
     border-color: rgba(37, 99, 235, 0.4);
+=======
+    border-color: rgba(50, 81, 255, 0.4);
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .card-header {
@@ -105,7 +126,11 @@ $submissions = $stmt->get_result();
 }
 
 .card-header h3 {
+<<<<<<< HEAD
     color: var(--submission-accent);
+=======
+    color: #3251ff;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     font-size: 16px;
     margin: 0;
 }
@@ -119,6 +144,7 @@ $submissions = $stmt->get_result();
     text-transform: uppercase;
 }
 
+<<<<<<< HEAD
 .status-badge.pending { background: rgba(148, 163, 184, 0.16); color: var(--submission-muted); }
 .status-badge.submitted { background: rgba(34, 197, 94, 0.12); color: #15803d; }
 .status-badge.reviewed { background: rgba(59, 130, 246, 0.12); color: #1d4ed8; }
@@ -126,6 +152,15 @@ $submissions = $stmt->get_result();
 
 .employee-info {
     color: var(--submission-muted);
+=======
+.status-badge.pending { background: #374151; color: #9ca3af; }
+.status-badge.submitted { background: #14532d; color: #4ade80; }
+.status-badge.reviewed { background: #1e3a8a; color: #60a5fa; }
+.status-badge.scored { background: #4c1d95; color: #c4b5fd; }
+
+.employee-info {
+    color: #9ca3af;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     font-size: 13px;
     margin-bottom: 10px;
 }
@@ -134,31 +169,53 @@ $submissions = $stmt->get_result();
     display: flex;
     flex-direction: column;
     gap: 6px;
+<<<<<<< HEAD
     color: var(--submission-text);
+=======
+    color: #cbd5e1;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     font-size: 12px;
     margin-bottom: 12px;
 }
 
+<<<<<<< HEAD
 .task-meta i { margin-right: 6px; color: var(--submission-accent); }
 
 .score-display {
     background: var(--submission-card-alt);
+=======
+.task-meta i { margin-right: 6px; color: #60a5fa; }
+
+.score-display {
+    background: #0b1220;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     padding: 10px;
     border-radius: 8px;
     margin-bottom: 12px;
     text-align: center;
+<<<<<<< HEAD
     border: 1px solid var(--submission-border);
+=======
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .score-display .score-value {
     font-size: 28px;
     font-weight: bold;
+<<<<<<< HEAD
     color: var(--submission-accent);
+=======
+    color: #3251ff;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .score-display .score-label {
     font-size: 11px;
+<<<<<<< HEAD
     color: var(--submission-muted);
+=======
+    color: #9ca3af;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .action-buttons {
@@ -181,6 +238,7 @@ $submissions = $stmt->get_result();
 }
 
 .btn-view {
+<<<<<<< HEAD
     background: var(--submission-accent);
     color: var(--submission-primary-text);
 }
@@ -198,11 +256,34 @@ $submissions = $stmt->get_result();
 .btn-score:hover {
     background: var(--submission-accent-soft);
     border-color: var(--submission-accent);
+=======
+    background: #3251ff;
+    color: white;
+}
+
+.btn-view:hover {
+    background: #2540cc;
+}
+
+.btn-score {
+    background: #1f2937;
+    color: #60a5fa;
+    border: 1px solid #1f2937;
+}
+
+.btn-score:hover {
+    background: #111827;
+    border-color: #3251ff;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .no-submissions {
     text-align: center;
+<<<<<<< HEAD
     color: var(--submission-muted);
+=======
+    color: #9ca3af;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     padding: 40px;
 }
 
@@ -210,7 +291,11 @@ $submissions = $stmt->get_result();
     display: flex;
     gap: 12px;
     margin-bottom: 20px;
+<<<<<<< HEAD
     border-bottom: 1px solid var(--submission-border);
+=======
+    border-bottom: 1px solid #1f2937;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     padding-bottom: 15px;
 }
 
@@ -218,7 +303,11 @@ $submissions = $stmt->get_result();
     padding: 8px 16px;
     background: transparent;
     border: none;
+<<<<<<< HEAD
     color: var(--submission-muted);
+=======
+    color: #9ca3af;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     cursor: pointer;
     font-size: 14px;
     border-bottom: 2px solid transparent;
@@ -226,11 +315,18 @@ $submissions = $stmt->get_result();
 }
 
 .filter-tab.active {
+<<<<<<< HEAD
     color: var(--submission-accent);
     border-bottom-color: var(--submission-accent);
 }
 </style>
 
+=======
+    color: #3251ff;
+    border-bottom-color: #3251ff;
+}
+</style>
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 </head>
 
 <body>

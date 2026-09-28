@@ -13,7 +13,10 @@ function renderSidebar(string $role, string $active = ''): void
             ['admin.users', 'fa-user', 'Create Employees'],
             ['admin.departments', 'fa-building', 'Departments'],
             ['admin.attendance', 'fa-clock', 'Attendance'],
+<<<<<<< HEAD
             ['admin.holidays', 'fa-calendar-days', 'Holiday Calendar'],
+=======
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
             ['admin.payroll', 'fa-money-bill', 'Payroll'],
             ['admin.login_logs', 'fa-clock-rotate-left', 'Login Logs'],
             ['#', 'fa-chart-pie', 'Reports'],
@@ -21,7 +24,11 @@ function renderSidebar(string $role, string $active = ''): void
         ],
         'hr' => [
             ['hr.dashboard', 'fa-chart-line', 'Dashboard'],
+<<<<<<< HEAD
             ['hr.task_submissions', 'fa-clipboard-check', 'Review Evaluations'],
+=======
+            ['hr.task_submissions', 'fa-clipboard-check', 'Review Submissions'],
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
             ['hr.201_files', 'fa-folder-open', '201 Files'],
             ['hr.leave_requests', 'fa-umbrella', 'Leave Requests'],
             ['hr.attendance', 'fa-clock', 'Attendance'],
@@ -33,7 +40,11 @@ function renderSidebar(string $role, string $active = ''): void
         'employee' => [
             ['employee.dashboard', 'fa-chart-line', 'Dashboard'],
             ['employee.documents', 'fa-folder-open', 'My Documents'],
+<<<<<<< HEAD
             ['employee.tasks', 'fa-tasks', 'Evaluations'],
+=======
+            ['employee.tasks', 'fa-tasks', 'Tasks'],
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
             ['employee.leave_request', 'fa-umbrella', 'Request Leave'],
             ['employee.attendance', 'fa-clock', 'Attendance'],
             ['employee.kpi', 'fa-gauge-high', 'My KPI'],
@@ -55,9 +66,13 @@ function renderSidebar(string $role, string $active = ''): void
         echo '</a>';
     }
 
+<<<<<<< HEAD
     echo '<button id="theme-toggle-btn" class="theme-toggle-btn">🌙 Dark Mode</button>';
     echo '</div>';
     
+=======
+    echo '</div>';
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     renderIdleTimeoutScript();
 }
 
@@ -73,6 +88,7 @@ function renderSidebarStyles(): void
 
     echo <<<HTML
 <style>
+<<<<<<< HEAD
 /* --- Color Palette Tokens --- */
 :root {
 --bg-color: #dcdfe4;
@@ -110,20 +126,30 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     transition: background-color 0.2s ease, color 0.2s ease;
+=======
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .sidebar {
     width: 240px !important;
     height: 100vh !important;
     min-height: 100vh !important;
+<<<<<<< HEAD
     background: var(--sidebar) !important;
     border-right: 1px solid var(--sidebar-border) !important;
+=======
+    background: var(--sidebar, #020617) !important;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     padding: 20px !important;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     z-index: 1000 !important;
     overflow-y: auto !important;
+<<<<<<< HEAD
     display: flex !important;
     flex-direction: column !important;
     font-family: 'Segoe UI', sans-serif !important;
@@ -137,12 +163,20 @@ body {
     font-size: 1.25rem !important;
     font-weight: 700 !important;
     line-height: 1.2 !important;
+=======
+}
+
+.sidebar h2 {
+    color: var(--accent, #3251ff) !important;
+    margin-bottom: 30px !important;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .sidebar a {
     display: flex !important;
     align-items: center !important;
     gap: 10px !important;
+<<<<<<< HEAD
     box-sizing: border-box !important;
     width: 100% !important;
     height: 44px !important;
@@ -198,6 +232,24 @@ body {
     background: var(--hover-bg) !important;
     color: var(--hover-text) !important;
     border-color: var(--accent) !important;
+=======
+    padding: 12px !important;
+    color: var(--muted, #9ca3af) !important;
+    text-decoration: none !important;
+    border-radius: 10px !important;
+    margin-bottom: 10px !important;
+    transition: background 0.2s ease, color 0.2s ease !important;
+}
+
+.sidebar a:hover {
+    background: var(--accent, #3251ff) !important;
+    color: #000 !important;
+}
+
+.sidebar a.active {
+    background: var(--accent, #3251ff) !important;
+    color: #000 !important;
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
 }
 
 .main {
@@ -213,8 +265,11 @@ body {
         min-height: 0 !important;
         position: sticky !important;
         top: 0 !important;
+<<<<<<< HEAD
         border-right: none !important;
         border-bottom: 1px solid var(--sidebar-border) !important;
+=======
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     }
 
     .main {
@@ -273,6 +328,7 @@ function renderIdleTimeoutScript(): void
 
     resetIdleTimer();
 })();
+<<<<<<< HEAD
 
 document.addEventListener("DOMContentLoaded", () => {
     const currentTheme = localStorage.getItem("theme") || "light";
@@ -293,3 +349,9 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 HTML;
 }  
+=======
+</script>
+HTML;
+}
+?>
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b

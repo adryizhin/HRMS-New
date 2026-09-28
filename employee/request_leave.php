@@ -95,10 +95,16 @@ $notifCount = $conn->query("
       right:0;
       top:30px;
       width:300px;
+<<<<<<< HEAD
       background:var(--card);
       border:1px solid var(--border);
       border-radius:10px;
       box-shadow:0 10px 25px rgba(0,0,0,0.12);
+=======
+      background:#111827;
+      border-radius:10px;
+      box-shadow:0 10px 25px rgba(0,0,0,0.5);
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
       max-height:300px;
       overflow-y:auto;
       z-index:999;
@@ -108,12 +114,20 @@ $notifCount = $conn->query("
       <?php while($n = $notifQuery->fetch_assoc()): ?>
         <div style="
             padding:10px;
+<<<<<<< HEAD
             border-bottom:1px solid var(--border);
             font-size:13px;
             color:var(--text);
         ">
           <?= $n['message']; ?><br>
           <small style="color:var(--muted);">
+=======
+            border-bottom:1px solid #1f2937;
+            font-size:13px;
+        ">
+          <?= $n['message']; ?><br>
+          <small style="color:gray;">
+>>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
             <?= date("M d, h:i A", strtotime($n['created_at'])); ?>
           </small>
         </div>
