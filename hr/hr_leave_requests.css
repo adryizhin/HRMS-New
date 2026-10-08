@@ -1,5 +1,8 @@
 :root {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   --bg: #f3f4f6;
   --sidebar: #ffffff;
   --card: #ffffff;
@@ -29,6 +32,7 @@
   --shadow: rgba(2, 6, 23, 0.55);
   --button-text: #ffffff;
   --button-dark: #0f172a;
+<<<<<<< HEAD
 =======
   --bg: #0b1220;
   --sidebar: #020617;
@@ -39,6 +43,8 @@
   --green: #22c55e;
   --red: #ef4444;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 * {
@@ -82,19 +88,27 @@ body {
 .sidebar a:hover {
   background: var(--accent);
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--button-text);
 =======
   color: #000;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--on-accent);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .sidebar a.active {
   background: var(--green);
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--button-dark);
 =======
   color: #000;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--on-green);
+>>>>>>> ea5c816 (partial done system)
 }
 
 /* MAIN */
@@ -121,17 +135,23 @@ body {
 
 .card {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   background: linear-gradient(145deg, var(--card), var(--card-soft));
   padding: 20px;
   border-radius: 15px;
   border: 1px solid var(--border);
   box-shadow: 0 10px 22px var(--shadow);
+<<<<<<< HEAD
 =======
   background: var(--card);
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.4);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   position: relative;
 }
 
@@ -163,6 +183,11 @@ body {
   font-size: 12px;
 }
 
+<<<<<<< HEAD
 .green { background: var(--green); color: #000; }
 .red { background: var(--red); color: #fff; }
+=======
+.green { background: var(--green); color: var(--on-green); }
+.red { background: var(--red); color: var(--on-red); }
+>>>>>>> ea5c816 (partial done system)
 .gray { background: #6b7280; color: #fff; }

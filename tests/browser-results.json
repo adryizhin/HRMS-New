@@ -1,0 +1,17 @@
+[
+  {
+    "role": "admin",
+    "theme": "dark",
+    "errors": []
+  },
+  {
+    "role": "hr",
+    "theme": "dark",
+    "errors": []
+  },
+  {
+    "role": "employee",
+    "theme": "dark",
+    "errors": []
+  }
+]

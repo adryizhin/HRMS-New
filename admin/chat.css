@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
 :root {
     --chat-shell-bg: #f8fafc;
     --chat-panel-bg: #ffffff;
@@ -31,8 +34,11 @@
     --chat-shadow: rgba(2, 6, 23, 0.55);
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 /* ===== CHAT AVATAR ===== */
 #chatAvatar {
     position: fixed;
@@ -45,6 +51,7 @@
     cursor: pointer;
     z-index: 1000;
 <<<<<<< HEAD
+<<<<<<< HEAD
     background: var(--chat-panel-bg);
     padding: 4px;
     box-shadow: 0 0 15px rgba(37, 99, 235, 0.25), 0 4px 15px var(--chat-shadow);
@@ -53,6 +60,11 @@
     padding: 4px;
     box-shadow: 0 0 15px rgba(50,81,255,0.6), 0 4px 15px rgba(0,0,0,0.4);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: var(--chat-panel-bg);
+    padding: 4px;
+    box-shadow: 0 0 15px rgba(37, 99, 235, 0.25), 0 4px 15px var(--chat-shadow);
+>>>>>>> ea5c816 (partial done system)
     animation: pulse 2s infinite;
     transition: transform 0.2s ease;
 }
@@ -70,6 +82,7 @@
 
 @keyframes pulse {
 <<<<<<< HEAD
+<<<<<<< HEAD
     0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.25); }
     70% { box-shadow: 0 0 0 12px rgba(37, 99, 235, 0); }
     100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
@@ -78,6 +91,11 @@
     70% { box-shadow: 0 0 0 12px rgba(50,81,255,0); }
     100% { box-shadow: 0 0 0 0 rgba(50,81,255,0); }
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.25); }
+    70% { box-shadow: 0 0 0 12px rgba(37, 99, 235, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+>>>>>>> ea5c816 (partial done system)
 }
 
 /* ===== CHAT BOX ===== */
@@ -87,6 +105,9 @@
     right: 25px;
     width: 350px;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     background: var(--chat-shell-bg);
     border-radius: 8px;
     border: 1px solid var(--chat-border);
@@ -100,6 +121,7 @@
     background: var(--chat-header-bg);
     padding: 12px 14px;
     color: var(--chat-text);
+<<<<<<< HEAD
 =======
     background: #0b1220;
     border-radius: 8px;
@@ -114,6 +136,8 @@
     padding: 12px 14px;
     color: white;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -128,17 +152,23 @@
     cursor: pointer;
     border-radius: 50%;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     color: var(--chat-text);
 }
 
 .chat-header i:hover {
     background: var(--chat-panel-alt);
+<<<<<<< HEAD
 =======
 }
 
 .chat-header i:hover {
     background: #1f2937;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 .chat-body {
@@ -149,11 +179,16 @@
     flex-direction: column;
     gap: 8px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     background: var(--chat-shell-bg);
     color: var(--chat-text);
 =======
     background: #0b1220;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: var(--chat-shell-bg);
+    color: var(--chat-text);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .msg {
@@ -166,16 +201,22 @@
 
 .msg.user {
 <<<<<<< HEAD
+<<<<<<< HEAD
     background: var(--chat-user);
     color: var(--chat-user-text);
 =======
     background: #3251ff;
     color: #fff;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: var(--chat-user);
+    color: var(--chat-user-text);
+>>>>>>> ea5c816 (partial done system)
     align-self: flex-end;
 }
 
 .msg.bot {
+<<<<<<< HEAD
 <<<<<<< HEAD
     background: var(--chat-bot);
     color: var(--chat-bot-text);
@@ -183,11 +224,16 @@
     background: #1f2937;
     color: #d1d5db;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: var(--chat-bot);
+    color: var(--chat-bot-text);
+>>>>>>> ea5c816 (partial done system)
     align-self: flex-start;
 }
 
 .chat-footer {
     display: flex;
+<<<<<<< HEAD
 <<<<<<< HEAD
     border-top: 1px solid var(--chat-border);
     background: var(--chat-header-bg);
@@ -195,6 +241,10 @@
     border-top: 1px solid #1f2937;
     background: #111827;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    border-top: 1px solid var(--chat-border);
+    background: var(--chat-header-bg);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .chat-footer input {
@@ -204,6 +254,9 @@
     outline: none;
     background: transparent;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     color: var(--chat-text);
 }
 
@@ -212,6 +265,7 @@
     border: none;
     padding: 10px 14px;
     color: var(--chat-user-text);
+<<<<<<< HEAD
 =======
     color: white;
 }
@@ -222,6 +276,8 @@
     padding: 10px 14px;
     color: white;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     cursor: pointer;
 }
 /* NOTIFICATION DOT */
@@ -231,7 +287,11 @@
     right: 8px;
     width: 12px;
     height: 12px;
+<<<<<<< HEAD
     background: red;
+=======
+    background: #b91c1c;
+>>>>>>> ea5c816 (partial done system)
     border-radius: 50%;
     display: none;
     box-shadow: 0 0 10px red;

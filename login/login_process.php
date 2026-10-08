@@ -6,8 +6,13 @@ require_once __DIR__ . '/../includes/attendance.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+<<<<<<< HEAD
     $email = trim($_POST['email']);
     $password = $_POST['password'];
+=======
+    $email = trim((string) ($_POST['email'] ?? ''));
+    $password = (string) ($_POST['password'] ?? '');
+>>>>>>> ea5c816 (partial done system)
 
     $user = login($email, $password);
 

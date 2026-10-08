@@ -9,10 +9,15 @@ ensureTaskSchema($conn);
 
 $hr_id = (int) $_SESSION['user_id'];
 <<<<<<< HEAD
+<<<<<<< HEAD
 $today = new DateTimeImmutable('today', new DateTimeZone('Asia/Manila'));
 $todayDate = $today->format('Y-m-d');
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+$today = new DateTimeImmutable('today', new DateTimeZone('Asia/Manila'));
+$todayDate = $today->format('Y-m-d');
+>>>>>>> ea5c816 (partial done system)
 
 $result = $conn->query("SELECT COUNT(*) AS total FROM users WHERE role='employee'");
 $totalEmployees = $result ? $result->fetch_assoc()['total'] : 0;
@@ -34,7 +39,11 @@ $employees = $conn->query("
     SELECT users.id, users.employee_id, users.full_name, departments.name AS department_name
     FROM users
     LEFT JOIN departments ON users.department_id = departments.id
+<<<<<<< HEAD
     WHERE users.role = 'employee'
+=======
+    WHERE users.role IN ('employee', 'admin', 'hr')
+>>>>>>> ea5c816 (partial done system)
     AND users.status = 'active'
     ORDER BY users.full_name ASC
 ");
@@ -71,6 +80,9 @@ $taskBatches = $conn->query("
 
 <style>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
 :root {
   --panel: #ffffff;
   --panel-alt: #f8fafc;
@@ -93,8 +105,11 @@ $taskBatches = $conn->query("
   --input: #0b1220;
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 /* ===== CHAT AVATAR ===== */
 #chatAvatar {
     position: fixed;
@@ -107,6 +122,7 @@ $taskBatches = $conn->query("
     cursor: pointer;
     z-index: 1000;
 <<<<<<< HEAD
+<<<<<<< HEAD
     background: var(--panel);
     padding: 4px;
     box-shadow: 0 0 15px rgba(50,81,255,0.6), 0 4px 15px rgba(0,0,0,0.12);
@@ -115,6 +131,11 @@ $taskBatches = $conn->query("
     padding: 4px;
     box-shadow: 0 0 15px rgba(50,81,255,0.6), 0 4px 15px rgba(0,0,0,0.4);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: var(--panel);
+    padding: 4px;
+    box-shadow: 0 0 15px rgba(50,81,255,0.6), 0 4px 15px rgba(0,0,0,0.12);
+>>>>>>> ea5c816 (partial done system)
     animation: pulse 2s infinite;
     transition: 0.2s;
 }
@@ -143,6 +164,7 @@ $taskBatches = $conn->query("
     right: 25px;
     width: 320px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     background: var(--panel-alt);
     border-radius: 12px;
     border: 1px solid var(--border);
@@ -151,12 +173,18 @@ $taskBatches = $conn->query("
     border-radius: 12px;
     border: 1px solid #1f2937;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: var(--panel-alt);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+>>>>>>> ea5c816 (partial done system)
     display: none;
     flex-direction: column;
     z-index: 1000;
 }
 
 .chat-header {
+<<<<<<< HEAD
 <<<<<<< HEAD
     background: var(--panel);
     padding: 12px 14px;
@@ -166,6 +194,11 @@ $taskBatches = $conn->query("
     padding: 12px 14px;
     color: white;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: var(--panel);
+    padding: 12px 14px;
+    color: var(--text);
+>>>>>>> ea5c816 (partial done system)
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -183,10 +216,14 @@ $taskBatches = $conn->query("
 
 .chat-header i:hover {
 <<<<<<< HEAD
+<<<<<<< HEAD
     background: var(--panel-strong);
 =======
     background: #1f2937;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: var(--panel-strong);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .chat-body {
@@ -197,10 +234,14 @@ $taskBatches = $conn->query("
     flex-direction: column;
     gap: 8px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     background: var(--panel-alt);
 =======
     background: #0b1220;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: var(--panel-alt);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .msg {
@@ -212,16 +253,22 @@ $taskBatches = $conn->query("
 
 .msg.user {
 <<<<<<< HEAD
+<<<<<<< HEAD
     background: var(--accent);
 color: #ffffff;
 =======
     background: #3251ff;
     color: #fff;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: var(--accent);
+color: var(--on-accent);
+>>>>>>> ea5c816 (partial done system)
     align-self: flex-end;
 }
 
 .msg.bot {
+<<<<<<< HEAD
 <<<<<<< HEAD
     background: var(--panel-strong);
     color: var(--text);
@@ -229,11 +276,16 @@ color: #ffffff;
     background: #1f2937;
     color: #d1d5db;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: var(--panel-strong);
+    color: var(--text);
+>>>>>>> ea5c816 (partial done system)
     align-self: flex-start;
 }
 
 .chat-footer {
     display: flex;
+<<<<<<< HEAD
 <<<<<<< HEAD
     border-top: 1px solid var(--border);
     background: var(--panel);
@@ -241,6 +293,10 @@ color: #ffffff;
     border-top: 1px solid #1f2937;
     background: #111827;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    border-top: 1px solid var(--border);
+    background: var(--panel);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .chat-footer input {
@@ -250,11 +306,15 @@ color: #ffffff;
     outline: none;
     background: transparent;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     color: var(--text);
 }
 
 .chat-footer button {
     background: var(--accent);
+<<<<<<< HEAD
 =======
     color: white;
 }
@@ -265,6 +325,11 @@ color: #ffffff;
     border: none;
     padding: 10px 14px;
     color: white;
+=======
+    border: none;
+    padding: 10px 14px;
+    color: var(--on-accent);
+>>>>>>> ea5c816 (partial done system)
     cursor: pointer;
 }
 /* NOTIFICATION DOT */
@@ -274,7 +339,11 @@ color: #ffffff;
     right: 8px;
     width: 12px;
     height: 12px;
+<<<<<<< HEAD
     background: red;
+=======
+    background: #b91c1c;
+>>>>>>> ea5c816 (partial done system)
     border-radius: 50%;
     display: none;
     box-shadow: 0 0 10px red;
@@ -289,12 +358,17 @@ color: #ffffff;
 
 .task-card {
 <<<<<<< HEAD
+<<<<<<< HEAD
   background: var(--panel);
   border: 1px solid var(--border);
 =======
   background: #111827;
   border: 1px solid #1f2937;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  background: var(--panel);
+  border: 1px solid var(--border);
+>>>>>>> ea5c816 (partial done system)
   border-radius: 14px;
   padding: 16px;
   transition: 0.2s;
@@ -303,11 +377,15 @@ color: #ffffff;
 .task-card:hover {
   transform: translateY(-4px);
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   border-color: rgba(37, 99, 235, 0.35);
 }
 
 .task-card h3 {
   color: var(--accent);
+<<<<<<< HEAD
 =======
   border-color: rgba(50,81,255,0.4);
 }
@@ -315,6 +393,8 @@ color: #ffffff;
 .task-card h3 {
   color: #3251ff;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   font-size: 15px;
 }
 
@@ -322,10 +402,14 @@ color: #ffffff;
   display: inline-block;
   margin-top: 8px;
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--accent);
 =======
   color: #60a5fa;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--accent);
+>>>>>>> ea5c816 (partial done system)
   font-size: 13px;
   text-decoration: none;
 }
@@ -336,12 +420,17 @@ color: #ffffff;
 
 .task-composer {
 <<<<<<< HEAD
+<<<<<<< HEAD
   background: var(--panel);
   border: 1px solid var(--border);
 =======
   background: #111827;
   border: 1px solid #1f2937;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  background: var(--panel);
+  border: 1px solid var(--border);
+>>>>>>> ea5c816 (partial done system)
   border-radius: 12px;
   padding: 18px;
   margin: 22px 0;
@@ -368,16 +457,21 @@ color: #ffffff;
 
 .field label {
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--muted);
 =======
   color: #9ca3af;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--muted);
+>>>>>>> ea5c816 (partial done system)
   font-size: 12px;
 }
 
 .field input,
 .field textarea {
   width: 100%;
+<<<<<<< HEAD
 <<<<<<< HEAD
   background: var(--input);
   color: var(--text);
@@ -387,6 +481,11 @@ color: #ffffff;
   color: #e5e7eb;
   border: 1px solid #1f2937;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  background: var(--input);
+  color: var(--text);
+  border: 1px solid var(--border);
+>>>>>>> ea5c816 (partial done system)
   border-radius: 8px;
   padding: 11px 12px;
   outline: none;
@@ -398,7 +497,11 @@ color: #ffffff;
 }
 
 .employee-picker {
+<<<<<<< HEAD
   background: #0b1220;
+=======
+  background: var(--card);
+>>>>>>> ea5c816 (partial done system)
   border: 1px solid #1f2937;
   border-radius: 10px;
   max-height: 315px;
@@ -412,16 +515,28 @@ color: #ffffff;
   gap: 10px;
   padding: 9px;
   border-radius: 8px;
+<<<<<<< HEAD
   color: #e5e7eb;
+=======
+  color: var(--text);
+>>>>>>> ea5c816 (partial done system)
   cursor: pointer;
 }
 
 .employee-option:hover {
+<<<<<<< HEAD
   background: #111827;
 }
 
 .employee-meta {
   color: #9ca3af;
+=======
+  background: var(--card-soft);
+}
+
+.employee-meta {
+  color: var(--muted);
+>>>>>>> ea5c816 (partial done system)
   display: block;
   font-size: 11px;
   margin-top: 2px;
@@ -447,7 +562,11 @@ color: #ffffff;
 }
 
 .select-all {
+<<<<<<< HEAD
   color: #60a5fa;
+=======
+  color: var(--accent);
+>>>>>>> ea5c816 (partial done system)
   font-size: 13px;
   cursor: pointer;
 }
@@ -469,10 +588,17 @@ color: #ffffff;
 }
 
 .batch-pill {
+<<<<<<< HEAD
   background: #0b1220;
   border: 1px solid #1f2937;
   border-radius: 999px;
   color: #cbd5e1;
+=======
+  background: var(--panel);
+  border: 1px solid #1f2937;
+  border-radius: 999px;
+  color: var(--muted);
+>>>>>>> ea5c816 (partial done system)
   font-size: 12px;
   padding: 6px 10px;
 }
@@ -498,6 +624,7 @@ color: #ffffff;
   <div style= "display:inline-block;
    padding:8px 18px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     background:var(--accent);
     border-radius:20px;
     color:#fff;
@@ -506,6 +633,11 @@ color: #ffffff;
     border-radius:20px;
     color:#fffff;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background:var(--accent);
+    border-radius:20px;
+    color:var(--on-accent);
+>>>>>>> ea5c816 (partial done system)
     font-weight:bold;
     font-size:15px;">Human Resource</div>
 </div>
@@ -540,10 +672,14 @@ color: #ffffff;
 
 <!-- CHAT LIST (ADMIN SELECTION) -->
 <<<<<<< HEAD
+<<<<<<< HEAD
 <div style="padding:12px; width: 30%; color:var(--text);">
 =======
 <div style="padding:12px; width: 30%; color:white;">
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+<div class="chat-contacts" style="padding:12px; width: 30%; color:var(--text);">
+>>>>>>> ea5c816 (partial done system)
     <h3>Chat With Admin</h3>
     <br>
     <?php
@@ -554,11 +690,16 @@ color: #ffffff;
             padding:8px;
             margin:5px 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
             background:var(--panel-alt);
             color:var(--text);
 =======
             background:#1f2937;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+            background:var(--panel-alt);
+            color:var(--text);
+>>>>>>> ea5c816 (partial done system)
             border-radius:8px;
             cursor:pointer;
         ">
@@ -569,6 +710,9 @@ color: #ffffff;
 
 <div class="task-composer">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   <h2><i class="fa-solid fa-paper-plane"></i> Send Evaluation</h2>
 
   <?php if (isset($_GET['task_sent'])): ?>
@@ -582,6 +726,7 @@ color: #ffffff;
     <div class="alert error">Task was not sent. Please select at least one active employee and complete the required fields.</div>
   <?php elseif (isset($_GET['task_date_error'])): ?>
     <div class="alert error">Evaluation was not sent. A deadline in the past is not allowed.</div>
+<<<<<<< HEAD
 =======
   <h2><i class="fa-solid fa-paper-plane"></i> Send Task</h2>
 
@@ -592,6 +737,8 @@ color: #ffffff;
   <?php elseif (isset($_GET['task_error'])): ?>
     <div class="alert error">Task was not sent. Please select at least one active employee and complete the required fields.</div>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   <?php endif; ?>
 
   <form action="post_task.php" method="POST" enctype="multipart/form-data">
@@ -599,30 +746,43 @@ color: #ffffff;
       <div>
         <div class="field">
 <<<<<<< HEAD
+<<<<<<< HEAD
           <label for="title">Evaluation Title</label>
           <input type="text" id="title" name="title" placeholder="Evaluation Title..." required>
 =======
           <label for="title">Task Title</label>
           <input type="text" id="title" name="title" required>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+          <label for="title">Evaluation Title</label>
+          <input type="text" id="title" name="title" placeholder="Evaluation Title..." required>
+>>>>>>> ea5c816 (partial done system)
         </div>
 
         <div class="field">
           <label for="description">Instructions</label>
 <<<<<<< HEAD
+<<<<<<< HEAD
           <textarea id="description" name="description" placeholder="Instruction here..." required></textarea>
 =======
           <textarea id="description" name="description" required></textarea>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+          <textarea id="description" name="description" placeholder="Instruction here..." required></textarea>
+>>>>>>> ea5c816 (partial done system)
         </div>
 
         <div class="field">
           <label for="deadline">Deadline</label>
 <<<<<<< HEAD
+<<<<<<< HEAD
           <input type="date" id="deadline" name="deadline" min="<?= htmlspecialchars($todayDate); ?>" required>
 =======
           <input type="date" id="deadline" name="deadline" required>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+          <input type="date" id="deadline" name="deadline" min="<?= htmlspecialchars($todayDate); ?>" required>
+>>>>>>> ea5c816 (partial done system)
         </div>
 
         <div class="field">
@@ -634,11 +794,16 @@ color: #ffffff;
       <div>
         <div class="composer-actions" style="margin-top:0;margin-bottom:8px;">
 <<<<<<< HEAD
+<<<<<<< HEAD
           <label style="color:var(--muted);font-size:12px;">Recipients</label>
 =======
           <label style="color:#9ca3af;font-size:12px;">Recipients</label>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
           <button type="button" class="select-all" onclick="toggleEmployees()" style="background:none;border:0;">Select All</button>
+=======
+          <label style="color:var(--muted);font-size:12px;">Recipients</label>
+          <button type="button" class="select-all app-button secondary" onclick="toggleEmployees()">Select All</button>
+>>>>>>> ea5c816 (partial done system)
         </div>
 
         <div class="employee-picker">
@@ -656,14 +821,22 @@ color: #ffffff;
               </label>
             <?php endwhile; ?>
           <?php else: ?>
+<<<<<<< HEAD
             <div style="color:#9ca3af;padding:10px;">No active employees found.</div>
+=======
+            <div style="color:var(--muted);padding:10px;">No active employees found.</div>
+>>>>>>> ea5c816 (partial done system)
           <?php endif; ?>
         </div>
       </div>
     </div>
 
     <div class="composer-actions">
+<<<<<<< HEAD
       <span style="color:#9ca3af;font-size:12px;">Each selected employee gets their own submission slot.</span>
+=======
+      <span style="color:var(--muted);font-size:12px;">Each selected employee gets their own submission slot.</span>
+>>>>>>> ea5c816 (partial done system)
       <button class="send-task-btn" type="submit">
         <i class="fa-solid fa-paper-plane"></i> Send Task
       </button>
@@ -680,7 +853,11 @@ color: #ffffff;
         <div class="task-card">
           <h3><?= htmlspecialchars($batch['title']); ?></h3>
 
+<<<<<<< HEAD
           <p style="color:#9ca3af;font-size:13px;margin-top:8px;">
+=======
+          <p style="color:var(--muted);font-size:13px;margin-top:8px;">
+>>>>>>> ea5c816 (partial done system)
             <?= nl2br(htmlspecialchars($batch['description'])); ?>
           </p>
 
@@ -691,7 +868,11 @@ color: #ffffff;
             <span class="batch-pill"><?= (int) $batch['reviewed_count']; ?> reviewed</span>
           </div>
 
+<<<<<<< HEAD
           <p style="color:#fbbf24;font-size:12px;">
+=======
+          <p style="color:var(--status-warning);font-size:12px;">
+>>>>>>> ea5c816 (partial done system)
             <i class="fa-solid fa-calendar"></i>
             Due: <?= $batch['deadline'] ? date("M d, Y", strtotime($batch['deadline'])) : 'No deadline'; ?>
           </p>
@@ -706,7 +887,11 @@ color: #ffffff;
     <?php else: ?>
       <div class="task-card">
         <h3>No tasks sent yet</h3>
+<<<<<<< HEAD
         <p style="color:#9ca3af;font-size:13px;margin-top:8px;">Sent task batches will appear here.</p>
+=======
+        <p style="color:var(--muted);font-size:13px;margin-top:8px;">Sent task batches will appear here.</p>
+>>>>>>> ea5c816 (partial done system)
       </div>
     <?php endif; ?>
   </div>
@@ -724,7 +909,11 @@ color: #ffffff;
         <i class="fa-solid fa-xmark" onclick="closeChat()"></i>
     </div>
 
+<<<<<<< HEAD
     <div id="typingIndicator" style="color:#9ca3af;font-size:12px;padding:5px 12px;display:none;">
+=======
+    <div id="typingIndicator" style="color:var(--muted);font-size:12px;padding:5px 12px;display:none;">
+>>>>>>> ea5c816 (partial done system)
     Someone is typing...
 </div>
     <div class="chat-body" id="chatBody"></div>

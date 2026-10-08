@@ -46,6 +46,10 @@ $employees = $conn->query("
         u.id,
         u.employee_id,
         u.full_name,
+<<<<<<< HEAD
+=======
+        u.role,
+>>>>>>> ea5c816 (partial done system)
         u.email,
         u.status,
         d.name AS department_name,
@@ -55,8 +59,13 @@ $employees = $conn->query("
     FROM users u
     LEFT JOIN departments d ON u.department_id = d.id
     LEFT JOIN employee_documents ed ON ed.employee_id = u.id
+<<<<<<< HEAD
     WHERE u.role = 'employee'
     GROUP BY u.id, u.employee_id, u.full_name, u.email, u.status, d.name
+=======
+    WHERE u.role IN ('employee', 'admin', 'hr')
+    GROUP BY u.id, u.employee_id, u.full_name, u.role, u.email, u.status, d.name
+>>>>>>> ea5c816 (partial done system)
     ORDER BY u.full_name ASC
 ");
 
@@ -71,7 +80,11 @@ if ($selectedEmployeeId > 0) {
         SELECT u.*, d.name AS department_name
         FROM users u
         LEFT JOIN departments d ON u.department_id = d.id
+<<<<<<< HEAD
         WHERE u.id = ? AND u.role = 'employee'
+=======
+        WHERE u.id = ? AND u.role IN ('employee', 'admin', 'hr')
+>>>>>>> ea5c816 (partial done system)
     ");
     $stmt->bind_param("i", $selectedEmployeeId);
     $stmt->execute();
@@ -134,6 +147,9 @@ if ($selectedEmployeeId > 0) {
 <link rel="stylesheet" href="dashboard.css">
 <style>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
 :root {
   --files-panel: #ffffff;
   --files-panel-alt: #f8fafc;
@@ -154,8 +170,11 @@ if ($selectedEmployeeId > 0) {
   --files-accent: #60a5fa;
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 .files-layout {
   display: grid;
   gap: 18px;
@@ -163,6 +182,9 @@ if ($selectedEmployeeId > 0) {
 }
 .panel {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   background: var(--files-panel);
   border: 1px solid var(--files-border);
   border-radius: 8px;
@@ -176,6 +198,7 @@ if ($selectedEmployeeId > 0) {
   border: 1px solid var(--files-border);
   border-radius: 8px;
   color: var(--files-text);
+<<<<<<< HEAD
 =======
   background: #111827;
   border: 1px solid #1f2937;
@@ -190,10 +213,13 @@ if ($selectedEmployeeId > 0) {
   border-radius: 8px;
   color: #e5e7eb;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   display: block;
   padding: 12px;
   text-decoration: none;
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 .employee-item.active, .employee-item:hover { border-color: var(--files-accent); }
 .employee-item strong { display: block; font-size: 14px; }
@@ -203,6 +229,11 @@ if ($selectedEmployeeId > 0) {
 .employee-item strong { display: block; font-size: 14px; }
 .employee-item span { color: #94a3b8; display: block; font-size: 12px; margin-top: 3px; }
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+.employee-item.active, .employee-item:hover { border-color: var(--files-accent); }
+.employee-item strong { display: block; font-size: 14px; }
+.employee-item span { color: var(--files-muted); display: block; font-size: 12px; margin-top: 3px; }
+>>>>>>> ea5c816 (partial done system)
 .file-header {
   align-items: flex-start;
   display: flex;
@@ -211,12 +242,17 @@ if ($selectedEmployeeId > 0) {
   margin-bottom: 16px;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 .file-header h1 { color: var(--files-text); font-size: 26px; }
 .file-header p { color: var(--files-muted); font-size: 14px; margin-top: 5px; }
 =======
 .file-header h1 { color: #f8fafc; font-size: 26px; }
 .file-header p { color: #94a3b8; font-size: 14px; margin-top: 5px; }
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+.file-header h1 { color: var(--files-text); font-size: 26px; }
+.file-header p { color: var(--files-muted); font-size: 14px; margin-top: 5px; }
+>>>>>>> ea5c816 (partial done system)
 .summary-grid {
   display: grid;
   gap: 12px;
@@ -225,6 +261,9 @@ if ($selectedEmployeeId > 0) {
 }
 .summary-card {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   background: var(--files-panel-alt);
   border: 1px solid var(--files-border);
   border-radius: 8px;
@@ -236,6 +275,7 @@ if ($selectedEmployeeId > 0) {
 .doc-card {
   background: var(--files-panel-alt);
   border: 1px solid var(--files-border);
+<<<<<<< HEAD
 =======
   background: #0b1220;
   border: 1px solid #263244;
@@ -249,6 +289,8 @@ if ($selectedEmployeeId > 0) {
   background: #0b1220;
   border: 1px solid #263244;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   border-radius: 8px;
   padding: 14px;
 }
@@ -259,12 +301,17 @@ if ($selectedEmployeeId > 0) {
   justify-content: space-between;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 .doc-card h3 { color: var(--files-text); font-size: 15px; }
 .doc-card p { color: var(--files-muted); font-size: 13px; line-height: 1.45; margin-top: 7px; }
 =======
 .doc-card h3 { color: #f8fafc; font-size: 15px; }
 .doc-card p { color: #94a3b8; font-size: 13px; line-height: 1.45; margin-top: 7px; }
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+.doc-card h3 { color: var(--files-text); font-size: 15px; }
+.doc-card p { color: var(--files-muted); font-size: 13px; line-height: 1.45; margin-top: 7px; }
+>>>>>>> ea5c816 (partial done system)
 .badge {
   border-radius: 999px;
   display: inline-flex;
@@ -273,6 +320,7 @@ if ($selectedEmployeeId > 0) {
   padding: 6px 9px;
   text-transform: uppercase;
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 .green { background: rgba(34, 197, 94, 0.13); color: #16a34a; }
 .red { background: rgba(239, 68, 68, 0.13); color: #dc2626; }
@@ -288,6 +336,14 @@ if ($selectedEmployeeId > 0) {
 .doc-link {
   color: #bfdbfe;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+.green { background: rgba(34, 197, 94, 0.13); color: var(--status-success); }
+.red { background: rgba(239, 68, 68, 0.13); color: var(--status-danger); }
+.blue { background: rgba(96, 165, 250, 0.13); color: var(--status-info); }
+.gray { background: #e2e8f0; color: #475569; }
+.doc-link {
+  color: var(--files-accent);
+>>>>>>> ea5c816 (partial done system)
   display: inline-flex;
   gap: 8px;
   margin-top: 10px;
@@ -296,10 +352,14 @@ if ($selectedEmployeeId > 0) {
 .doc-link:hover { text-decoration: underline; }
 .review-form {
 <<<<<<< HEAD
+<<<<<<< HEAD
   border-top: 1px solid var(--files-border);
 =======
   border-top: 1px solid #263244;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  border-top: 1px solid var(--files-border);
+>>>>>>> ea5c816 (partial done system)
   display: grid;
   gap: 10px;
   grid-template-columns: minmax(130px, 170px) minmax(0, 1fr) auto;
@@ -309,6 +369,9 @@ if ($selectedEmployeeId > 0) {
 .review-form select,
 .review-form input {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   background: var(--files-panel);
   border: 1px solid var(--files-border);
   border-radius: 8px;
@@ -317,6 +380,7 @@ if ($selectedEmployeeId > 0) {
 }
 .review-form button {
   background: var(--files-accent);
+<<<<<<< HEAD
 =======
   background: #111827;
   border: 1px solid #263244;
@@ -330,6 +394,11 @@ if ($selectedEmployeeId > 0) {
   border: 0;
   border-radius: 8px;
   color: #fff;
+=======
+  border: 0;
+  border-radius: 8px;
+  color: var(--on-accent);
+>>>>>>> ea5c816 (partial done system)
   cursor: pointer;
   font-weight: 700;
   padding: 9px 12px;
@@ -338,22 +407,29 @@ if ($selectedEmployeeId > 0) {
 .record-row {
   align-items: center;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   background: var(--files-panel-alt);
   border: 1px solid var(--files-border);
   border-radius: 8px;
   color: var(--files-text);
+<<<<<<< HEAD
 =======
   background: #0b1220;
   border: 1px solid #263244;
   border-radius: 8px;
   color: #cbd5e1;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   display: flex;
   justify-content: space-between;
   gap: 12px;
   padding: 11px;
 }
 .empty {
+<<<<<<< HEAD
 <<<<<<< HEAD
   border: 1px dashed var(--files-border);
   border-radius: 8px;
@@ -363,6 +439,11 @@ if ($selectedEmployeeId > 0) {
   border-radius: 8px;
   color: #94a3b8;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  border: 1px dashed var(--files-border);
+  border-radius: 8px;
+  color: var(--files-muted);
+>>>>>>> ea5c816 (partial done system)
   padding: 28px;
   text-align: center;
 }
@@ -381,13 +462,21 @@ if ($selectedEmployeeId > 0) {
 <div class="main">
   <div class="files-layout">
     <aside class="panel">
+<<<<<<< HEAD
       <h2><i class="fa-solid fa-users"></i> Employees</h2>
+=======
+      <h2><i class="fa-solid fa-users"></i> All Staff</h2>
+>>>>>>> ea5c816 (partial done system)
       <div class="employee-list">
         <?php if ($employees && $employees->num_rows > 0): ?>
           <?php while ($employee = $employees->fetch_assoc()): ?>
             <a class="employee-item <?= (int) $employee['id'] === $selectedEmployeeId ? 'active' : ''; ?>" href="201_files.php?employee_id=<?= (int) $employee['id']; ?>">
               <strong><?= htmlspecialchars($employee['full_name']); ?></strong>
+<<<<<<< HEAD
               <span><?= htmlspecialchars($employee['employee_id'] ?: 'No employee ID'); ?></span>
+=======
+              <span><?= htmlspecialchars($employee['employee_id'] ?: 'No employee ID'); ?> · <?= strtoupper(htmlspecialchars($employee['role'])); ?></span>
+>>>>>>> ea5c816 (partial done system)
               <span><?= htmlspecialchars($employee['department_name'] ?: 'Unassigned'); ?></span>
               <span><?= (int) $employee['document_count']; ?> docs • <?= (int) $employee['verified_count']; ?> verified • <?= (int) $employee['pending_count']; ?> pending</span>
             </a>
@@ -440,10 +529,17 @@ if ($selectedEmployeeId > 0) {
                     <span class="badge <?= htmlspecialchars(documentStatusClass($document['status'])); ?>"><?= htmlspecialchars($document['status']); ?></span>
                   </div>
                   <?php if (!empty($document['notes'])): ?>
+<<<<<<< HEAD
                     <p><strong style="color:#cbd5e1;">Employee note:</strong> <?= nl2br(htmlspecialchars($document['notes'])); ?></p>
                   <?php endif; ?>
                   <?php if (!empty($document['hr_notes'])): ?>
                     <p><strong style="color:#cbd5e1;">HR note:</strong> <?= nl2br(htmlspecialchars($document['hr_notes'])); ?></p>
+=======
+                    <p><strong style="color:var(--muted);">Employee note:</strong> <?= nl2br(htmlspecialchars($document['notes'])); ?></p>
+                  <?php endif; ?>
+                  <?php if (!empty($document['hr_notes'])): ?>
+                    <p><strong style="color:var(--muted);">HR note:</strong> <?= nl2br(htmlspecialchars($document['hr_notes'])); ?></p>
+>>>>>>> ea5c816 (partial done system)
                   <?php endif; ?>
                   <?php if (!empty($document['reviewer_name'])): ?>
                     <p>Reviewed by <?= htmlspecialchars($document['reviewer_name']); ?><?= $document['reviewed_at'] ? ' on ' . date("M d, Y h:i A", strtotime($document['reviewed_at'])) : ''; ?></p>

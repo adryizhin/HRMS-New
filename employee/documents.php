@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../includes/auth_check.php';
+<<<<<<< HEAD
 checkRole(['employee']);
+=======
+checkRole(['employee', 'admin', 'hr']);
+>>>>>>> ea5c816 (partial done system)
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/sidebar.php';
 require_once __DIR__ . '/../includes/employee_documents.php';
@@ -101,9 +105,14 @@ $documents = $stmt->get_result();
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My 201 Documents</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<<<<<<< HEAD
 <link rel="stylesheet" href="dashboard.css">
 <style>
 <<<<<<< HEAD
+=======
+<link rel="stylesheet" href="<?= htmlspecialchars(app_url('employee/dashboard.css')); ?>">
+<style>
+>>>>>>> ea5c816 (partial done system)
 :root {
   --doc-panel: #ffffff;
   --doc-panel-alt: #f8fafc;
@@ -122,8 +131,11 @@ $documents = $stmt->get_result();
   --doc-accent: #60a5fa;
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 .document-layout {
   display: grid;
   gap: 20px;
@@ -131,6 +143,9 @@ $documents = $stmt->get_result();
 }
 .panel {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   background: var(--doc-panel);
   border: 1px solid var(--doc-border);
   border-radius: 8px;
@@ -145,6 +160,7 @@ $documents = $stmt->get_result();
   border: 1px solid var(--doc-border);
   border-radius: 8px;
   color: var(--doc-text);
+<<<<<<< HEAD
 =======
   background: #101826;
   border: 1px solid #263244;
@@ -160,12 +176,15 @@ $documents = $stmt->get_result();
   border-radius: 8px;
   color: #e5e7eb;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   padding: 10px 11px;
   width: 100%;
 }
 .field textarea { min-height: 95px; resize: vertical; }
 .btn {
   align-items: center;
+<<<<<<< HEAD
 <<<<<<< HEAD
   background: var(--doc-accent);
 =======
@@ -174,6 +193,12 @@ $documents = $stmt->get_result();
   border: 0;
   border-radius: 8px;
   color: #fff;
+=======
+  background: var(--doc-accent);
+  border: 0;
+  border-radius: 8px;
+  color: var(--on-accent);
+>>>>>>> ea5c816 (partial done system)
   cursor: pointer;
   display: inline-flex;
   font-weight: 700;
@@ -185,12 +210,16 @@ $documents = $stmt->get_result();
 }
 .alert { border-radius: 8px; margin-bottom: 12px; padding: 10px 12px; }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
 .alert.success { background: #dcfce7; color: #166534; }
 .alert.error { background: #fee2e2; color: #991b1b; }
 .doc-grid { display: grid; gap: 13px; }
 .doc-card {
   background: var(--doc-panel-alt);
   border: 1px solid var(--doc-border);
+<<<<<<< HEAD
 =======
 .alert.success { background: #14532d; color: #bbf7d0; }
 .alert.error { background: #7f1d1d; color: #fecaca; }
@@ -199,6 +228,8 @@ $documents = $stmt->get_result();
   background: #0b1220;
   border: 1px solid #263244;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   border-radius: 8px;
   padding: 14px;
 }
@@ -209,12 +240,17 @@ $documents = $stmt->get_result();
   justify-content: space-between;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 .doc-card h3 { color: var(--doc-text); font-size: 15px; }
 .doc-card p { color: var(--doc-muted); font-size: 13px; line-height: 1.45; margin-top: 7px; }
 =======
 .doc-card h3 { color: #f8fafc; font-size: 15px; }
 .doc-card p { color: #94a3b8; font-size: 13px; line-height: 1.45; margin-top: 7px; }
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+.doc-card h3 { color: var(--doc-text); font-size: 15px; }
+.doc-card p { color: var(--doc-muted); font-size: 13px; line-height: 1.45; margin-top: 7px; }
+>>>>>>> ea5c816 (partial done system)
 .badge {
   border-radius: 999px;
   display: inline-flex;
@@ -223,6 +259,7 @@ $documents = $stmt->get_result();
   padding: 6px 9px;
   text-transform: uppercase;
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 .green { background: rgba(34, 197, 94, 0.13); color: #16a34a; }
 .red { background: rgba(239, 68, 68, 0.13); color: #dc2626; }
@@ -236,6 +273,13 @@ $documents = $stmt->get_result();
 .doc-link {
   color: #bfdbfe;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+.green { background: rgba(34, 197, 94, 0.13); color: var(--status-success); }
+.red { background: rgba(239, 68, 68, 0.13); color: var(--status-danger); }
+.blue { background: rgba(96, 165, 250, 0.13); color: var(--status-info); }
+.doc-link {
+  color: var(--doc-accent);
+>>>>>>> ea5c816 (partial done system)
   display: inline-flex;
   gap: 8px;
   margin-top: 10px;
@@ -243,6 +287,7 @@ $documents = $stmt->get_result();
 }
 .doc-link:hover { text-decoration: underline; }
 .empty {
+<<<<<<< HEAD
 <<<<<<< HEAD
   border: 1px dashed var(--doc-border);
   border-radius: 8px;
@@ -252,6 +297,11 @@ $documents = $stmt->get_result();
   border-radius: 8px;
   color: #94a3b8;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  border: 1px dashed var(--doc-border);
+  border-radius: 8px;
+  color: var(--doc-muted);
+>>>>>>> ea5c816 (partial done system)
   padding: 28px;
   text-align: center;
 }
@@ -261,7 +311,11 @@ $documents = $stmt->get_result();
 </style>
 </head>
 <body>
+<<<<<<< HEAD
 <?php renderSidebar('employee', 'employee.documents'); ?>
+=======
+<?php renderSidebar($_SESSION['role'], $_SESSION['role'] . '.documents'); ?>
+>>>>>>> ea5c816 (partial done system)
 
 <div class="main">
   <div class="task-section-header">
@@ -323,7 +377,11 @@ $documents = $stmt->get_result();
                 <p><?= nl2br(htmlspecialchars($document['notes'])); ?></p>
               <?php endif; ?>
               <?php if (!empty($document['hr_notes'])): ?>
+<<<<<<< HEAD
                 <p><strong style="color:#cbd5e1;">HR note:</strong> <?= nl2br(htmlspecialchars($document['hr_notes'])); ?></p>
+=======
+                <p><strong style="color:var(--muted);">HR note:</strong> <?= nl2br(htmlspecialchars($document['hr_notes'])); ?></p>
+>>>>>>> ea5c816 (partial done system)
               <?php endif; ?>
               <a class="doc-link" href="../<?= htmlspecialchars($document['file_path']); ?>" target="_blank">
                 <i class="fa-solid fa-download"></i> View File

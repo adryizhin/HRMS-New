@@ -1,0 +1,67 @@
+/* Shared layouts for desktop, tablets and phones. */
+.mobile-header, #sidebar-close, .sidebar-backdrop { display: none; }
+.sidebar-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 24px; }
+.sidebar .sidebar-heading h2 { margin: 0 !important; }
+.main { min-width: 0; }
+.main :where(.card, .panel, .form-card, .table-card, .report-panel, .container, .table-wrapper, .table-wrap, .task-card, .submission-card) { min-width: 0; }
+.responsive-table { width: 100%; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.main :where(img, video, iframe) { max-width: 100%; }
+.main :where(input, select, textarea) { max-width: 100%; box-sizing: border-box; }
+.main :where(h1, h2, h3, p, .task-title, .employee-meta) { overflow-wrap: anywhere; }
+@media screen and (max-width: 1024px) {
+    html body { display: block !important; }
+    .mobile-header {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        position: sticky; top: 0; z-index: 1100; min-height: 64px;
+        padding: 10px max(16px, env(safe-area-inset-left));
+        background: var(--sidebar); color: var(--accent); border-bottom: 1px solid var(--sidebar-border);
+        font-weight: 700;
+    }
+    #sidebar-toggle, #sidebar-close {
+        display: inline-flex; width: 44px; min-height: 44px; flex: 0 0 44px; padding: 8px;
+        background: var(--card-bg); color: var(--text-color); border: 1px solid var(--btn-border);
+        border-radius: 8px; font-size: 24px; line-height: 1;
+    }
+    html body .sidebar {
+        position: fixed !important; top: 0 !important; left: 0 !important;
+        width: min(300px, calc(100vw - 48px)) !important;
+        height: 100vh !important; height: 100dvh !important; min-height: 0 !important;
+        padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom)) !important;
+        z-index: 1300 !important; transform: translateX(-100%); visibility: hidden;
+        pointer-events: none; overscroll-behavior: contain;
+        transition: transform 0.2s ease, visibility 0.2s ease !important;
+    }
+    html body.sidebar-open .sidebar { transform: translateX(0); visibility: visible; pointer-events: auto; }
+    .sidebar-backdrop:not([hidden]) { display: block; position: fixed; inset: 0; z-index: 1200; background: rgba(15, 23, 42, 0.55); }
+    html body.sidebar-open { overflow: hidden !important; }
+    html body .main { margin-left: 0 !important; width: 100% !important; padding: 20px !important; }
+    .main .topbar { flex-wrap: wrap; gap: 12px; }
+    .main .chat-contacts { width: 100% !important; }
+    .main .container { flex-wrap: wrap; }
+    .main :where(.form-card, .table-card) { min-width: 0; max-width: 100%; }
+    .main .table-wrapper { max-width: 100%; overflow-x: auto; }
+    .main :where(.grid, .charts, .document-layout, .files-layout, .composer-grid) { grid-template-columns: minmax(0, 1fr); }
+    .modal { inset: 0; z-index: 1400; padding: 16px; }
+    .modal-content { max-width: 100%; max-height: calc(100dvh - 32px); overflow-y: auto; }
+    #chatBox, .chat-box { width: min(350px, calc(100vw - 32px)); max-height: calc(100dvh - 100px); right: 16px; }
+}
+@media screen and (max-width: 640px) {
+    html body .main { padding: 16px !important; }
+    .main :where(.cards, .task-grid, .submissions-grid, .factor-grid, .report-grid, .report-cards, .stats-grid, .summary-grid) { grid-template-columns: minmax(0, 1fr); }
+    .main :where(.kpi-hero, .holiday-form, .holiday-row, .review-form) { grid-template-columns: minmax(0, 1fr); }
+    .main :where(.report-filters, .composer-actions, .top-actions, .task-section-header, .kpi-header, .action-buttons, .modal-actions) { flex-wrap: wrap; gap: 12px; }
+    .main .report-filters label { width: 100%; min-width: 0; }
+    .main .report-filters :where(input, select) { width: 100%; }
+    .main .responsive-table table { min-width: 600px; }
+    .main .card { padding: 16px; }
+    .main .form-card, .main .table-card { width: 100%; flex: 1 1 100%; }
+    .main :where(.leave-card, .document-panel, .task-composer, .report-panel) { padding: 16px; }
+    .main :where(h1) { font-size: clamp(22px, 6vw, 28px); }
+    #notifBox { width: min(300px, calc(100vw - 32px)) !important; }
+}
+@media print {
+    .mobile-header, #sidebar-close, .sidebar-backdrop { display: none !important; }
+    .responsive-table { overflow: visible; }
+    html body.sidebar-open { overflow: visible !important; }
+}
+@media (prefers-reduced-motion: reduce) { html body .sidebar { transition: none !important; } }

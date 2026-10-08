@@ -26,26 +26,36 @@ function payslipDefaultCutoff(): array
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 function payslipCountWorkdays(mysqli $conn, string $startDate, string $endDate): int
 =======
 function payslipCountWorkdays(string $startDate, string $endDate): int
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+function payslipCountWorkdays(mysqli $conn, string $startDate, string $endDate): int
+>>>>>>> ea5c816 (partial done system)
 {
     $start = new DateTimeImmutable($startDate);
     $end = new DateTimeImmutable($endDate);
     $days = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     $holidayDates = holidayDatesBetween($conn, $startDate, $endDate);
 
     for ($date = $start; $date <= $end; $date = $date->modify('+1 day')) {
         $dayOfWeek = (int) $date->format('N');
         if ($dayOfWeek <= 5 && !isset($holidayDates[$date->format('Y-m-d')])) {
+<<<<<<< HEAD
 =======
 
     for ($date = $start; $date <= $end; $date = $date->modify('+1 day')) {
         $dayOfWeek = (int) $date->format('N');
         if ($dayOfWeek <= 5) {
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
             $days++;
         }
     }
@@ -237,10 +247,14 @@ function renderPayslipPage(mysqli $conn, string $role): void
     $currentUserId = (int) ($_SESSION['user_id'] ?? 0);
     $input = $_SERVER['REQUEST_METHOD'] === 'POST' ? $_POST : $_GET;
 <<<<<<< HEAD
+<<<<<<< HEAD
     $dailyRate = 695.00;
 =======
     $dailyRate = 755.00;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    $dailyRate = 695.00;
+>>>>>>> ea5c816 (partial done system)
     $employeeId = $canGenerate ? (int) ($input['employee_id'] ?? 0) : $currentUserId;
     $cutoffStart = $input['cutoff_start'] ?? $defaultStart;
     $cutoffEnd = $input['cutoff_end'] ?? $defaultEnd;
@@ -285,6 +299,9 @@ function renderPayslipPage(mysqli $conn, string $role): void
         : ['present' => 0, 'late' => 0, 'absent' => 0, 'recorded' => 0];
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     $workdays = payslipCountWorkdays($conn, $cutoffStart, $cutoffEnd);
     $paidDays = $attendance['present'] + $attendance['late'];
     $unrecordedDays = max(0, $workdays - $attendance['recorded']);
@@ -298,6 +315,7 @@ function renderPayslipPage(mysqli $conn, string $role): void
     $overtimePay = ($overtimeHours / 2) * 100;
     $grossPay = ($paidDays * $dailyRate) + $overtimePay + $allowance;
     $totalDeductions = $deduction + $tax + $requiredDeductions;
+<<<<<<< HEAD
 =======
     $workdays = payslipCountWorkdays($cutoffStart, $cutoffEnd);
     $paidDays = $attendance['present'] + $attendance['late'];
@@ -305,6 +323,8 @@ function renderPayslipPage(mysqli $conn, string $role): void
     $grossPay = $paidDays * $dailyRate + $allowance;
     $totalDeductions = $deduction + $tax;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     $netPay = max(0, $grossPay - $totalDeductions);
     $savedPayslip = $employee ? payslipFind($conn, $employeeId, $cutoffStart, $cutoffEnd) : null;
 
@@ -361,6 +381,9 @@ function renderPayslipPage(mysqli $conn, string $role): void
 <style>
 :root {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     --payroll-bg:#f3f4f6;
     --payroll-panel:#ffffff;
     --payroll-panel-soft:#f8fafc;
@@ -383,7 +406,11 @@ function renderPayslipPage(mysqli $conn, string $role): void
     --payroll-line:#22304a;
     --payroll-text:#e5e7eb;
     --payroll-muted:#9ca3af;
+<<<<<<< HEAD
     --payroll-accent:#3251ff;
+=======
+    --payroll-accent:#60a5fa;
+>>>>>>> ea5c816 (partial done system)
     --payroll-green:#22c55e;
     --payroll-red:#fb7185;
     --payroll-yellow:#facc15;
@@ -391,6 +418,7 @@ function renderPayslipPage(mysqli $conn, string $role): void
     --payroll-header-start:#0b1220;
     --payroll-header-mid:#111827;
     --payroll-header-end:#172033;
+<<<<<<< HEAD
 =======
     --bg:#0b1220;
     --panel:#111827;
@@ -403,11 +431,14 @@ function renderPayslipPage(mysqli $conn, string $role): void
     --red:#fb7185;
     --yellow:#facc15;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 * { box-sizing:border-box; }
 body {
     margin:0;
     min-height:100vh;
+<<<<<<< HEAD
 <<<<<<< HEAD
     background:var(--payroll-bg);
     color:var(--payroll-text);
@@ -415,6 +446,10 @@ body {
     background:var(--bg);
     color:var(--text);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background:var(--payroll-bg);
+    color:var(--payroll-text);
+>>>>>>> ea5c816 (partial done system)
     font-family:Arial, sans-serif;
 }
 .main {
@@ -434,10 +469,14 @@ body {
 .topbar p {
     margin:0;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color:var(--payroll-muted);
 =======
     color:var(--muted);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color:var(--payroll-muted);
+>>>>>>> ea5c816 (partial done system)
     font-size:14px;
 }
 .generator {
@@ -449,12 +488,17 @@ body {
 .form-panel,
 .payslip {
 <<<<<<< HEAD
+<<<<<<< HEAD
     background:var(--payroll-panel);
     border:1px solid var(--payroll-line);
 =======
     background:var(--panel);
     border:1px solid var(--line);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background:var(--payroll-panel);
+    border:1px solid var(--payroll-line);
+>>>>>>> ea5c816 (partial done system)
     border-radius:8px;
 }
 .form-panel {
@@ -471,10 +515,14 @@ body {
     display:block;
     margin-bottom:7px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color:var(--payroll-muted);
 =======
     color:var(--muted);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color:var(--payroll-muted);
+>>>>>>> ea5c816 (partial done system)
     font-size:12px;
     font-weight:700;
     text-transform:uppercase;
@@ -483,26 +531,36 @@ body {
 .field select {
     width:100%;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     border:1px solid var(--payroll-line);
     border-radius:8px;
     background:var(--payroll-input-bg);
     color:var(--payroll-text);
+<<<<<<< HEAD
 =======
     border:1px solid var(--line);
     border-radius:8px;
     background:#0f172a;
     color:var(--text);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     padding:11px 12px;
     outline:none;
 }
 .field input:focus,
 .field select:focus {
 <<<<<<< HEAD
+<<<<<<< HEAD
     border-color:var(--payroll-accent);
 =======
     border-color:var(--accent);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    border-color:var(--payroll-accent);
+>>>>>>> ea5c816 (partial done system)
 }
 .actions {
     display:flex;
@@ -515,12 +573,17 @@ body {
     padding:11px 14px;
     cursor:pointer;
     font-weight:700;
+<<<<<<< HEAD
     color:#fff;
 <<<<<<< HEAD
     background:var(--payroll-accent);
 =======
     background:var(--accent);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--on-accent);
+    background:var(--payroll-accent);
+>>>>>>> ea5c816 (partial done system)
     text-decoration:none;
     display:inline-flex;
     align-items:center;
@@ -529,6 +592,9 @@ body {
 }
 .btn.secondary {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     background:var(--payroll-panel-soft);
     color:var(--payroll-text);
     border:1px solid var(--payroll-line);
@@ -537,6 +603,7 @@ body {
     padding:24px;
     background:linear-gradient(135deg, var(--payroll-header-start) 0%, var(--payroll-header-mid) 55%, var(--payroll-header-end) 100%);
     border-bottom:1px solid var(--payroll-line);
+<<<<<<< HEAD
 =======
     background:#1f2937;
     color:var(--text);
@@ -546,6 +613,8 @@ body {
     background:linear-gradient(135deg, #0b1220 0%, #111827 55%, #172033 100%);
     border-bottom:1px solid var(--line);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 .payslip-meta {
     display:flex;
@@ -558,17 +627,25 @@ body {
     gap:10px;
     align-items:center;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color:var(--payroll-muted);
 =======
     color:var(--muted);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color:var(--payroll-muted);
+>>>>>>> ea5c816 (partial done system)
     font-size:11px;
     font-weight:800;
     text-transform:uppercase;
     letter-spacing:0;
 }
 .paid-badge {
+<<<<<<< HEAD
     color:#86efac;
+=======
+    color:var(--status-success);
+>>>>>>> ea5c816 (partial done system)
     background:rgba(34,197,94,.14);
     border:1px solid rgba(34,197,94,.35);
     border-radius:999px;
@@ -582,12 +659,16 @@ body {
 .subtitle {
     margin:0;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     color:var(--payroll-muted);
     font-size:14px;
 }
 .month-pill {
     background:var(--payroll-panel-soft);
     border:1px solid var(--payroll-line);
+<<<<<<< HEAD
 =======
     color:var(--muted);
     font-size:14px;
@@ -596,23 +677,31 @@ body {
     background:#1f2937;
     border:1px solid var(--line);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     border-radius:8px;
     min-width:88px;
     padding:10px;
     text-align:center;
     font-weight:800;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     color:var(--payroll-text);
 }
 .month-pill span {
     display:block;
     color:var(--payroll-muted);
+<<<<<<< HEAD
 =======
 }
 .month-pill span {
     display:block;
     color:var(--muted);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     font-size:12px;
     margin-top:3px;
 }
@@ -625,22 +714,31 @@ body {
 .metric {
     min-height:96px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     background:var(--payroll-panel-soft);
     border:1px solid var(--payroll-line);
 =======
     background:var(--panel-soft);
     border:1px solid var(--line);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background:var(--payroll-panel-soft);
+    border:1px solid var(--payroll-line);
+>>>>>>> ea5c816 (partial done system)
     border-radius:8px;
     padding:14px;
 }
 .metric label {
     display:block;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color:var(--payroll-muted);
 =======
     color:var(--muted);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color:var(--payroll-muted);
+>>>>>>> ea5c816 (partial done system)
     font-size:11px;
     font-weight:800;
     text-transform:uppercase;
@@ -653,15 +751,20 @@ body {
 }
 .metric small {
 <<<<<<< HEAD
+<<<<<<< HEAD
     color:var(--payroll-green);
 =======
     color:var(--green);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color:var(--payroll-green);
+>>>>>>> ea5c816 (partial done system)
     display:block;
     margin-top:7px;
     font-size:12px;
 }
 .metric.warning strong,
+<<<<<<< HEAD
 <<<<<<< HEAD
 .metric.warning small { color:var(--payroll-yellow); }
 .metric.danger strong,
@@ -671,11 +774,19 @@ body {
 .metric.danger strong,
 .metric.danger small { color:var(--red); }
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+.metric.warning small { color:var(--payroll-yellow); }
+.metric.danger strong,
+.metric.danger small { color:var(--payroll-red); }
+>>>>>>> ea5c816 (partial done system)
 .payslip-body {
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:18px;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     background:var(--payroll-panel-soft);
     color:var(--payroll-text);
     padding:24px;
@@ -683,6 +794,7 @@ body {
 .breakdown {
     background:var(--payroll-panel);
     border:1px solid var(--payroll-line);
+<<<<<<< HEAD
 =======
     background:#f8fafc;
     color:#111827;
@@ -692,6 +804,8 @@ body {
     background:#fff;
     border:1px solid #e5e7eb;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     border-radius:8px;
     overflow:hidden;
 }
@@ -704,12 +818,17 @@ body {
 }
 .breakdown-head {
 <<<<<<< HEAD
+<<<<<<< HEAD
     background:var(--payroll-panel-soft);
     color:var(--payroll-muted);
 =======
     background:#f1f5f9;
     color:#334155;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background:var(--payroll-panel-soft);
+    color:var(--payroll-muted);
+>>>>>>> ea5c816 (partial done system)
     padding:12px 14px;
     font-size:12px;
     font-weight:800;
@@ -718,6 +837,9 @@ body {
 .line-item {
     padding:13px 14px;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     border-top:1px solid var(--payroll-line);
     font-size:13px;
     color:var(--payroll-text);
@@ -725,6 +847,7 @@ body {
 .line-item small {
     display:block;
     color:var(--payroll-muted);
+<<<<<<< HEAD
 =======
     border-top:1px solid #e5e7eb;
     font-size:13px;
@@ -733,6 +856,8 @@ body {
     display:block;
     color:#64748b;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     margin-top:3px;
 }
 .line-item strong {
@@ -740,18 +865,24 @@ body {
 }
 .line-item.danger {
 <<<<<<< HEAD
+<<<<<<< HEAD
     color:var(--payroll-red);
     background:rgba(190, 18, 60, 0.06);
 =======
     color:#be123c;
     background:#fff1f2;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color:var(--payroll-red);
+    background:rgba(190, 18, 60, 0.06);
+>>>>>>> ea5c816 (partial done system)
 }
 .payslip-footer {
     display:flex;
     justify-content:space-between;
     align-items:center;
     gap:12px;
+<<<<<<< HEAD
 <<<<<<< HEAD
     color:var(--payroll-muted);
     background:var(--payroll-panel);
@@ -761,15 +892,24 @@ body {
     background:#fff;
     border-top:1px solid #e5e7eb;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color:var(--payroll-muted);
+    background:var(--payroll-panel);
+    border-top:1px solid var(--payroll-line);
+>>>>>>> ea5c816 (partial done system)
     padding:14px 24px;
     font-size:12px;
 }
 .empty-note {
 <<<<<<< HEAD
+<<<<<<< HEAD
     color:var(--payroll-muted);
 =======
     color:var(--muted);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color:var(--payroll-muted);
+>>>>>>> ea5c816 (partial done system)
     padding:18px;
 }
 @media (max-width: 1100px) {
@@ -888,6 +1028,9 @@ body {
                         <input id="tax" type="number" name="tax" min="0" step="0.01" value="<?= htmlspecialchars((string) $tax); ?>">
                     </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
                     <div class="field">
                         <label>Standard Deductions</label>
                         <div style="color:var(--payroll-muted); font-size:12px; line-height:1.7; background:var(--payroll-panel-soft); border:1px solid var(--payroll-line); border-radius:8px; padding:10px 12px;">
@@ -895,8 +1038,11 @@ body {
                             Total: <?= number_format($standardDeductionPercent * 100, 1); ?>%
                         </div>
                     </div>
+<<<<<<< HEAD
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
                 <?php endif; ?>
                 <div class="actions">
                     <button class="btn" type="submit"><i class="fa-solid <?= $canGenerate ? 'fa-wand-magic-sparkles' : 'fa-magnifying-glass'; ?>"></i> <?= $canGenerate ? 'Generate & Save' : 'View'; ?></button>
@@ -938,12 +1084,16 @@ body {
                             <label>Gross Earnings</label>
                             <strong><?= money($grossPay); ?></strong>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
                             <small><?= $paidDays; ?> paid day<?= $paidDays === 1 ? '' : 's'; ?> at <?= money($dailyRate); ?> + Overtime</small>
                         </div>
                         <div class="metric warning">
                             <label>Standard Deductions</label>
                             <strong>- <?= money($requiredDeductions); ?></strong>
                             <small>Pag-IBIG 2% • PhilHealth 1.5% • SSS 4.5%</small>
+<<<<<<< HEAD
 =======
                             <small><?= $paidDays; ?> paid day<?= $paidDays === 1 ? '' : 's'; ?> at <?= money($dailyRate); ?></small>
                         </div>
@@ -952,6 +1102,8 @@ body {
                             <strong>- <?= money($deduction); ?></strong>
                             <small>Manual deductions</small>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
                         </div>
                         <div class="metric danger">
                             <label>Withholding Tax</label>
@@ -982,6 +1134,9 @@ body {
                         <div class="line-item">
                             <div>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
                                 Overtime Pay
                                 <small><?= ($overtimeHours / 2); ?> overtime cycle(s) at PHP 100 per 2 hours</small>
                             </div>
@@ -989,8 +1144,11 @@ body {
                         </div>
                         <div class="line-item">
                             <div>
+<<<<<<< HEAD
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
                                 Allowances
                                 <small>Additional cut-off allowance</small>
                             </div>
@@ -1032,6 +1190,9 @@ body {
                             <strong><?= money($unrecordedDays * $dailyRate); ?></strong>
                         </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
                         <div class="line-item danger">
                             <div>
                                 Pag-IBIG (2%)
@@ -1053,8 +1214,11 @@ body {
                             </div>
                             <strong><?= money(($paidDays * $dailyRate) * 0.045); ?></strong>
                         </div>
+<<<<<<< HEAD
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
                         <div class="line-item">
                             <div>
                                 Other Deductions

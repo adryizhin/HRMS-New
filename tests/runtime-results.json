@@ -1,0 +1,186 @@
+[
+  {
+    "role": "admin",
+    "path": "login",
+    "status": 200,
+    "url": "http://127.0.0.1:8088/HRMS/admin/dashboard.php",
+    "ok": true
+  },
+  {
+    "role": "admin",
+    "path": "dashboard.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "admin",
+    "path": "create_user_account.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "admin",
+    "path": "departments.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "admin",
+    "path": "attendance.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "admin",
+    "path": "holidays.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "admin",
+    "path": "payroll.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "admin",
+    "path": "login_logs.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "admin",
+    "path": "logout",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "hr",
+    "path": "login",
+    "status": 200,
+    "url": "http://127.0.0.1:8088/HRMS/hr/dashboard.php",
+    "ok": true
+  },
+  {
+    "role": "hr",
+    "path": "dashboard.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "hr",
+    "path": "task_submissions.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "hr",
+    "path": "201_files.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "hr",
+    "path": "hr_leave_requests.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "hr",
+    "path": "attendance.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "hr",
+    "path": "kpi.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "hr",
+    "path": "payroll.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "hr",
+    "path": "post_task.php",
+    "status": 200,
+    "url": "http://127.0.0.1:8088/HRMS/hr/dashboard.php?task_sent=1&task_duplicate=0",
+    "ok": true
+  },
+  {
+    "role": "hr",
+    "path": "score_submission.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "hr",
+    "path": "view_submission.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "hr",
+    "path": "save score",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "hr",
+    "path": "logout",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "employee",
+    "path": "login",
+    "status": 200,
+    "url": "http://127.0.0.1:8088/HRMS/employee/dashboard.php",
+    "ok": true
+  },
+  {
+    "role": "employee",
+    "path": "dashboard.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "employee",
+    "path": "documents.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "employee",
+    "path": "request_leave.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "employee",
+    "path": "attendance.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "employee",
+    "path": "kpi.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "employee",
+    "path": "payroll.php",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "role": "employee",
+    "path": "logout",
+    "status": 200,
+    "ok": true
+  }
+]

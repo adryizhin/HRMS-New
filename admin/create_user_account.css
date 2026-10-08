@@ -1,5 +1,8 @@
 :root {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   --bg:#f3f4f6;
   --sidebar:#ffffff;
   --card:#ffffff;
@@ -14,6 +17,7 @@
 }
 
 [data-theme="dark"] {
+<<<<<<< HEAD
   --bg:#f3f4f6;
   --sidebar:#ffffff;
   --card:#ffffff;
@@ -30,6 +34,8 @@
 }
 
 [data-theme="dark"] {
+=======
+>>>>>>> ea5c816 (partial done system)
   --bg:#0b1220;
   --sidebar:#0f172a;
   --card:#111827;
@@ -43,6 +49,7 @@
   --shadow:rgba(2, 6, 23, 0.55);
   --button-text:#ffffff;
   --button-dark:#0f172a;
+<<<<<<< HEAD
 =======
   --bg:#0b1220;
   --sidebar:#020617;
@@ -53,6 +60,8 @@
   --green:#22c55e;
   --red:#ef4444;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 * {
@@ -95,12 +104,20 @@ body {
 
 .sidebar a:hover {
   background:var(--accent);
+<<<<<<< HEAD
   color:#000;
+=======
+  color: var(--on-accent);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .sidebar a.active {
   background:var(--green);
+<<<<<<< HEAD
   color:#000;
+=======
+  color: var(--on-green);
+>>>>>>> ea5c816 (partial done system)
 }
 
 /* MAIN */
@@ -119,17 +136,23 @@ body {
 /* CARDS */
 .form-card, .table-card {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   background:linear-gradient(145deg, var(--card), var(--card-soft));
   padding:25px;
   border-radius:15px;
   border:1px solid var(--border);
   box-shadow:0 10px 22px var(--shadow);
+<<<<<<< HEAD
 =======
   background:var(--card);
   padding:25px;
   border-radius:15px;
   box-shadow:0 5px 20px rgba(0,0,0,0.4);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 /* FORM */
@@ -152,12 +175,17 @@ input, select {
   padding:12px;
   border-radius:8px;
 <<<<<<< HEAD
+<<<<<<< HEAD
   border:1px solid var(--border);
   background:var(--card-soft);
 =======
   border:none;
   background:#1f2937;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  border:1px solid var(--border);
+  background:var(--card-soft);
+>>>>>>> ea5c816 (partial done system)
   color:var(--text);
 }
 
@@ -169,6 +197,11 @@ button {
   border-radius:10px;
   font-weight:bold;
   cursor:pointer;
+<<<<<<< HEAD
+=======
+
+  color: var(--on-accent);
+>>>>>>> ea5c816 (partial done system)
 }
 
 /* TABLE */
@@ -185,7 +218,11 @@ table {
 
 th {
   background:#3251ff;
+<<<<<<< HEAD
   color:#000;
+=======
+  color:#fff;
+>>>>>>> ea5c816 (partial done system)
   padding:10px;
 }
 

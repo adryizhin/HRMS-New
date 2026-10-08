@@ -828,7 +828,11 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `employee_id` varchar(50) DEFAULT NULL,
   `full_name` varchar(255) DEFAULT NULL,
+<<<<<<< HEAD
   `email` varchar(255) DEFAULT NULL,
+=======
+  `email` varchar(191) DEFAULT NULL,
+>>>>>>> ea5c816 (partial done system)
   `password` varchar(255) DEFAULT NULL,
   `role` enum('admin','hr','employee') NOT NULL,
   `department_id` int(11) DEFAULT NULL,

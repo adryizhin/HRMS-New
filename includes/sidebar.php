@@ -14,48 +14,84 @@ function renderSidebar(string $role, string $active = ''): void
             ['admin.departments', 'fa-building', 'Departments'],
             ['admin.attendance', 'fa-clock', 'Attendance'],
 <<<<<<< HEAD
+<<<<<<< HEAD
             ['admin.holidays', 'fa-calendar-days', 'Holiday Calendar'],
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
             ['admin.payroll', 'fa-money-bill', 'Payroll'],
             ['admin.login_logs', 'fa-clock-rotate-left', 'Login Logs'],
             ['#', 'fa-chart-pie', 'Reports'],
+=======
+            ['admin.holidays', 'fa-calendar-days', 'Holiday Calendar'],
+            ['admin.documents', 'fa-folder-open', 'My Documents'],
+            ['admin.evaluations', 'fa-tasks', 'My Evaluations'],
+            ['admin.kpi', 'fa-gauge-high', 'My KPI'],
+            ['admin.payroll', 'fa-money-bill', 'Payroll'],
+            ['admin.login_logs', 'fa-clock-rotate-left', 'Login Logs'],
+            ['admin.reports', 'fa-chart-pie', 'Reports'],
+>>>>>>> ea5c816 (partial done system)
             ['logout', 'fa-right-from-bracket', 'Logout'],
         ],
         'hr' => [
             ['hr.dashboard', 'fa-chart-line', 'Dashboard'],
+<<<<<<< HEAD
 <<<<<<< HEAD
             ['hr.task_submissions', 'fa-clipboard-check', 'Review Evaluations'],
 =======
             ['hr.task_submissions', 'fa-clipboard-check', 'Review Submissions'],
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
             ['hr.201_files', 'fa-folder-open', '201 Files'],
+=======
+            ['hr.task_submissions', 'fa-clipboard-check', 'Review Evaluations'],
+            ['hr.201_files', 'fa-folder-open', '201 Files'],
+            ['hr.documents', 'fa-folder-open', 'My Documents'],
+            ['hr.evaluations', 'fa-tasks', 'My Evaluations'],
+>>>>>>> ea5c816 (partial done system)
             ['hr.leave_requests', 'fa-umbrella', 'Leave Requests'],
             ['hr.attendance', 'fa-clock', 'Attendance'],
             ['hr.kpi', 'fa-gauge-high', 'Employee KPIs'],
             ['hr.payroll', 'fa-money-bill', 'Payroll'],
+<<<<<<< HEAD
             ['#', 'fa-chart-pie', 'Reports'],
+=======
+            ['hr.reports', 'fa-chart-pie', 'Reports'],
+>>>>>>> ea5c816 (partial done system)
             ['logout', 'fa-right-from-bracket', 'Logout'],
         ],
         'employee' => [
             ['employee.dashboard', 'fa-chart-line', 'Dashboard'],
             ['employee.documents', 'fa-folder-open', 'My Documents'],
 <<<<<<< HEAD
+<<<<<<< HEAD
             ['employee.tasks', 'fa-tasks', 'Evaluations'],
 =======
             ['employee.tasks', 'fa-tasks', 'Tasks'],
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+            ['employee.tasks', 'fa-tasks', 'Evaluations'],
+>>>>>>> ea5c816 (partial done system)
             ['employee.leave_request', 'fa-umbrella', 'Request Leave'],
             ['employee.attendance', 'fa-clock', 'Attendance'],
             ['employee.kpi', 'fa-gauge-high', 'My KPI'],
             ['employee.payroll', 'fa-money-bill', 'Payroll'],
+<<<<<<< HEAD
             ['#', 'fa-chart-pie', 'Reports'],
+=======
+            ['employee.reports', 'fa-chart-pie', 'Reports'],
+>>>>>>> ea5c816 (partial done system)
             ['logout', 'fa-right-from-bracket', 'Logout'],
         ],
     ];
 
+<<<<<<< HEAD
     echo '<div class="sidebar">';
     echo '<h2>Pagecom HRIS</h2>';
+=======
+    echo '<header class="mobile-header"><span>Pagecom HRIS</span><button id="sidebar-toggle" type="button" aria-label="Open menu" aria-controls="app-sidebar" aria-expanded="false"><span aria-hidden="true">☰</span></button></header>';
+    echo '<div id="sidebar-backdrop" class="sidebar-backdrop" hidden aria-hidden="true"></div>';
+    echo '<div class="sidebar" id="app-sidebar" aria-label="Main navigation">';
+    echo '<div class="sidebar-heading"><h2>Pagecom HRIS</h2><button id="sidebar-close" type="button" aria-label="Close menu"><span aria-hidden="true">×</span></button></div>';
+>>>>>>> ea5c816 (partial done system)
 
     foreach ($menus[$role] ?? [] as [$routeName, $icon, $label]) {
         $href = $routeName === '#' ? '#' : route($routeName);
@@ -67,6 +103,7 @@ function renderSidebar(string $role, string $active = ''): void
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     echo '<button id="theme-toggle-btn" class="theme-toggle-btn">🌙 Dark Mode</button>';
     echo '</div>';
     
@@ -74,6 +111,13 @@ function renderSidebar(string $role, string $active = ''): void
     echo '</div>';
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
     renderIdleTimeoutScript();
+=======
+    echo '<button id="theme-toggle-btn" class="theme-toggle-btn">🌙 Dark Mode</button>';
+    echo '</div>';
+    
+    renderIdleTimeoutScript();
+    echo '<script src="' . htmlspecialchars(app_url('includes/sidebar.js')) . '" defer></script>';
+>>>>>>> ea5c816 (partial done system)
 }
 
 function renderSidebarStyles(): void
@@ -85,6 +129,7 @@ function renderSidebarStyles(): void
     }
 
     $rendered = true;
+<<<<<<< HEAD
 
     echo <<<HTML
 <style>
@@ -92,6 +137,16 @@ function renderSidebarStyles(): void
 /* --- Color Palette Tokens --- */
 :root {
 --bg-color: #dcdfe4;
+=======
+    echo '<style>' . file_get_contents(__DIR__ . '/buttons.css') . '</style>';
+    echo '<style>' . file_get_contents(__DIR__ . '/contrast.css') . '</style>';
+
+    echo <<<HTML
+<style>
+/* --- Color Palette Tokens --- */
+:root {
+--bg-color: #f3f4f6;
+>>>>>>> ea5c816 (partial done system)
     --text-color: #0f172a;
     --card-bg: #ffffff;
     --sidebar: #ffffff;
@@ -126,11 +181,14 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     transition: background-color 0.2s ease, color 0.2s ease;
+<<<<<<< HEAD
 =======
 body {
     min-height: 100vh;
     overflow-x: hidden;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 .sidebar {
@@ -138,11 +196,16 @@ body {
     height: 100vh !important;
     min-height: 100vh !important;
 <<<<<<< HEAD
+<<<<<<< HEAD
     background: var(--sidebar) !important;
     border-right: 1px solid var(--sidebar-border) !important;
 =======
     background: var(--sidebar, #020617) !important;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: var(--sidebar) !important;
+    border-right: 1px solid var(--sidebar-border) !important;
+>>>>>>> ea5c816 (partial done system)
     padding: 20px !important;
     position: fixed !important;
     top: 0 !important;
@@ -150,6 +213,9 @@ body {
     z-index: 1000 !important;
     overflow-y: auto !important;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     display: flex !important;
     flex-direction: column !important;
     font-family: 'Segoe UI', sans-serif !important;
@@ -163,6 +229,7 @@ body {
     font-size: 1.25rem !important;
     font-weight: 700 !important;
     line-height: 1.2 !important;
+<<<<<<< HEAD
 =======
 }
 
@@ -170,6 +237,8 @@ body {
     color: var(--accent, #3251ff) !important;
     margin-bottom: 30px !important;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 .sidebar a {
@@ -177,6 +246,9 @@ body {
     align-items: center !important;
     gap: 10px !important;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     box-sizing: border-box !important;
     width: 100% !important;
     height: 44px !important;
@@ -232,6 +304,7 @@ body {
     background: var(--hover-bg) !important;
     color: var(--hover-text) !important;
     border-color: var(--accent) !important;
+<<<<<<< HEAD
 =======
     padding: 12px !important;
     color: var(--muted, #9ca3af) !important;
@@ -250,6 +323,8 @@ body {
     background: var(--accent, #3251ff) !important;
     color: #000 !important;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 .main {
@@ -258,6 +333,7 @@ body {
     flex: none !important;
 }
 
+<<<<<<< HEAD
 @media (max-width: 780px) {
     .sidebar {
         width: 100% !important;
@@ -279,6 +355,11 @@ body {
 }
 </style>
 HTML;
+=======
+</style>
+HTML;
+    echo '<style>' . file_get_contents(__DIR__ . '/responsive.css') . '</style>';
+>>>>>>> ea5c816 (partial done system)
 }
 
 function renderIdleTimeoutScript(): void
@@ -329,6 +410,9 @@ function renderIdleTimeoutScript(): void
     resetIdleTimer();
 })();
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
 
 document.addEventListener("DOMContentLoaded", () => {
     const currentTheme = localStorage.getItem("theme") || "light";
@@ -349,9 +433,12 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 HTML;
 }  
+<<<<<<< HEAD
 =======
 </script>
 HTML;
 }
 ?>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)

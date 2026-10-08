@@ -2,10 +2,15 @@
 declare(strict_types=1);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 require_once __DIR__ . '/holidays.php';
 
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+require_once __DIR__ . '/holidays.php';
+
+>>>>>>> ea5c816 (partial done system)
 function ensureAttendanceTable(mysqli $conn): void
 {
     static $checked = false;
@@ -23,9 +28,13 @@ function ensureAttendanceTable(mysqli $conn): void
             login_time DATETIME NOT NULL,
             status ENUM('present','late','absent') NOT NULL,
 <<<<<<< HEAD
+<<<<<<< HEAD
             late_minutes INT NOT NULL DEFAULT 0,
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+            late_minutes INT NOT NULL DEFAULT 0,
+>>>>>>> ea5c816 (partial done system)
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
             UNIQUE KEY unique_user_shift_date (user_id, attendance_date, shift),
@@ -37,13 +46,19 @@ function ensureAttendanceTable(mysqli $conn): void
     ");
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     $cols = $conn->query("SHOW COLUMNS FROM attendance LIKE 'late_minutes'");
     if ($cols && $cols->num_rows === 0) {
         $conn->query("ALTER TABLE attendance ADD COLUMN late_minutes INT NOT NULL DEFAULT 0 AFTER status");
     }
 
+<<<<<<< HEAD
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     $checked = true;
 }
 
@@ -92,6 +107,9 @@ function getAttendanceMark(DateTimeImmutable $loginTime): array
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
 function lateMinutesForLogin(string $loginTime): int
 {
     $login = new DateTimeImmutable($loginTime, new DateTimeZone('Asia/Manila'));
@@ -212,8 +230,11 @@ function markMissingAttendanceAbsent(mysqli $conn): void
     $flushBatch();
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 function recordAttendanceOnLogin(mysqli $conn, int $userId): void
 {
     ensureAttendanceTable($conn);
@@ -223,6 +244,9 @@ function recordAttendanceOnLogin(mysqli $conn, int $userId): void
     $mark = getAttendanceMark($loginTime);
     $loginAt = $loginTime->format('Y-m-d H:i:s');
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     $lateMinutes = 0;
 
     if ($mark['status'] === 'late') {
@@ -235,6 +259,7 @@ function recordAttendanceOnLogin(mysqli $conn, int $userId): void
         VALUES (?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
             late_minutes = IF(login_time > VALUES(login_time), VALUES(late_minutes), late_minutes),
+<<<<<<< HEAD
 =======
 
     $stmt = $conn->prepare("
@@ -242,25 +267,36 @@ function recordAttendanceOnLogin(mysqli $conn, int $userId): void
         VALUES (?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
             status = IF(login_time > VALUES(login_time), VALUES(status), status),
             login_time = IF(login_time > VALUES(login_time), VALUES(login_time), login_time)
     ");
     $stmt->bind_param(
 <<<<<<< HEAD
+<<<<<<< HEAD
         "issssi",
 =======
         "issss",
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+        "issssi",
+>>>>>>> ea5c816 (partial done system)
         $userId,
         $mark['date'],
         $mark['shift'],
         $loginAt,
+<<<<<<< HEAD
 <<<<<<< HEAD
         $mark['status'],
         $lateMinutes
 =======
         $mark['status']
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+        $mark['status'],
+        $lateMinutes
+>>>>>>> ea5c816 (partial done system)
     );
     $stmt->execute();
 }

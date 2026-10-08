@@ -53,9 +53,19 @@ function extractText($filePath)
     }
 
     if ($ext === "pdf") {
+<<<<<<< HEAD
         $escaped = escapeshellarg($filePath);
         $output  = shell_exec("pdftotext $escaped -");
         return $output ? trim(preg_replace('/\s+/', ' ', $output)) : "";
+=======
+        require_once __DIR__ . '/../vendor/autoload.php';
+        try {
+            $parser = new \Smalot\PdfParser\Parser();
+            return trim($parser->parseFile($filePath)->getText());
+        } catch (Throwable $exception) {
+            return '';
+        }
+>>>>>>> ea5c816 (partial done system)
     }
 
     return "";
@@ -69,7 +79,15 @@ function extractText($filePath)
 ========================= */
 function getGeminiScore($text)
 {
+<<<<<<< HEAD
     $apiKey = "AIzaSyAzXXOJ0ySfvwxTLflBrfSCGl6dGE2tAbo";
+=======
+    $settingsFile = __DIR__ . '/../.runtime/ai-config.php';
+    $settings = is_file($settingsFile) ? require $settingsFile : [];
+    $apiKey = getenv('GEMINI_API_KEY') ?: ($settings['api_key'] ?? '');
+    if ($apiKey === '') { return defaultResult('AI scoring is not configured. You can still enter an HR score.'); }
+    $model = getenv('GEMINI_MODEL') ?: 'gemini-3.8-flash';
+>>>>>>> ea5c816 (partial done system)
     $text   = substr($text, 0, 8000);
 
     $prompt = <<<PROMPT
@@ -102,21 +120,37 @@ PROMPT;
         ]]
     ]);
 
+<<<<<<< HEAD
     $ch = curl_init("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey");
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST           => true,
         CURLOPT_HTTPHEADER     => ["Content-Type: application/json"],
+=======
+    $ch = curl_init("https://generativelanguage.googleapis.com/v1beta/models/" . rawurlencode($model) . ":generateContent");
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_HTTPHEADER     => ["Content-Type: application/json", "x-goog-api-key: " . $apiKey],
+>>>>>>> ea5c816 (partial done system)
         CURLOPT_POSTFIELDS     => $payload,
         CURLOPT_TIMEOUT        => 30,
     ]);
 
     $response = curl_exec($ch);
     $curlErr  = curl_error($ch);
+<<<<<<< HEAD
     curl_close($ch);
 
     if ($curlErr) {
         return defaultResult("cURL error: $curlErr");
+=======
+    $httpStatus = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    curl_close($ch);
+
+    if ($curlErr || $httpStatus >= 400) {
+        return defaultResult("AI scoring is temporarily unavailable. You can still enter an HR score.");
+>>>>>>> ea5c816 (partial done system)
     }
 
     $res = json_decode($response, true);
@@ -139,6 +173,10 @@ PROMPT;
     }
 
     return [
+<<<<<<< HEAD
+=======
+        'available'       => true,
+>>>>>>> ea5c816 (partial done system)
         'overall_score'   => clamp((int)($data['overall_score']   ?? 0)),
         'grammar_score'   => clamp((int)($data['grammar_score']   ?? 0)),
         'spelling_score'  => clamp((int)($data['spelling_score']  ?? 0)),
@@ -152,6 +190,10 @@ function clamp(int $v): int { return max(0, min(100, $v)); }
 
 function defaultResult(string $msg): array {
     return [
+<<<<<<< HEAD
+=======
+        'available'       => false,
+>>>>>>> ea5c816 (partial done system)
         'overall_score'   => 0,
         'grammar_score'   => 0,
         'spelling_score'  => 0,
@@ -165,9 +207,15 @@ function defaultResult(string $msg): array {
    SCORE COLOR HELPER
 ========================= */
 function scoreColor(int $score): string {
+<<<<<<< HEAD
     if ($score >= 80) return '#22c55e'; // green
     if ($score >= 55) return '#f59e0b'; // amber
     return '#ef4444';                   // red
+=======
+    if ($score >= 80) return 'var(--status-success)'; // green
+    if ($score >= 55) return 'var(--status-warning)'; // amber
+    return 'var(--status-danger)';                   // red
+>>>>>>> ea5c816 (partial done system)
 }
 
 /* =========================
@@ -192,10 +240,18 @@ if (!empty($task['ai_feedback'])) {
         $ai = getGeminiScore($text);
     } else {
         $ai = defaultResult("Text extraction failed. The file may be image-based or an unsupported format.");
+<<<<<<< HEAD
         $ai['overall_score'] = 50;
     }
 
     /* Save scores to DB so re-opening doesn't re-call Gemini */
+=======
+
+    }
+
+    /* Save scores to DB so re-opening doesn't re-call Gemini */
+    if (!empty($ai['available'])) {
+>>>>>>> ea5c816 (partial done system)
     $save = $conn->prepare("
         UPDATE tasks
         SET ai_score        = ?,
@@ -218,6 +274,10 @@ if (!empty($task['ai_feedback'])) {
         $id
     );
     $save->execute();
+<<<<<<< HEAD
+=======
+    }
+>>>>>>> ea5c816 (partial done system)
 } else {
     $ai = defaultResult("No submission found.");
 }
@@ -231,6 +291,9 @@ if (!empty($task['ai_feedback'])) {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
 .main { margin-left: 240px; padding: 25px; color: var(--text); }
 
 .card-box {
@@ -239,6 +302,7 @@ if (!empty($task['ai_feedback'])) {
     padding: 20px;
     margin-bottom: 20px;
    border: 1px solid var(--border);
+<<<<<<< HEAD
 =======
 .main { margin-left: 240px; padding: 25px; color: #e5e7eb; }
 
@@ -249,6 +313,8 @@ if (!empty($task['ai_feedback'])) {
     margin-bottom: 20px;
     border: 1px solid #1f2937;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 /* OVERALL SCORE CIRCLE */
@@ -266,10 +332,15 @@ if (!empty($task['ai_feedback'])) {
     border: 5px solid;
     transition: background 0.3s;
 <<<<<<< HEAD
+<<<<<<< HEAD
     background: transparent;
     color: var(--text);
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: transparent;
+    color: var(--text);
+>>>>>>> ea5c816 (partial done system)
 }
 
 /* SUB-SCORE GRID */
@@ -282,11 +353,15 @@ if (!empty($task['ai_feedback'])) {
 
 .sub-card {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     background: var(--card-soft);
     border-radius: 10px;
     padding: 14px;
     text-align: center;
     border: 1px solid var(--border);
+<<<<<<< HEAD
 =======
     background: #0f172a;
     border-radius: 10px;
@@ -294,6 +369,8 @@ if (!empty($task['ai_feedback'])) {
     text-align: center;
     border: 1px solid #1f2937;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 .sub-card .label {
@@ -301,10 +378,14 @@ if (!empty($task['ai_feedback'])) {
     text-transform: uppercase;
     letter-spacing: 0.05em;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: var(--muted);
 =======
     color: #9ca3af;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--muted);
+>>>>>>> ea5c816 (partial done system)
     margin-bottom: 6px;
 }
 
@@ -312,6 +393,9 @@ if (!empty($task['ai_feedback'])) {
     font-size: 28px;
     font-weight: 700;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     color: var(--text);
 }
 
@@ -324,6 +408,7 @@ if (!empty($task['ai_feedback'])) {
     padding: 16px;
     border-radius: 10px;
     color: var(--muted);
+<<<<<<< HEAD
 =======
 }
 
@@ -337,6 +422,8 @@ if (!empty($task['ai_feedback'])) {
     border-radius: 10px;
     color: #cbd5e1;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     white-space: pre-wrap;
     line-height: 1.6;
     font-size: 14px;
@@ -358,19 +445,27 @@ if (!empty($task['ai_feedback'])) {
         <?= $task['submitted_at']
             ? date("M d, Y h:i A", strtotime($task['submitted_at']))
 <<<<<<< HEAD
+<<<<<<< HEAD
             : '<span style="color:var(--muted);">Not yet submitted</span>' ?>
 =======
             : '<span style="color:#9ca3af;">Not yet submitted</span>' ?>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+            : '<span style="color:var(--muted);">Not yet submitted</span>' ?>
+>>>>>>> ea5c816 (partial done system)
     </p>
     <?php if (!empty($task['submission_file'])): ?>
     <a href="../uploads/submissions/<?= htmlspecialchars($task['submission_file']) ?>"
        target="_blank"
 <<<<<<< HEAD
+<<<<<<< HEAD
       style="color:var(--accent);font-size:13px;">
 =======
        style="color:#60a5fa;font-size:13px;">
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+      style="color:var(--accent);font-size:13px;">
+>>>>>>> ea5c816 (partial done system)
         📄 Download Submission
     </a>
     <?php endif; ?>
@@ -383,6 +478,7 @@ if (!empty($task['ai_feedback'])) {
     $oc = scoreColor($ai['overall_score']);
     ?>
     <!-- OVERALL SCORE CIRCLE -->
+<<<<<<< HEAD
     <div class="score-circle" style="background:<?= $oc ?>22; border-color:<?= $oc ?>; color:<?= $oc ?>;">
         <span><?= $ai['overall_score'] ?></span>
 <<<<<<< HEAD
@@ -390,6 +486,11 @@ if (!empty($task['ai_feedback'])) {
 =======
         <span style="font-size:12px;font-weight:400;color:#9ca3af;">/ 100</span>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    <div class="score-circle" style="background:var(--card-soft); border-color:<?= $oc ?>; color:<?= $oc ?>;">
+        <span><?= $ai['overall_score'] ?></span>
+        <span style="font-size:12px;font-weight:400;color:var(--muted);">/ 100</span>
+>>>>>>> ea5c816 (partial done system)
     </div>
 
     <!-- SUB-SCORES -->
@@ -416,10 +517,14 @@ if (!empty($task['ai_feedback'])) {
 
     <!-- FEEDBACK -->
 <<<<<<< HEAD
+<<<<<<< HEAD
     <h4 style="margin-bottom:8px;color:var(--muted);">AI Feedback</h4>
 =======
     <h4 style="margin-bottom:8px;color:#9ca3af;">AI Feedback</h4>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    <h4 style="margin-bottom:8px;color:var(--muted);">AI Feedback</h4>
+>>>>>>> ea5c816 (partial done system)
     <div class="feedback"><?= $ai['feedback'] ?></div>
 </div>
 

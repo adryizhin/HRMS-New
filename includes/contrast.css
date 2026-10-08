@@ -1,0 +1,50 @@
+
+:root {
+    color-scheme: light;
+    --on-accent: #ffffff;
+    --on-green: #0f172a;
+    --on-red: #ffffff;
+    --status-success: #166534;
+    --status-danger: #991b1b;
+    --status-warning: #92400e;
+    --status-info: #1d4ed8;
+    --status-purple: #6b21a8;
+    --control-border: #64748b;
+}
+[data-theme="dark"] {
+    color-scheme: dark;
+    --on-accent: #0f172a;
+    --on-green: #0f172a;
+    --on-red: #0f172a;
+    --status-success: #86efac;
+    --status-danger: #fca5a5;
+    --status-warning: #fcd34d;
+    --status-info: #93c5fd;
+    --status-purple: #d8b4fe;
+    --control-border: #94a3b8;
+}
+input:not([type="hidden"]), select, textarea {
+    border-color: var(--control-border);
+}
+input::placeholder, textarea::placeholder {
+    color: var(--muted, #475569);
+    opacity: 1;
+}
+:is(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 3px solid var(--accent, #2563eb) !important;
+    outline-offset: 3px;
+}
+input[type="checkbox"], input[type="radio"] {
+    accent-color: var(--accent, #2563eb);
+}
+input::file-selector-button {
+    background: var(--card-soft, #f8fafc);
+    color: var(--text-color);
+    border: 1px solid var(--control-border);
+    border-radius: 4px;
+    padding: 6px 10px;
+}
+.theme-toggle-btn { border-color: var(--control-border) !important; }
+
+html body :is(input:not([type="hidden"]), select, textarea) { border: 1px solid var(--control-border); }
+html body :is(input, textarea)::placeholder { color: var(--muted); opacity: 1; }

@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../includes/auth_check.php';
+<<<<<<< HEAD
 checkRole(['employee']);
+=======
+checkRole(['employee', 'admin', 'hr']);
+>>>>>>> ea5c816 (partial done system)
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/sidebar.php';
 require_once __DIR__ . '/../includes/task_schema.php';
@@ -9,10 +13,15 @@ ensureTaskSchema($conn);
 
 $user_id = (int) $_SESSION['user_id'];
 <<<<<<< HEAD
+<<<<<<< HEAD
 $today = new DateTimeImmutable('today', new DateTimeZone('Asia/Manila'));
 $todayDate = $today->format('Y-m-d');
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+$today = new DateTimeImmutable('today', new DateTimeZone('Asia/Manila'));
+$todayDate = $today->format('Y-m-d');
+>>>>>>> ea5c816 (partial done system)
 
 /* NOTIFICATIONS */
 $notifQuery = $conn->query("
@@ -65,12 +74,20 @@ $assignments = $assignments->get_result();
 <title>Employee Dashboard</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<<<<<<< HEAD
 <link rel="stylesheet" href="dashboard.css">
+=======
+<link rel="stylesheet" href="<?= htmlspecialchars(app_url('employee/dashboard.css')); ?>">
+>>>>>>> ea5c816 (partial done system)
 </head>
 
 <body>
 
+<<<<<<< HEAD
 <?php renderSidebar('employee', 'employee.dashboard'); ?>
+=======
+<?php renderSidebar($_SESSION['role'], $_SESSION['role'] === 'employee' ? 'employee.dashboard' : $_SESSION['role'] . '.evaluations'); ?>
+>>>>>>> ea5c816 (partial done system)
 
 <div class="main">
 
@@ -81,10 +98,16 @@ $assignments = $assignments->get_result();
    padding:8px 18px;
     background:green;
     border-radius:20px;
+<<<<<<< HEAD
     color:#fffff;
     font-weight:bold;
 <<<<<<< HEAD
     font-size:15px;">Employee</div></div>
+=======
+    color:#ffffff;
+    font-weight:bold;
+    font-size:15px;"><?= htmlspecialchars(ucfirst($_SESSION['role'])); ?></div></div>
+>>>>>>> ea5c816 (partial done system)
 </div>
 
 <?php if (isset($_GET['success'])): ?>
@@ -98,6 +121,7 @@ $assignments = $assignments->get_result();
   <div class="task-alert error"><i class="fa-solid fa-triangle-exclamation"></i>
     Submission is not allowed because the evaluation deadline has passed.
   </div>
+<<<<<<< HEAD
 =======
     font-size:15px;">Employee</div>
 </div>
@@ -106,6 +130,8 @@ $assignments = $assignments->get_result();
 <?php if (isset($_GET['success'])): ?>
   <div class="task-alert success"><i class="fa-solid fa-circle-check"></i> Task submitted successfully.</div>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 <?php endif; ?>
 
 <div class="task-section-header">
@@ -122,17 +148,23 @@ $assignments = $assignments->get_result();
 <?php while($a = $assignments->fetch_assoc()): 
     $status = $a['status'] ?: 'pending';
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     $submissionRequestKey = bin2hex(random_bytes(32));
     $statusLabel = $status === 'reviewed' ? 'Reviewed' : ($status === 'submitted' ? 'Submitted' : 'Pending');
     $statusIcon = $status === 'reviewed' ? 'fa-circle-check' : ($status === 'submitted' ? 'fa-clock' : 'fa-hourglass-half');
     $deadlineText = $a['deadline'] ? date("M d, Y", strtotime($a['deadline'])) : 'No deadline';
     $isOverdue = $a['deadline'] && $a['deadline'] < $todayDate;
+<<<<<<< HEAD
 =======
     $statusLabel = $status === 'reviewed' ? 'Reviewed' : ($status === 'submitted' ? 'Submitted' : 'Pending');
     $statusIcon = $status === 'reviewed' ? 'fa-circle-check' : ($status === 'submitted' ? 'fa-clock' : 'fa-hourglass-half');
     $deadlineText = $a['deadline'] ? date("M d, Y", strtotime($a['deadline'])) : 'No deadline';
     $isOverdue = $a['deadline'] && $status === 'pending' && strtotime($a['deadline'] . ' 23:59:59') < time();
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 ?>
 
 <article class="task-card <?= htmlspecialchars($status); ?>">
@@ -192,12 +224,16 @@ $assignments = $assignments->get_result();
     <?php endif; ?>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     <?php if ($isOverdue): ?>
         <div class="task-alert error">
             <i class="fa-solid fa-ban"></i>
             Submission is not allowed because the evaluation deadline has passed.
         </div>
     <?php else: ?>
+<<<<<<< HEAD
     <form class="submission-form" action="submit_assignment.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="assignment_id" value="<?= $a['id']; ?>">
         <input type="hidden" name="submission_request_key" value="<?= htmlspecialchars($submissionRequestKey); ?>">
@@ -205,6 +241,11 @@ $assignments = $assignments->get_result();
     <form class="submission-form" action="submit_assignment.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="assignment_id" value="<?= $a['id']; ?>">
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    <form class="submission-form" action="<?= htmlspecialchars(app_url('employee/submit_assignment.php')); ?>" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="assignment_id" value="<?= $a['id']; ?>">
+        <input type="hidden" name="submission_request_key" value="<?= htmlspecialchars($submissionRequestKey); ?>">
+>>>>>>> ea5c816 (partial done system)
 
         <label>
             <span><?= !empty($a['submission_file']) ? 'Replace Submission' : 'Upload Submission'; ?></span>
@@ -217,9 +258,13 @@ $assignments = $assignments->get_result();
         </button>
     </form>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <?php endif; ?>
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    <?php endif; ?>
+>>>>>>> ea5c816 (partial done system)
 
 </article>
 

@@ -82,6 +82,9 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="dashboard.css">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
 <style>
 :root {
     --score-bg: #f3f4f6;
@@ -120,11 +123,14 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 }
 
 .main { margin-left: 240px; padding: 20px; background: var(--score-bg); color: var(--score-text); }
+<<<<<<< HEAD
 =======
 
 <style>
 .main { margin-left: 240px; padding: 20px; }
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 
 .header {
     margin-bottom: 25px;
@@ -133,19 +139,27 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 .header h1 {
     font-size: 28px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: var(--score-text);
 =======
     color: #e5e7eb;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--score-text);
+>>>>>>> ea5c816 (partial done system)
     margin-bottom: 8px;
 }
 
 .header p {
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: var(--score-muted);
 =======
     color: #9ca3af;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--score-muted);
+>>>>>>> ea5c816 (partial done system)
     font-size: 14px;
 }
 
@@ -163,6 +177,9 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 
 .card {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     background: var(--score-card);
     border: 1px solid var(--score-border);
     border-radius: 12px;
@@ -172,6 +189,7 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 
 .card h3 {
     color: var(--score-text);
+<<<<<<< HEAD
 =======
     background: #111827;
     border: 1px solid #1f2937;
@@ -182,6 +200,8 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 .card h3 {
     color: #e5e7eb;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     font-size: 16px;
     margin-top: 0;
     margin-bottom: 15px;
@@ -192,20 +212,28 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 
 .card h3 i {
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: var(--score-accent);
 =======
     color: #3251ff;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--score-accent);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .info-section {
     margin-bottom: 20px;
     padding-bottom: 15px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     border-bottom: 1px solid var(--score-border);
 =======
     border-bottom: 1px solid #1f2937;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    border-bottom: 1px solid var(--score-border);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .info-section:last-child {
@@ -216,10 +244,14 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 
 .info-label {
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: var(--score-muted);
 =======
     color: #9ca3af;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--score-muted);
+>>>>>>> ea5c816 (partial done system)
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -228,37 +260,51 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 
 .info-value {
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: var(--score-text);
 =======
     color: #e5e7eb;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--score-text);
+>>>>>>> ea5c816 (partial done system)
     font-size: 14px;
 }
 
 .ai-score-display {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     background: var(--score-card-alt);
     padding: 15px;
     border-radius: 10px;
     margin-bottom: 15px;
     border: 1px solid var(--score-border);
+<<<<<<< HEAD
 =======
     background: #0b1220;
     padding: 15px;
     border-radius: 10px;
     margin-bottom: 15px;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 .score-value {
     font-size: 32px;
     font-weight: bold;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     color: var(--score-accent);
 }
 
 .score-label {
     color: var(--score-muted);
+<<<<<<< HEAD
 =======
     color: #3251ff;
 }
@@ -266,6 +312,8 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 .score-label {
     color: #9ca3af;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     font-size: 12px;
     margin-top: 5px;
 }
@@ -277,10 +325,14 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 .form-group label {
     display: block;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: var(--score-muted);
 =======
     color: #9ca3af;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--score-muted);
+>>>>>>> ea5c816 (partial done system)
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -297,36 +349,50 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
     flex: 1;
     padding: 10px;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     background: var(--score-input-bg);
     border: 1px solid var(--score-border);
     border-radius: 8px;
     color: var(--score-text);
+<<<<<<< HEAD
 =======
     background: #0b1220;
     border: 1px solid #1f2937;
     border-radius: 8px;
     color: #e5e7eb;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     font-size: 14px;
 }
 
 .score-input-container input:focus {
     outline: none;
 <<<<<<< HEAD
+<<<<<<< HEAD
     border-color: var(--score-accent);
 =======
     border-color: #3251ff;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    border-color: var(--score-accent);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .score-display-inline {
     font-size: 24px;
     font-weight: bold;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: var(--score-accent);
 =======
     color: #3251ff;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--score-accent);
+>>>>>>> ea5c816 (partial done system)
     min-width: 50px;
     text-align: center;
 }
@@ -335,16 +401,22 @@ textarea {
     width: 100%;
     padding: 12px;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     background: var(--score-input-bg);
     border: 1px solid var(--score-border);
     border-radius: 8px;
     color: var(--score-text);
+<<<<<<< HEAD
 =======
     background: #0b1220;
     border: 1px solid #1f2937;
     border-radius: 8px;
     color: #e5e7eb;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     font-size: 14px;
     min-height: 120px;
     resize: vertical;
@@ -353,10 +425,14 @@ textarea {
 textarea:focus {
     outline: none;
 <<<<<<< HEAD
+<<<<<<< HEAD
     border-color: var(--score-accent);
 =======
     border-color: #3251ff;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    border-color: var(--score-accent);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .form-actions {
@@ -376,26 +452,40 @@ textarea:focus {
 
 .btn-primary {
 <<<<<<< HEAD
+<<<<<<< HEAD
     background: var(--score-accent);
     color: var(--score-primary-text);
 =======
     background: #3251ff;
     color: white;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: var(--score-accent);
+    color: var(--on-accent);
+>>>>>>> ea5c816 (partial done system)
     flex: 1;
 }
 
 .btn-primary:hover {
 <<<<<<< HEAD
+<<<<<<< HEAD
     background: #1d4ed8;
 =======
     background: #2540cc;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    background: #1d4ed8;
+
+  color: #ffffff;
+>>>>>>> ea5c816 (partial done system)
 }
 
 .btn-secondary {
     background: transparent;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     color: var(--score-accent);
     border: 1px solid var(--score-border);
 }
@@ -403,6 +493,7 @@ textarea:focus {
 .btn-secondary:hover {
     background: var(--score-card-alt);
     border-color: var(--score-accent);
+<<<<<<< HEAD
 =======
     color: #60a5fa;
     border: 1px solid #1f2937;
@@ -412,6 +503,8 @@ textarea:focus {
     background: #111827;
     border-color: #3251ff;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 .alert {
@@ -422,6 +515,9 @@ textarea:focus {
 
 .alert.success {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     background: var(--score-success-bg);
     color: var(--score-success-text);
 }
@@ -441,6 +537,7 @@ textarea:focus {
 
 .download-section a {
     color: var(--score-accent);
+<<<<<<< HEAD
 =======
     background: #14532d;
     color: #4ade80;
@@ -461,6 +558,8 @@ textarea:focus {
 .download-section a {
     color: #60a5fa;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     text-decoration: none;
     font-size: 13px;
     display: flex;
@@ -473,9 +572,13 @@ textarea:focus {
 }
 </style>
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+
+>>>>>>> ea5c816 (partial done system)
 </head>
 
 <body>
@@ -503,10 +606,14 @@ textarea:focus {
                     <?= htmlspecialchars($task['employee_name']); ?>
                     <?php if ($task['emp_id']): ?>
 <<<<<<< HEAD
+<<<<<<< HEAD
                         <br><span style="color:var(--score-muted);font-size:12px;"><?= htmlspecialchars($task['emp_id']); ?></span>
 =======
                         <br><span style="color:#9ca3af;font-size:12px;"><?= htmlspecialchars($task['emp_id']); ?></span>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+                        <br><span style="color:var(--score-muted);font-size:12px;"><?= htmlspecialchars($task['emp_id']); ?></span>
+>>>>>>> ea5c816 (partial done system)
                     <?php endif; ?>
                 </div>
             </div>
@@ -532,10 +639,14 @@ textarea:focus {
                 <div class="info-label">Submitted</div>
                 <div class="info-value">
 <<<<<<< HEAD
+<<<<<<< HEAD
                     <?= $task['submitted_at'] ? date("M d, Y h:i A", strtotime($task['submitted_at'])) : '<span style="color:var(--score-muted);">Not submitted</span>' ?>
 =======
                     <?= $task['submitted_at'] ? date("M d, Y h:i A", strtotime($task['submitted_at'])) : '<span style="color:#9ca3af;">Not submitted</span>' ?>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+                    <?= $task['submitted_at'] ? date("M d, Y h:i A", strtotime($task['submitted_at'])) : '<span style="color:var(--score-muted);">Not submitted</span>' ?>
+>>>>>>> ea5c816 (partial done system)
                 </div>
             </div>
 

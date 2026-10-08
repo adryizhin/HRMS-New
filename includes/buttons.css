@@ -1,0 +1,45 @@
+/* Shared defaults cover plain controls; page-specific button styles take priority. */
+:where(button, input[type="submit"], input[type="button"], input[type="reset"], .app-button) {
+    appearance: none;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    max-width: 100%;
+    padding: 10px 16px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: var(--accent, #2563eb);
+    color: var(--on-accent, #ffffff);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+    white-space: normal;
+    cursor: pointer;
+    transition: filter 0.15s ease, box-shadow 0.15s ease;
+}
+:where(button, input[type="submit"], input[type="button"], input[type="reset"], .app-button):where(:hover:not(:disabled):not([aria-disabled="true"])) {
+    filter: brightness(0.94);
+}
+:where(button, input[type="submit"], input[type="button"], input[type="reset"], .app-button):focus-visible {
+    outline: 3px solid var(--accent, #2563eb);
+    outline-offset: 3px;
+}
+:where(button, input[type="submit"], input[type="button"], input[type="reset"], .app-button):where(:disabled, [aria-disabled="true"]) {
+    opacity: 0.55;
+    cursor: not-allowed;
+    filter: none;
+}
+.app-button.secondary {
+    background: var(--card-bg, #ffffff);
+    color: var(--text-color, #0f172a);
+    border-color: var(--control-border, #64748b);
+}
+@media (prefers-reduced-motion: reduce) {
+    :where(button, input[type="submit"], input[type="button"], input[type="reset"], .app-button) { transition: none; }
+}

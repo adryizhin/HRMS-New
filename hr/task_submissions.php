@@ -47,6 +47,9 @@ $submissions = $stmt->get_result();
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="dashboard.css">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
 <style>
 :root {
     --submission-bg: #f3f4f6;
@@ -76,6 +79,7 @@ $submissions = $stmt->get_result();
 
 .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
 .topbar h1 { font-size: 28px; color: var(--submission-text); }
+<<<<<<< HEAD
 =======
 
 <style>
@@ -84,6 +88,8 @@ $submissions = $stmt->get_result();
 .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
 .topbar h1 { font-size: 28px; color: #e5e7eb; }
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 
 .submissions-grid {
     display: grid;
@@ -94,12 +100,16 @@ $submissions = $stmt->get_result();
 
 .submission-card {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     background: var(--submission-card);
     border: 1px solid var(--submission-border);
     border-radius: 12px;
     padding: 18px;
     transition: 0.2s;
     box-shadow: 0 10px 22px rgba(15, 23, 42, 0.05);
+<<<<<<< HEAD
 =======
     background: #111827;
     border: 1px solid #1f2937;
@@ -107,15 +117,21 @@ $submissions = $stmt->get_result();
     padding: 18px;
     transition: 0.2s;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 .submission-card:hover {
     transform: translateY(-4px);
 <<<<<<< HEAD
+<<<<<<< HEAD
     border-color: rgba(37, 99, 235, 0.4);
 =======
     border-color: rgba(50, 81, 255, 0.4);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    border-color: rgba(37, 99, 235, 0.4);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .card-header {
@@ -127,10 +143,14 @@ $submissions = $stmt->get_result();
 
 .card-header h3 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: var(--submission-accent);
 =======
     color: #3251ff;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--submission-accent);
+>>>>>>> ea5c816 (partial done system)
     font-size: 16px;
     margin: 0;
 }
@@ -144,6 +164,7 @@ $submissions = $stmt->get_result();
     text-transform: uppercase;
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 .status-badge.pending { background: rgba(148, 163, 184, 0.16); color: var(--submission-muted); }
 .status-badge.submitted { background: rgba(34, 197, 94, 0.12); color: #15803d; }
@@ -161,6 +182,15 @@ $submissions = $stmt->get_result();
 .employee-info {
     color: #9ca3af;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+.status-badge.pending { background: rgba(148, 163, 184, 0.16); color: var(--submission-muted); }
+.status-badge.submitted { background: rgba(34, 197, 94, 0.12); color: var(--status-success); }
+.status-badge.reviewed { background: rgba(59, 130, 246, 0.12); color: var(--status-info); }
+.status-badge.scored { background: rgba(147, 51, 234, 0.12); color: var(--status-purple); }
+
+.employee-info {
+    color: var(--submission-muted);
+>>>>>>> ea5c816 (partial done system)
     font-size: 13px;
     margin-bottom: 10px;
 }
@@ -170,52 +200,74 @@ $submissions = $stmt->get_result();
     flex-direction: column;
     gap: 6px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: var(--submission-text);
 =======
     color: #cbd5e1;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--submission-text);
+>>>>>>> ea5c816 (partial done system)
     font-size: 12px;
     margin-bottom: 12px;
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
 .task-meta i { margin-right: 6px; color: var(--submission-accent); }
 
 .score-display {
     background: var(--submission-card-alt);
+<<<<<<< HEAD
 =======
 .task-meta i { margin-right: 6px; color: #60a5fa; }
 
 .score-display {
     background: #0b1220;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     padding: 10px;
     border-radius: 8px;
     margin-bottom: 12px;
     text-align: center;
 <<<<<<< HEAD
+<<<<<<< HEAD
     border: 1px solid var(--submission-border);
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    border: 1px solid var(--submission-border);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .score-display .score-value {
     font-size: 28px;
     font-weight: bold;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: var(--submission-accent);
 =======
     color: #3251ff;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--submission-accent);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .score-display .score-label {
     font-size: 11px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: var(--submission-muted);
 =======
     color: #9ca3af;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--submission-muted);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .action-buttons {
@@ -239,12 +291,22 @@ $submissions = $stmt->get_result();
 
 .btn-view {
 <<<<<<< HEAD
+<<<<<<< HEAD
     background: var(--submission-accent);
     color: var(--submission-primary-text);
+=======
+    background: var(--submission-accent);
+    color: var(--on-accent);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .btn-view:hover {
     background: #1d4ed8;
+<<<<<<< HEAD
+=======
+
+  color: #ffffff;
+>>>>>>> ea5c816 (partial done system)
 }
 
 .btn-score {
@@ -256,6 +318,7 @@ $submissions = $stmt->get_result();
 .btn-score:hover {
     background: var(--submission-accent-soft);
     border-color: var(--submission-accent);
+<<<<<<< HEAD
 =======
     background: #3251ff;
     color: white;
@@ -275,15 +338,21 @@ $submissions = $stmt->get_result();
     background: #111827;
     border-color: #3251ff;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 .no-submissions {
     text-align: center;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: var(--submission-muted);
 =======
     color: #9ca3af;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--submission-muted);
+>>>>>>> ea5c816 (partial done system)
     padding: 40px;
 }
 
@@ -292,10 +361,14 @@ $submissions = $stmt->get_result();
     gap: 12px;
     margin-bottom: 20px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     border-bottom: 1px solid var(--submission-border);
 =======
     border-bottom: 1px solid #1f2937;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    border-bottom: 1px solid var(--submission-border);
+>>>>>>> ea5c816 (partial done system)
     padding-bottom: 15px;
 }
 
@@ -304,10 +377,14 @@ $submissions = $stmt->get_result();
     background: transparent;
     border: none;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: var(--submission-muted);
 =======
     color: #9ca3af;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    color: var(--submission-muted);
+>>>>>>> ea5c816 (partial done system)
     cursor: pointer;
     font-size: 14px;
     border-bottom: 2px solid transparent;
@@ -316,17 +393,23 @@ $submissions = $stmt->get_result();
 
 .filter-tab.active {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     color: var(--submission-accent);
     border-bottom-color: var(--submission-accent);
 }
 </style>
 
+<<<<<<< HEAD
 =======
     color: #3251ff;
     border-bottom-color: #3251ff;
 }
 </style>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 </head>
 
 <body>
@@ -370,7 +453,11 @@ $submissions = $stmt->get_result();
 
             <?php if ($task['hr_score'] !== null): ?>
                 <div class="score-display">
+<<<<<<< HEAD
                     <div class="score-value" style="color: <?= $task['hr_score'] >= 70 ? '#22c55e' : ($task['hr_score'] >= 50 ? '#f59e0b' : '#ef4444') ?>">
+=======
+                    <div class="score-value" style="color: <?= $task['hr_score'] >= 70 ? 'var(--status-success)' : ($task['hr_score'] >= 50 ? 'var(--status-warning)' : 'var(--status-danger)') ?>">
+>>>>>>> ea5c816 (partial done system)
                         <?= (int) $task['hr_score'] ?>%
                     </div>
                     <div class="score-label">HR Score</div>

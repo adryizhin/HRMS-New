@@ -76,7 +76,11 @@ $activeUsers = $conn->query($activeQuery);
    TIME AGO FUNCTION
 ========================= */
 
+<<<<<<< HEAD
 function timeAgo($datetime) {
+=======
+function timeAgo(?string $datetime): string {
+>>>>>>> ea5c816 (partial done system)
 
     if (!$datetime) {
         return "0 sec";
@@ -117,7 +121,11 @@ function timeAgo($datetime) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
 <link rel="shortcut icon" href="images/logo.png" type="image/x-icon">
+=======
+<link rel="shortcut icon" href="../images/logo.png" type="image/x-icon">
+>>>>>>> ea5c816 (partial done system)
 <title>Pagecom HRIS</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -142,15 +150,21 @@ function timeAgo($datetime) {
   <div style= "display:inline-block;
    padding:8px 18px;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
     background:var(--card-soft);
     border:1px solid var(--border);
     border-radius:20px;
     color:var(--accent);
+<<<<<<< HEAD
 =======
     background:#3251ff;
     border-radius:20px;
     color:#fffff;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
     font-weight:bold;
     font-size:15px;">Admin</div>
 </div>
@@ -186,10 +200,15 @@ function timeAgo($datetime) {
 
 <!-- CHAT LIST (HR SELECTION) & ADMIN LIST -->
 <<<<<<< HEAD
+<<<<<<< HEAD
 <div style="padding:12px; width: 30%; color:var(--text);">
 =======
 <div style="padding:12px; width: 30%; color:white;">
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+<div class="dashboard-lower">
+<div class="chat-contacts" style="padding:12px; width: 30%; color:var(--text);">
+>>>>>>> ea5c816 (partial done system)
     <h3>Chat With HR</h3>
     <br>
     <?php
@@ -200,16 +219,22 @@ function timeAgo($datetime) {
             padding:8px;
             margin:5px 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
             background:var(--card-soft);
             color:var(--text);
             border-radius:8px;
             cursor:pointer;
             border:1px solid var(--border);
+<<<<<<< HEAD
 =======
             background:#1f2937;
             border-radius:8px;
             cursor:pointer;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
         ">
             <?= htmlspecialchars($hr['full_name']); ?>
         </div>
@@ -226,16 +251,22 @@ function timeAgo($datetime) {
                 padding:8px;
                 margin:5px 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
                 background:var(--card-soft);
                 color:var(--text);
                 border-radius:8px;
                 cursor:pointer;
                 border:1px solid var(--border);
+<<<<<<< HEAD
 =======
                 background:#1f2937;
                 border-radius:8px;
                 cursor:pointer;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
             ">
                 <?= htmlspecialchars($otherAdmin['full_name']); ?>
             </div>
@@ -244,21 +275,43 @@ function timeAgo($datetime) {
     else:
         ?>
 <<<<<<< HEAD
+<<<<<<< HEAD
         <div style="color:var(--muted);font-size:12px;">No other admins available</div>
 =======
         <div style="color:#9ca3af;font-size:12px;">No other admins available</div>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+        <div style="color:var(--muted);font-size:12px;">No other admins available</div>
+>>>>>>> ea5c816 (partial done system)
         <?php
     endif;
     ?>
 </div>
 
+<<<<<<< HEAD
 </div>
 <<<<<<< HEAD
 <div style=" margin-bottom:-1px; padding:15px; background:var(--card); border-radius:12px; border:1px solid var(--border); "> <h1 style = "text-align:center; color:var(--text);">Online Users</h1> <br> <?php if ($activeUsers->num_rows > 0): ?> <?php while($a = $activeUsers->fetch_assoc()): ?> <div style=" display:flex; justify-content:space-between; align-items:center; padding:12px; margin-bottom:10px; background:var(--card-soft); border-radius:10px; border:1px solid var(--border); "> <!-- LEFT --> <div style="display:flex; flex-direction:column;"> <div style="display:flex; align-items:center; gap:8px;"> <span class="dot"></span> <strong style="color:var(--text);"><?= htmlspecialchars($a['username']); ?></strong> </div> </div> <!-- RIGHT --> <span class="badge <?= $a['role']; ?>"> <?= strtoupper($a['role']); ?> </span> </div> <?php endwhile; ?> <?php else: ?> <div style=" text-align:center; color:var(--muted); padding:10px; "> No active users </div> <?php endif; ?> </div> </div>
 =======
 <div style=" margin-bottom:-1px; padding:15px; background:#111827; border-radius:12px; border:1px solid #1f2937; "> <h1 style = "text-align:center">Online Users</h1> <br> <?php if ($activeUsers->num_rows > 0): ?> <?php while($a = $activeUsers->fetch_assoc()): ?> <div style=" display:flex; justify-content:space-between; align-items:center; padding:12px; margin-bottom:10px; background:#0b1220; border-radius:10px; border:1px solid #1f2937; "> <!-- LEFT --> <div style="display:flex; flex-direction:column;"> <div style="display:flex; align-items:center; gap:8px;"> <span class="dot"></span> <strong><?= htmlspecialchars($a['username']); ?></strong> </div> </div> <!-- RIGHT --> <span class="badge <?= $a['role']; ?>"> <?= strtoupper($a['role']); ?> </span> </div> <?php endwhile; ?> <?php else: ?> <div style=" text-align:center; color:#9ca3af; padding:10px; "> No active users </div> <?php endif; ?> </div> </div>
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+<aside class="online-users" aria-labelledby="online-users-heading">
+    <h2 id="online-users-heading">Online Users</h2>
+    <?php if ($activeUsers->num_rows > 0): ?>
+        <?php while ($a = $activeUsers->fetch_assoc()): ?>
+            <div class="online-user-row">
+                <div class="online-user-name"><span class="dot"></span><strong><?= htmlspecialchars($a['username']); ?></strong></div>
+                <span class="badge <?= htmlspecialchars($a['role']); ?>"><?= strtoupper(htmlspecialchars($a['role'])); ?></span>
+            </div>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <p class="online-users-empty">No active users</p>
+    <?php endif; ?>
+</aside>
+</div>
+</div>
+>>>>>>> ea5c816 (partial done system)
 <!-- CHAT FLOAT -->
 <div id="chatAvatar" onclick="openChat()">
     <span id="chatNotif"></span>
@@ -272,10 +325,14 @@ function timeAgo($datetime) {
     </div>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     <div id="typingIndicator" style="color:var(--muted);font-size:12px;padding:5px 12px;display:none;">
 =======
     <div id="typingIndicator" style="color:#9ca3af;font-size:12px;padding:5px 12px;display:none;">
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+    <div id="typingIndicator" style="color:var(--muted);font-size:12px;padding:5px 12px;display:none;">
+>>>>>>> ea5c816 (partial done system)
     Someone is typing...
 </div>
     <div class="chat-body" id="chatBody"></div>
@@ -451,3 +508,9 @@ document.getElementById("chatInput").addEventListener("input", function () {
 
 </body>
 </html>
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> ea5c816 (partial done system)

@@ -1,5 +1,8 @@
 :root {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   --bg: #f3f4f6;
   --sidebar: #ffffff;
   --card: #ffffff;
@@ -29,6 +32,7 @@
   --shadow: rgba(2, 6, 23, 0.55);
   --button-text: #ffffff;
   --button-dark: #0f172a;
+<<<<<<< HEAD
 =======
   --bg: #0b1220;
   --sidebar: #020617;
@@ -39,6 +43,8 @@
   --green: #22c55e;
   --red: #ef4444;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 * {
@@ -82,19 +88,27 @@ body {
 .sidebar a:hover {
   background: var(--accent);
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--button-text);
 =======
   color: #000;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--on-accent);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .sidebar a.active {
   background: var(--green);
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--button-dark);
 =======
   color: #000;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--on-green);
+>>>>>>> ea5c816 (partial done system)
 }
 
 /* MAIN */
@@ -126,17 +140,23 @@ body {
 
 .card {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   background: linear-gradient(145deg, var(--card), var(--card-soft));
   padding: 20px;
   border-radius: 15px;
   border: 1px solid var(--border);
   box-shadow: 0 10px 22px var(--shadow);
+<<<<<<< HEAD
 =======
   background: var(--card);
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.4);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   position: relative;
   transition: 0.3s;
 }
@@ -154,10 +174,14 @@ body {
 .card:hover {
   transform: translateY(-4px);
 <<<<<<< HEAD
+<<<<<<< HEAD
   box-shadow: 0 15px 35px rgba(37, 99, 235, 0.18);
 =======
   box-shadow: 0 15px 35px rgba(50,81,255,0.25);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.18);
+>>>>>>> ea5c816 (partial done system)
 }
 
 /* KEEP YOUR ORIGINAL CARD ICON STYLE */
@@ -194,12 +218,17 @@ body {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 .green { background: var(--green); color: var(--button-dark); }
 .red { background: var(--red); color: var(--button-text); }
 =======
 .green { background: var(--green); color:#000; }
 .red { background: var(--red); color:#fff; }
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+.green { background: var(--green); color: var(--on-green); }
+.red { background: var(--red); color: var(--on-red); }
+>>>>>>> ea5c816 (partial done system)
 
 
 
@@ -220,7 +249,12 @@ body {
   right: 0;
   top: 35px;
   width: 300px;
+<<<<<<< HEAD
   background: #111827;
+=======
+  background: var(--card);
+  color: var(--text);
+>>>>>>> ea5c816 (partial done system)
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.5);
   display: none;
@@ -239,7 +273,11 @@ body {
 
 /* hover effect */
 .notif-dropdown div:hover {
+<<<<<<< HEAD
   background: #1f2937;
+=======
+  background: var(--card-soft);
+>>>>>>> ea5c816 (partial done system)
 }
 
 /* unread badge */
@@ -247,7 +285,11 @@ body {
   position: absolute;
   top: -5px;
   right: -5px;
+<<<<<<< HEAD
   background: red;
+=======
+  background: #b91c1c;
+>>>>>>> ea5c816 (partial done system)
   color: white;
   font-size: 10px;
   padding: 3px 6px;
@@ -268,20 +310,31 @@ body {
   background: rgba(34, 197, 94, 0.12);
   border: 1px solid rgba(34, 197, 94, 0.28);
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: #166534;
+=======
+  color: var(--status-success);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .task-alert.error {
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.28);
+<<<<<<< HEAD
   color: #991b1b;
+=======
+  color: var(--status-danger);
+>>>>>>> ea5c816 (partial done system)
 }
 
 [data-theme="dark"] .task-alert.error {
   color: #fecaca;
+<<<<<<< HEAD
 =======
   color: #bbf7d0;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 .task-section-header {
@@ -294,20 +347,28 @@ body {
 
 .task-section-header h2 {
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--text);
 =======
   color: #f8fafc;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--text);
+>>>>>>> ea5c816 (partial done system)
   font-size: 24px;
   font-weight: 700;
 }
 
 .eyebrow {
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--accent);
 =======
   color: #60a5fa;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--accent);
+>>>>>>> ea5c816 (partial done system)
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -317,16 +378,22 @@ body {
 
 .task-count {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   background: var(--card-soft);
   border: 1px solid var(--border);
   border-radius: 999px;
   color: var(--muted);
+<<<<<<< HEAD
 =======
   background: #111827;
   border: 1px solid #243044;
   border-radius: 999px;
   color: #cbd5e1;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   font-size: 12px;
   padding: 7px 11px;
 }
@@ -340,16 +407,22 @@ body {
 
 .task-card {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   background: linear-gradient(145deg, var(--card), var(--card-soft));
   border: 1px solid var(--border);
   border-radius: 8px;
   box-shadow: 0 14px 35px var(--shadow);
+<<<<<<< HEAD
 =======
   background: #101826;
   border: 1px solid #263244;
   border-radius: 8px;
   box-shadow: 0 14px 35px rgba(0, 0, 0, 0.22);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -374,10 +447,14 @@ body {
 
 .task-card h3 {
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--text);
 =======
   color: #f8fafc;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--text);
+>>>>>>> ea5c816 (partial done system)
   font-size: 18px;
   line-height: 1.3;
   margin-top: 5px;
@@ -385,10 +462,14 @@ body {
 
 .task-batch {
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--muted);
 =======
   color: #94a3b8;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--muted);
+>>>>>>> ea5c816 (partial done system)
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -410,29 +491,42 @@ body {
 .status-chip.pending {
   background: rgba(245, 158, 11, 0.12);
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: #b45309;
 =======
   color: #fbbf24;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--status-warning);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .status-chip.submitted {
   background: rgba(96, 165, 250, 0.12);
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: #1d4ed8;
 =======
   color: #93c5fd;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--status-info);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .status-chip.reviewed {
   background: rgba(34, 197, 94, 0.12);
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: #166534;
+=======
+  color: var(--status-success);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .task-description {
   color: var(--text);
+<<<<<<< HEAD
 =======
   color: #86efac;
 }
@@ -440,6 +534,8 @@ body {
 .task-description {
   color: #cbd5e1;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   font-size: 14px;
   line-height: 1.55;
 }
@@ -453,10 +549,14 @@ body {
 .task-muted {
   align-items: center;
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--muted);
 =======
   color: #94a3b8;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--muted);
+>>>>>>> ea5c816 (partial done system)
   display: flex;
   gap: 8px;
   font-size: 13px;
@@ -465,19 +565,27 @@ body {
 .task-meta-list i,
 .task-muted i {
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--accent);
 =======
   color: #60a5fa;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--accent);
+>>>>>>> ea5c816 (partial done system)
   width: 16px;
 }
 
 .task-meta-list .overdue {
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: #b91c1c;
 =======
   color: #fca5a5;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--status-danger);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .task-actions {
@@ -489,16 +597,22 @@ body {
 .task-link {
   align-items: center;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   background: var(--card-soft);
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--accent);
+<<<<<<< HEAD
 =======
   background: #0b1220;
   border: 1px solid #263244;
   border-radius: 8px;
   color: #bfdbfe;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   display: inline-flex;
   gap: 8px;
   padding: 9px 11px;
@@ -508,16 +622,24 @@ body {
 
 .task-link:hover {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   border-color: var(--accent);
 }
 
 .task-link.secondary {
+<<<<<<< HEAD
   color: #166534;
+=======
+  color: var(--status-success);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .score-panel {
   background: var(--card-soft);
   border: 1px solid var(--border);
+<<<<<<< HEAD
 =======
   border-color: #3251ff;
 }
@@ -530,6 +652,8 @@ body {
   background: #0b1220;
   border: 1px solid #263244;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   border-radius: 8px;
   display: grid;
   gap: 8px;
@@ -538,10 +662,14 @@ body {
 
 .score-value {
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: #16a34a;
 =======
   color: #22c55e;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--status-success);
+>>>>>>> ea5c816 (partial done system)
   font-size: 28px;
   font-weight: 800;
   margin-right: 8px;
@@ -549,30 +677,42 @@ body {
 
 .score-label {
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--muted);
 =======
   color: #94a3b8;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--muted);
+>>>>>>> ea5c816 (partial done system)
   font-size: 12px;
   text-transform: uppercase;
 }
 
 .score-panel p {
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--text);
 =======
   color: #cbd5e1;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--text);
+>>>>>>> ea5c816 (partial done system)
   font-size: 13px;
   line-height: 1.5;
 }
 
 .submission-form {
 <<<<<<< HEAD
+<<<<<<< HEAD
   border-top: 1px solid var(--border);
 =======
   border-top: 1px solid #263244;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  border-top: 1px solid var(--border);
+>>>>>>> ea5c816 (partial done system)
   display: grid;
   gap: 10px;
   margin-top: auto;
@@ -586,10 +726,14 @@ body {
 
 .submission-form label span {
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--muted);
 =======
   color: #94a3b8;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--muted);
+>>>>>>> ea5c816 (partial done system)
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
@@ -597,22 +741,29 @@ body {
 
 .submission-form input[type="file"] {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   background: var(--card-soft);
   border: 1px dashed var(--border);
   border-radius: 8px;
   color: var(--text);
+<<<<<<< HEAD
 =======
   background: #0b1220;
   border: 1px dashed #334155;
   border-radius: 8px;
   color: #e5e7eb;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   padding: 10px;
   width: 100%;
 }
 
 .submission-form button {
   align-items: center;
+<<<<<<< HEAD
 <<<<<<< HEAD
   background: var(--accent);
 =======
@@ -621,6 +772,12 @@ body {
   border: none;
   border-radius: 8px;
   color: white;
+=======
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: var(--on-accent);
+>>>>>>> ea5c816 (partial done system)
   cursor: pointer;
   display: inline-flex;
   font-weight: 700;
@@ -631,11 +788,18 @@ body {
 
 .submission-form button:hover {
 <<<<<<< HEAD
+<<<<<<< HEAD
   background: #1d4ed8;
+=======
+  background: #1d4ed8;
+
+  color: #ffffff;
+>>>>>>> ea5c816 (partial done system)
 }
 
 .submission-form button:disabled {
   background: #94a3b8;
+<<<<<<< HEAD
   color: #f8fafc;
 =======
   background: #2540cc;
@@ -645,21 +809,30 @@ body {
   background: #334155;
   color: #94a3b8;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: #0f172a;
+>>>>>>> ea5c816 (partial done system)
   cursor: not-allowed;
 }
 
 .empty-tasks {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   background: var(--card-soft);
   border: 1px dashed var(--border);
   border-radius: 8px;
   color: var(--muted);
+<<<<<<< HEAD
 =======
   background: #101826;
   border: 1px dashed #334155;
   border-radius: 8px;
   color: #94a3b8;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   grid-column: 1 / -1;
   padding: 34px;
   text-align: center;
@@ -667,20 +840,28 @@ body {
 
 .empty-tasks i {
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--accent);
 =======
   color: #60a5fa;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--accent);
+>>>>>>> ea5c816 (partial done system)
   font-size: 34px;
   margin-bottom: 12px;
 }
 
 .empty-tasks h3 {
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--text);
 =======
   color: #e5e7eb;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--text);
+>>>>>>> ea5c816 (partial done system)
   margin-bottom: 6px;
 }
 
@@ -696,6 +877,9 @@ body {
   }
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)

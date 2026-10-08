@@ -11,6 +11,10 @@ session_start();
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<<<<<<< HEAD
+=======
+<link rel="stylesheet" href="includes/buttons.css">
+>>>>>>> ea5c816 (partial done system)
 <link rel="stylesheet" href="login/login.css">
 </head>
 

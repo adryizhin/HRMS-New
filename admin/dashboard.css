@@ -1,5 +1,8 @@
 :root {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   --bg: #f3f4f6;
   --sidebar: #ffffff;
   --card: #ffffff;
@@ -29,6 +32,7 @@
   --shadow: rgba(2, 6, 23, 0.55);
   --button-text: #ffffff;
   --button-dark: #0f172a;
+<<<<<<< HEAD
 =======
   --bg: #0b1220;
   --sidebar: #020617;
@@ -39,6 +43,8 @@
   --green: #22c55e;
   --red: #ef4444;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
 }
 
 * {
@@ -82,19 +88,27 @@ body {
 .sidebar a:hover {
   background: var(--accent);
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--button-text);
 =======
   color: #000;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--on-accent);
+>>>>>>> ea5c816 (partial done system)
 }
 
 .sidebar a.active {
   background: var(--green);
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--button-dark);
 =======
   color: #000;
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  color: var(--on-green);
+>>>>>>> ea5c816 (partial done system)
 }
 
 /* MAIN */
@@ -126,17 +140,23 @@ body {
 
 .card {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ea5c816 (partial done system)
   background: linear-gradient(145deg, var(--card), var(--card-soft));
   padding: 20px;
   border-radius: 15px;
   border: 1px solid var(--border);
   box-shadow: 0 10px 22px var(--shadow);
+<<<<<<< HEAD
 =======
   background: var(--card);
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.4);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+>>>>>>> ea5c816 (partial done system)
   position: relative;
   transition: 0.3s;
 }
@@ -154,10 +174,14 @@ body {
 .card:hover {
   transform: translateY(-4px);
 <<<<<<< HEAD
+<<<<<<< HEAD
   box-shadow: 0 15px 35px rgba(37, 99, 235, 0.18);
 =======
   box-shadow: 0 15px 35px rgba(50,81,255,0.25);
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.18);
+>>>>>>> ea5c816 (partial done system)
 }
 
 /* KEEP YOUR ORIGINAL CARD ICON STYLE */
@@ -177,6 +201,49 @@ body {
 }
 
 /* TABLE */
+<<<<<<< HEAD
+=======
+.dashboard-lower {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  align-items: start;
+  gap: 20px;
+}
+.dashboard-lower .chat-contacts { width: 100% !important; min-width: 0; }
+.online-users {
+  position: sticky;
+  top: 20px;
+  min-width: 0;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 18px;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.online-users h2 { font-size: 22px; margin-bottom: 16px; text-align: center; }
+.online-user-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  margin-top: 10px;
+  background: var(--card-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.online-user-name { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.online-user-name strong { overflow-wrap: anywhere; }
+.online-users-empty { color: var(--muted); text-align: center; padding: 10px; }
+@media (max-width: 1024px) {
+  .dashboard-lower { grid-template-columns: minmax(0, 1fr); }
+  .online-users { position: static; max-height: none; }
+}
+
+>>>>>>> ea5c816 (partial done system)
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -194,12 +261,17 @@ body {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 .green { background: var(--green); color: var(--button-dark); }
 .red { background: var(--red); color: var(--button-text); }
 =======
 .green { background: var(--green); color:#000; }
 .red { background: var(--red); color:#fff; }
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+.green { background: var(--green); color: var(--on-green); }
+.red { background: var(--red); color: var(--on-red); }
+>>>>>>> ea5c816 (partial done system)
 
 .dot {
   height:10px;

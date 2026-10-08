@@ -21,9 +21,17 @@ function route(string $name): string
         'admin.departments' => 'admin/departments.php',
         'admin.attendance' => 'admin/attendance.php',
 <<<<<<< HEAD
+<<<<<<< HEAD
         'admin.holidays' => 'admin/holidays.php',
 =======
 >>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
+=======
+        'admin.kpi' => 'admin/kpi.php',
+        'admin.evaluations' => 'admin/evaluations.php',
+        'admin.documents' => 'admin/documents.php',
+        'admin.reports' => 'admin/reports.php',
+        'admin.holidays' => 'admin/holidays.php',
+>>>>>>> ea5c816 (partial done system)
         'admin.payroll' => 'admin/payroll.php',
         'admin.login_logs' => 'admin/login_logs.php',
         'hr.dashboard' => 'hr/dashboard.php',
@@ -33,6 +41,12 @@ function route(string $name): string
         'hr.leave_requests' => 'hr/hr_leave_requests.php',
         'hr.attendance' => 'hr/attendance.php',
         'hr.kpi' => 'hr/kpi.php',
+<<<<<<< HEAD
+=======
+        'hr.reports' => 'hr/reports.php',
+        'hr.documents' => 'hr/documents.php',
+        'hr.evaluations' => 'hr/evaluations.php',
+>>>>>>> ea5c816 (partial done system)
         'hr.payroll' => 'hr/payroll.php',
         'hr.post_task' => 'hr/post_task.php',
         'employee.dashboard' => 'employee/dashboard.php',
@@ -41,6 +55,10 @@ function route(string $name): string
         'employee.leave_request' => 'employee/request_leave.php',
         'employee.attendance' => 'employee/attendance.php',
         'employee.kpi' => 'employee/kpi.php',
+<<<<<<< HEAD
+=======
+        'employee.reports' => 'employee/reports.php',
+>>>>>>> ea5c816 (partial done system)
         'employee.payroll' => 'employee/payroll.php',
     ];
 

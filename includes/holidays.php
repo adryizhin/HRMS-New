@@ -21,6 +21,32 @@ function ensureHolidayTable(mysqli $conn): void
         throw new RuntimeException("Unable to create holiday calendar: " . $conn->error);
     }
 
+<<<<<<< HEAD
+=======
+    $conn->query('CREATE TABLE IF NOT EXISTS holiday_imports (calendar_year INT NOT NULL PRIMARY KEY, imported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB');
+    $calendars = require __DIR__ . '/../config/philippine_holidays.php';
+    foreach ($calendars as $year => $dates) {
+        $imported = $conn->query('SELECT calendar_year FROM holiday_imports WHERE calendar_year = ' . (int) $year);
+        if ($imported->num_rows > 0) continue;
+        $conn->begin_transaction();
+        try {
+            $stmt = $conn->prepare('INSERT IGNORE INTO holidays (holiday_date, name) VALUES (?, ?)');
+            $hasAttendance = $conn->query("SHOW TABLES LIKE 'attendance'")->num_rows > 0;
+            foreach ($dates as $monthDay => $name) {
+                $date = $year . '-' . $monthDay;
+                $stmt->bind_param('ss', $date, $name);
+                $stmt->execute();
+                if ($hasAttendance) {
+                    $cleanup = $conn->prepare("DELETE FROM attendance WHERE attendance_date = ? AND status = 'absent' AND login_time = CONCAT(?, ' 17:00:00')");
+                    $cleanup->bind_param('ss', $date, $date);
+                    $cleanup->execute();
+                }
+            }
+            $conn->query('INSERT IGNORE INTO holiday_imports (calendar_year) VALUES (' . (int) $year . ')');
+            $conn->commit();
+        } catch (Throwable $error) { $conn->rollback(); throw $error; }
+    }
+>>>>>>> ea5c816 (partial done system)
     $ready = true;
 }
 
