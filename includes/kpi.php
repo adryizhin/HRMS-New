@@ -43,11 +43,7 @@ function clampScore(float $score): float
     return max(0.0, min(100.0, $score));
 }
 
-<<<<<<< HEAD
-function calculateEmployeeKpi(mysqli $conn, int $employeeId): array
-=======
 function calculateEmployeeKpi(mysqli $conn, int $employeeId, ?string $startDate = null, ?string $endDate = null): array
->>>>>>> ea5c816 (partial done system)
 {
     ensureAttendanceTable($conn);
     ensureTaskSchema($conn);
@@ -67,15 +63,9 @@ function calculateEmployeeKpi(mysqli $conn, int $employeeId, ?string $startDate 
             SUM(status = 'absent') AS absent_count,
             COUNT(*) AS total_count
         FROM attendance
-<<<<<<< HEAD
-        WHERE user_id = ?
-    ");
-    $attendanceStmt->bind_param("i", $employeeId);
-=======
         WHERE user_id = ? AND (? IS NULL OR attendance_date >= ?) AND (? IS NULL OR attendance_date <= ?)
     ");
     $attendanceStmt->bind_param("issss", $employeeId, $startDate, $startDate, $endDate, $endDate);
->>>>>>> ea5c816 (partial done system)
     $attendanceStmt->execute();
     $attendance = $attendanceStmt->get_result()->fetch_assoc() ?: [];
 
@@ -113,15 +103,9 @@ function calculateEmployeeKpi(mysqli $conn, int $employeeId, ?string $startDate 
                 AND deadline < CURDATE()
             ) AS overdue_pending_count
         FROM tasks
-<<<<<<< HEAD
-        WHERE employee_id = ?
-    ");
-    $taskStmt->bind_param("i", $employeeId);
-=======
         WHERE employee_id = ? AND (? IS NULL OR created_at >= ?) AND (? IS NULL OR created_at < DATE_ADD(?, INTERVAL 1 DAY))
     ");
     $taskStmt->bind_param("issss", $employeeId, $startDate, $startDate, $endDate, $endDate);
->>>>>>> ea5c816 (partial done system)
     $taskStmt->execute();
     $tasks = $taskStmt->get_result()->fetch_assoc() ?: [];
 
@@ -192,12 +176,9 @@ function calculateEmployeeKpi(mysqli $conn, int $employeeId, ?string $startDate 
         'available_weight' => $availableWeight,
         'factors' => $factors,
         'stats' => [
-<<<<<<< HEAD
-=======
             'present' => $present,
             'late' => $late,
             'absent' => $absent,
->>>>>>> ea5c816 (partial done system)
             'attendance_total' => $attendanceTotal,
             'assigned' => $assigned,
             'submitted' => $submitted,

@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/config/database.php';
 require_once __DIR__ . '/session.php';
 
-function login(string $email, string $password)
+function login(string $email, string $password): array|false
 {
     global $conn;
 

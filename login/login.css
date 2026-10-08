@@ -5,17 +5,10 @@
     --panel-bg:   #111111;
     --surface:    #1a1a1a;
     --border:     #2a2a2a;
-<<<<<<< HEAD
-    --border-mid: #3a3a3a;
-    --text-pri:   #f0f0f0;
-    --text-sec:   #888888;
-    --text-hint:  #555555;
-=======
     --border-mid: #808080;
     --text-pri:   #f0f0f0;
     --text-sec:   #b3b3b3;
     --text-hint:  #a3a3a3;
->>>>>>> ea5c816 (partial done system)
     --accent:     #ffffff;
     --role-color: #ffffff;
     --admin:      #d4a843;
@@ -97,11 +90,7 @@
     font-size: 11px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-<<<<<<< HEAD
-    color: rgba(255,255,255,0.4);
-=======
     color: #d4d4d4;
->>>>>>> ea5c816 (partial done system)
     margin-bottom: 1.2rem;
     font-weight: 400;
   }
@@ -117,20 +106,12 @@
 
   .hero-title em {
     font-style: normal;
-<<<<<<< HEAD
-    color: rgba(255,255,255,0.45);
-=======
     color: #d4d4d4;
->>>>>>> ea5c816 (partial done system)
   }
 
   .hero-sub {
     font-size: 14px;
-<<<<<<< HEAD
-    color: rgba(255,255,255,0.45);
-=======
     color: #d4d4d4;
->>>>>>> ea5c816 (partial done system)
     line-height: 1.7;
     max-width: 320px;
     font-weight: 300;
@@ -153,11 +134,7 @@
   .stat-lbl {
     font-size: 11px;
     letter-spacing: 0.1em;
-<<<<<<< HEAD
-    color: rgba(255,255,255,0.3);
-=======
     color: #d4d4d4;
->>>>>>> ea5c816 (partial done system)
     text-transform: uppercase;
   }
 
@@ -251,11 +228,7 @@
   .field input::placeholder { color: var(--text-hint); }
 
   .field input:focus {
-<<<<<<< HEAD
-    border-color: #555;
-=======
     border-color: #b3b3b3;
->>>>>>> ea5c816 (partial done system)
     background: #1f1f1f;
   }
 
@@ -334,11 +307,7 @@
 
   .popup-icon {
     font-size: 28px;
-<<<<<<< HEAD
-    color: #cc4444;
-=======
     color: #f87171;
->>>>>>> ea5c816 (partial done system)
     margin-bottom: 1rem;
   }
 
@@ -371,11 +340,7 @@
     .hero-title { font-size: 1.8rem; }
     .stat-row { display: none; }
     .right-panel { padding: 2.5rem 1.5rem; }
-<<<<<<< HEAD
-  }
-=======
   }
 /* Visible keyboard focus and opaque placeholder text. */
 .field input::placeholder { opacity: 1; }
 :is(input, button, a):focus-visible { outline: 3px solid #b3d4ff; outline-offset: 3px; }
->>>>>>> ea5c816 (partial done system)

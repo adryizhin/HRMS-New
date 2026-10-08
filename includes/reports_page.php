@@ -64,7 +64,7 @@ function renderReportsPage(mysqli $conn, string $role): void
         $output = fopen('php://output', 'w');
         fwrite($output, "\xEF\xBB\xBF"); // Keep names readable when the download is opened in Excel.
         $writeCsv = static function (array $cells) use ($output): void {
-            $cells = array_map(static function ($cell) {
+            $cells = array_map(static function (mixed $cell): mixed {
                 return is_string($cell) && preg_match('/^[=+@\-\t\r\n]/', $cell) ? "'" . $cell : $cell;
             }, $cells);
             fputcsv($output, $cells, ',', '"', '');
@@ -89,7 +89,7 @@ function renderReportsPage(mysqli $conn, string $role): void
     $exportQuery['export'] = 'print';
     $printUrl = route($role . '.reports') . '?' . http_build_query($exportQuery);
     $isPrint = ($_GET['export'] ?? '') === 'print';
-    $h = static fn($value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+    $h = static fn(mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
     ?>
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Accomplishments and KPI Reports</title>

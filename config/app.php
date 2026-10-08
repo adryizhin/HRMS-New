@@ -8,9 +8,6 @@ if (!defined('BASE_PATH')) {
 }
 
 if (!defined('BASE_URL')) {
-<<<<<<< HEAD
-    define('BASE_URL', '/hrms');
-=======
     $configuredUrl = getenv('HRMS_BASE_URL');
     $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? realpath($_SERVER['DOCUMENT_ROOT']) : false;
     $projectRoot = str_replace('\\', '/', BASE_PATH);
@@ -19,6 +16,5 @@ if (!defined('BASE_URL')) {
         ? substr($projectRoot, strlen($webRoot))
         : '/HRMS';
     define('BASE_URL', $configuredUrl !== false ? rtrim($configuredUrl, '/') : $detectedUrl);
->>>>>>> ea5c816 (partial done system)
 }
 ?>

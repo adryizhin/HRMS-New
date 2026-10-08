@@ -29,7 +29,7 @@ $filePath = "../uploads/submissions/" . $task['submission_file'];
 /* =========================
    EXTRACT TEXT FROM FILE
 ========================= */
-function extractText($filePath)
+function extractText(string $filePath): string
 {
     if (!file_exists($filePath)) return "";
     $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
@@ -71,7 +71,7 @@ function extractText($filePath)
    malformed responses, and saves
    detailed sub-scores to the DB.
 ========================= */
-function getGeminiScore($text)
+function getGeminiScore(string $text): array
 {
     $settingsFile = __DIR__ . '/../.runtime/ai-config.php';
     $settings = is_file($settingsFile) ? require $settingsFile : [];

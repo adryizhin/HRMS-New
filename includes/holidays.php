@@ -21,8 +21,6 @@ function ensureHolidayTable(mysqli $conn): void
         throw new RuntimeException("Unable to create holiday calendar: " . $conn->error);
     }
 
-<<<<<<< HEAD
-=======
     $conn->query('CREATE TABLE IF NOT EXISTS holiday_imports (calendar_year INT NOT NULL PRIMARY KEY, imported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB');
     $calendars = require __DIR__ . '/../config/philippine_holidays.php';
     foreach ($calendars as $year => $dates) {
@@ -46,7 +44,6 @@ function ensureHolidayTable(mysqli $conn): void
             $conn->commit();
         } catch (Throwable $error) { $conn->rollback(); throw $error; }
     }
->>>>>>> ea5c816 (partial done system)
     $ready = true;
 }
 

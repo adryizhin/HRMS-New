@@ -6,68 +6,6 @@ require_once __DIR__ . '/../includes/sidebar.php';
 
 $hr_id = $_SESSION['user_id'];
 
-<<<<<<< HEAD
-// HANDLE APPROVE / REJECT
-if (isset($_GET['id']) && isset($_GET['status'])) {
-
-    $id = intval($_GET['id']);
-    $status = $_GET['status'];
-
-    if (in_array($status, ['approved', 'rejected'])) {
-
-        /* 1. UPDATE LEAVE STATUS */
-        $stmt = $conn->prepare("
-            UPDATE leave_requests 
-            SET status=? 
-            WHERE id=? AND hr_id=?
-        ");
-        $stmt->bind_param("sii", $status, $id, $hr_id);
-        $stmt->execute();
-        $stmt->close();
-
-        /* 2. GET EMPLOYEE DATA */
-        $get = $conn->prepare("
-            SELECT employee_id, leave_type, start_date, end_date
-            FROM leave_requests
-            WHERE id=? AND hr_id=?
-        ");
-        $get->bind_param("ii", $id, $hr_id);
-        $get->execute();
-        $result = $get->get_result();
-        $data = $result->fetch_assoc();
-        $get->close();
-
-        if ($data) {
-
-            $employee_id = $data['employee_id'];
-            $type = $data['leave_type'];
-
-            $start = date("M d", strtotime($data['start_date']));
-            $end = date("M d", strtotime($data['end_date']));
-
-            /* 3. MESSAGE */
-            if ($status == 'approved') {
-                $message = "✅ Your {$type} leave ({$start} - {$end}) has been APPROVED.";
-            } else {
-                $message = "❌ Your {$type} leave ({$start} - {$end}) has been REJECTED.";
-            }
-
-            /* 4. INSERT NOTIFICATION */
-            $notif = $conn->prepare("
-                INSERT INTO notifications (user_id, message)
-                VALUES (?, ?)
-            ");
-            $notif->bind_param("is", $employee_id, $message);
-            $notif->execute();
-            $notif->close();
-        }
-
-        header("Location: hr_leave_requests.php");
-        exit();
-    }
-}
-
-=======
 require_once __DIR__ . '/../includes/leave.php';
 ensureLeaveSchema($conn);
 if (empty($_SESSION['leave_review_csrf'])) $_SESSION['leave_review_csrf'] = bin2hex(random_bytes(32));
@@ -105,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: hr_leave_requests.php');
     exit;
 }
->>>>>>> ea5c816 (partial done system)
 // FETCH REQUESTS FOR THIS HR
 $query = "
 SELECT lr.*, u.full_name 
@@ -203,22 +140,12 @@ $rejected = $conn->query("SELECT COUNT(*) as total FROM leave_requests WHERE hr_
 
         <td style="display:flex; gap:5px;">
           <?php if($row['status'] == 'pending'): ?>
-<<<<<<< HEAD
-            <a href="?id=<?= $row['id']; ?>&status=approved"
-               onclick="return confirm('Approve this request?')"
-               class="badge green">Approve</a>
-
-            <a href="?id=<?= $row['id']; ?>&status=rejected"
-               onclick="return confirm('Reject this request?')"
-               class="badge red">Reject</a>
-=======
             <form method="post" style="display:flex;gap:5px;">
               <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['leave_review_csrf']); ?>">
               <input type="hidden" name="id" value="<?= (int) $row['id']; ?>">
               <button name="status" value="approved" class="badge green">Approve</button>
               <button name="status" value="rejected" class="badge red">Reject</button>
             </form>
->>>>>>> ea5c816 (partial done system)
           <?php else: ?>
             <span>-</span>
           <?php endif; ?>
@@ -233,7 +160,4 @@ $rejected = $conn->query("SELECT COUNT(*) as total FROM leave_requests WHERE hr_
 
 </body>
 </html>
-<<<<<<< HEAD
-=======
 
->>>>>>> ea5c816 (partial done system)
