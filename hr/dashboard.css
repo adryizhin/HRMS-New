@@ -1,8 +1,4 @@
 :root {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ea5c816 (partial done system)
   --bg: #f3f4f6;
   --sidebar: #ffffff;
   --card: #ffffff;
@@ -32,19 +28,6 @@
   --shadow: rgba(2, 6, 23, 0.55);
   --button-text: #ffffff;
   --button-dark: #0f172a;
-<<<<<<< HEAD
-=======
-  --bg: #0b1220;
-  --sidebar: #020617;
-  --card: #111827;
-  --accent: #3251ff;
-  --text: #e5e7eb;
-  --muted: #9ca3af;
-  --green: #22c55e;
-  --red: #ef4444;
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
->>>>>>> ea5c816 (partial done system)
 }
 
 /* RESET */
@@ -94,28 +77,12 @@ body {
 
 .sidebar a:hover {
   background: var(--accent);
-<<<<<<< HEAD
-<<<<<<< HEAD
-  color: var(--button-text);
-=======
-  color: #000;
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
   color: var(--on-accent);
->>>>>>> ea5c816 (partial done system)
 }
 
 .sidebar a.active {
   background: var(--green);
-<<<<<<< HEAD
-<<<<<<< HEAD
-  color: var(--button-dark);
-=======
-  color: #000;
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
   color: var(--on-green);
->>>>>>> ea5c816 (partial done system)
 }
 
 /* MAIN */
@@ -150,24 +117,11 @@ body {
 
 /* CARD */
 .card {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ea5c816 (partial done system)
   background: linear-gradient(145deg, var(--card), var(--card-soft));
   padding: 26px 22px;
   border-radius: 16px;
   border: 1px solid var(--border);
   box-shadow: 0 10px 22px var(--shadow);
-<<<<<<< HEAD
-=======
-  background: linear-gradient(145deg, #111827, #0b1220);
-  padding: 26px 22px;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
->>>>>>> ea5c816 (partial done system)
   position: relative;
   transition: 0.3s ease;
   overflow: hidden;
@@ -175,15 +129,7 @@ body {
 
 .card:hover {
   transform: translateY(-4px);
-<<<<<<< HEAD
-<<<<<<< HEAD
   box-shadow: 0 15px 35px rgba(37, 99, 235, 0.18);
-=======
-  box-shadow: 0 15px 35px rgba(50,81,255,0.25);
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
-  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.18);
->>>>>>> ea5c816 (partial done system)
 }
 
 .card h3 {

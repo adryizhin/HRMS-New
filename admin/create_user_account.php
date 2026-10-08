@@ -10,26 +10,18 @@ checkRole(['admin']);
 ========================= */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-<<<<<<< HEAD
-    $name        = $_POST['full_name'] ?? '';
-    $email       = $_POST['email'] ?? '';
-=======
     $name        = trim($_POST['full_name'] ?? '');
     $email       = trim($_POST['email'] ?? '');
->>>>>>> ea5c816 (partial done system)
     $password    = $_POST['password'] ?? '';
     $role        = $_POST['role'] ?? '';
     $department_id = !empty($_POST['department_id']) ? (int) $_POST['department_id'] : null;
     $work_shift = 'morning';
 
-<<<<<<< HEAD
-=======
     if ($name === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 191
         || $password === '' || !in_array($role, ['admin', 'hr', 'employee'], true)) {
         $error = 'Enter a name, valid email (up to 191 characters), password, and role.';
     } else {
 
->>>>>>> ea5c816 (partial done system)
     // Auto-generate employee_id
     $last = $conn->query("SELECT MAX(id) AS max_id FROM users")->fetch_assoc();
     $employee_id = 'EMP-' . str_pad(($last['max_id'] ?? 0) + 1, 5, '0', STR_PAD_LEFT);
@@ -43,13 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt->bind_param("sssssis", $employee_id, $name, $email, $hashed, $role, $department_id, $work_shift);
 
-<<<<<<< HEAD
-    if ($stmt->execute()) {
-        header("Location: create_user_account.php");
-        exit();
-    } else {
-        $error = $stmt->error;
-=======
     try {
       if ($stmt->execute()) {
         header("Location: create_user_account.php");
@@ -63,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $error = 'An account with this email or employee ID already exists.';
     }
->>>>>>> ea5c816 (partial done system)
     }
 }
 
@@ -110,11 +94,7 @@ $departments = $conn->query("
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-<link rel="shortcut icon" href="images/logo.png" type="image/x-icon">
-=======
 <link rel="shortcut icon" href="../images/logo.png" type="image/x-icon">
->>>>>>> ea5c816 (partial done system)
 <title>Pagecom HRIS</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -133,11 +113,7 @@ $departments = $conn->query("
   <h2>Create User Account</h2>
 
   <?php if (!empty($error)): ?>
-<<<<<<< HEAD
-    <div style="background:#ef4444;padding:10px;border-radius:8px;margin-bottom:10px;">
-=======
     <div style="background:#fee2e2;color:#991b1b;padding:10px;border-radius:8px;margin-bottom:10px;">
->>>>>>> ea5c816 (partial done system)
       <?= $error; ?>
     </div>
   <?php endif; ?>
@@ -188,11 +164,7 @@ $departments = $conn->query("
   <br>
 
   <?php if (isset($_GET['deleted'])): ?>
-<<<<<<< HEAD
-    <div style="background:#22c55e;padding:10px;border-radius:8px;margin-bottom:10px;">
-=======
     <div style="background:#dcfce7;color:#166534;padding:10px;border-radius:8px;margin-bottom:10px;">
->>>>>>> ea5c816 (partial done system)
       User deleted successfully!
     </div>
   <?php endif; ?>

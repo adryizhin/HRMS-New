@@ -6,17 +6,10 @@ require_once __DIR__ . '/../includes/sidebar.php';
 require_once __DIR__ . '/../includes/kpi.php';
 
 $employees = $conn->query("
-<<<<<<< HEAD
-    SELECT users.id, users.employee_id, users.full_name, departments.name AS department_name
-    FROM users
-    LEFT JOIN departments ON users.department_id = departments.id
-    WHERE users.role = 'employee'
-=======
     SELECT users.id, users.employee_id, users.full_name, users.role, departments.name AS department_name
     FROM users
     LEFT JOIN departments ON users.department_id = departments.id
     WHERE users.role IN ('employee', 'admin', 'hr')
->>>>>>> ea5c816 (partial done system)
     AND users.status = 'active'
     ORDER BY users.full_name ASC
 ");
@@ -43,10 +36,6 @@ usort($rows, static function (array $a, array $b): int {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="dashboard.css">
 <style>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ea5c816 (partial done system)
 :root {
   --kpi-table-bg: #ffffff;
   --kpi-table-alt: #f8fafc;
@@ -67,11 +56,6 @@ usort($rows, static function (array $a, array $b): int {
   --kpi-accent: #60a5fa;
 }
 
-<<<<<<< HEAD
-=======
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
->>>>>>> ea5c816 (partial done system)
 .kpi-header {
   align-items: flex-end;
   display: flex;
@@ -79,10 +63,6 @@ usort($rows, static function (array $a, array $b): int {
   gap: 16px;
   margin-bottom: 22px;
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ea5c816 (partial done system)
 .kpi-header h1 { color: var(--kpi-heading); font-size: 28px; }
 .kpi-header p { color: var(--kpi-muted); font-size: 14px; margin-top: 6px; max-width: 760px; }
 .table-wrap {
@@ -95,42 +75,14 @@ usort($rows, static function (array $a, array $b): int {
 table { border-collapse: collapse; width: 100%; }
 th, td {
   border-bottom: 1px solid var(--kpi-border);
-<<<<<<< HEAD
-=======
-.kpi-header h1 { color: #f8fafc; font-size: 28px; }
-.kpi-header p { color: #94a3b8; font-size: 14px; margin-top: 6px; max-width: 760px; }
-.table-wrap {
-  background: #111827;
-  border: 1px solid #1f2937;
-  border-radius: 8px;
-  overflow-x: auto;
-}
-table { border-collapse: collapse; width: 100%; }
-th, td {
-  border-bottom: 1px solid #1f2937;
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
->>>>>>> ea5c816 (partial done system)
   font-size: 13px;
   padding: 13px;
   text-align: left;
   vertical-align: middle;
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
 th { color: var(--kpi-muted); font-weight: 700; text-transform: uppercase; }
 td { color: var(--kpi-text); }
 .employee-meta { color: var(--kpi-muted); display: block; font-size: 12px; margin-top: 3px; }
-=======
-th { color: #9ca3af; font-weight: 700; text-transform: uppercase; }
-td { color: #e5e7eb; }
-.employee-meta { color: #94a3b8; display: block; font-size: 12px; margin-top: 3px; }
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
-th { color: var(--kpi-muted); font-weight: 700; text-transform: uppercase; }
-td { color: var(--kpi-text); }
-.employee-meta { color: var(--kpi-muted); display: block; font-size: 12px; margin-top: 3px; }
->>>>>>> ea5c816 (partial done system)
 .score-pill {
   border-radius: 999px;
   display: inline-flex;
@@ -139,37 +91,15 @@ td { color: var(--kpi-text); }
   padding: 7px 10px;
   justify-content: center;
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-.excellent { background: rgba(34, 197, 94, 0.13); color: #16a34a; }
-.good { background: rgba(96, 165, 250, 0.13); color: var(--kpi-accent); }
-.watch { background: rgba(245, 158, 11, 0.13); color: #d97706; }
-.risk { background: rgba(239, 68, 68, 0.13); color: #dc2626; }
-=======
 .excellent { background: rgba(34, 197, 94, 0.13); color: var(--status-success); }
 .good { background: rgba(96, 165, 250, 0.13); color: var(--status-info); }
 .watch { background: rgba(245, 158, 11, 0.13); color: var(--status-warning); }
 .risk { background: rgba(239, 68, 68, 0.13); color: var(--status-danger); }
->>>>>>> ea5c816 (partial done system)
 .muted { background: var(--kpi-table-alt); color: var(--kpi-muted); }
 .mini-score { color: var(--kpi-text); font-weight: 700; }
 .mini-score span { color: var(--kpi-muted); font-weight: 500; }
 .empty {
   color: var(--kpi-muted);
-<<<<<<< HEAD
-=======
-.excellent { background: rgba(34, 197, 94, 0.13); color: #86efac; }
-.good { background: rgba(96, 165, 250, 0.13); color: #93c5fd; }
-.watch { background: rgba(245, 158, 11, 0.13); color: #fcd34d; }
-.risk { background: rgba(239, 68, 68, 0.13); color: #fca5a5; }
-.muted { background: #0b1220; color: #94a3b8; }
-.mini-score { color: #cbd5e1; font-weight: 700; }
-.mini-score span { color: #64748b; font-weight: 500; }
-.empty {
-  color: #94a3b8;
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
->>>>>>> ea5c816 (partial done system)
   padding: 30px;
   text-align: center;
 }
@@ -212,11 +142,7 @@ td { color: var(--kpi-text); }
               <td>
                 <strong><?= htmlspecialchars($row['full_name']); ?></strong>
                 <span class="employee-meta">
-<<<<<<< HEAD
-                  <?= htmlspecialchars($row['employee_id'] ?: 'No employee ID'); ?>
-=======
                   <?= htmlspecialchars($row['employee_id'] ?: 'No employee ID'); ?> · <?= strtoupper(htmlspecialchars($row['role'])); ?>
->>>>>>> ea5c816 (partial done system)
                   <?= $row['department_name'] ? ' - ' . htmlspecialchars($row['department_name']) : ''; ?>
                 </span>
               </td>

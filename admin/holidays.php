@@ -130,17 +130,10 @@ if (!$holidays) {
 .holiday-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin: 18px 0; padding: 20px; }
 .holiday-form, .holiday-row { align-items: center; display: grid; gap: 12px; grid-template-columns: minmax(150px, 220px) minmax(180px, 1fr) auto; }
 .holiday-form input, .holiday-row input { background: var(--card-soft); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 10px 12px; }
-<<<<<<< HEAD
-.holiday-form button, .holiday-row button { background: var(--accent); border: 0; border-radius: 8px; color: #fff; cursor: pointer; font-weight: 600; padding: 10px 14px; }
-.holiday-row { border-top: 1px solid var(--border); padding: 12px 0; }
-.holiday-row form { margin: 0; }
-.holiday-row .delete-button { background: #b91c1c; }
-=======
 .holiday-form button, .holiday-row button { background: var(--accent); border: 0; border-radius: 8px; color: var(--on-accent); cursor: pointer; font-weight: 600; padding: 10px 14px; }
 .holiday-row { border-top: 1px solid var(--border); padding: 12px 0; }
 .holiday-row form { margin: 0; }
 .holiday-row .delete-button { background: #b91c1c; color: #ffffff; }
->>>>>>> ea5c816 (partial done system)
 .holiday-notice { background: #dcfce7; border-radius: 8px; color: #166534; margin-top: 14px; padding: 12px; }
 .holiday-error { background: #fee2e2; border-radius: 8px; color: #991b1b; margin-top: 14px; padding: 12px; }
 [data-theme="dark"] .holiday-notice { background: #14532d; color: #bbf7d0; }
@@ -154,10 +147,7 @@ if (!$holidays) {
 <main class="main holiday-page">
     <h1><i class="fa-solid fa-calendar-days"></i> Holiday Calendar</h1>
     <p style="color:var(--muted);">Configured holidays are excluded from automatic absence marking and payroll workday counts.</p>
-<<<<<<< HEAD
-=======
     <p style="color:var(--muted);">Philippine nationwide non-working holidays for 2026 and 2027 are added automatically from official proclamations. The 2027 Eid dates await separate announcements and can be added here when declared. Local holidays can also be added below. Changes and deletions are preserved. Future yearly proclamations must be added to the calendar data before that year's automatic import.</p>
->>>>>>> ea5c816 (partial done system)
 
     <?php if (!empty($error)): ?>
         <div class="holiday-error"><?= htmlspecialchars($error); ?></div>

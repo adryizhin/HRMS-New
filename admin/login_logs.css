@@ -1,8 +1,4 @@
 :root {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ea5c816 (partial done system)
   --bg: #f3f4f6;
   --sidebar: #ffffff;
   --card: #ffffff;
@@ -32,17 +28,6 @@
   --shadow: rgba(2, 6, 23, 0.55);
   --button-text: #ffffff;
   --button-dark: #0f172a;
-<<<<<<< HEAD
-=======
-  --bg: #0b1220;
-  --sidebar: #020617;
-  --card: #111827;
-  --accent: #3251ff;
-  --text: #e5e7eb;
-  --muted: #9ca3af;
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
->>>>>>> ea5c816 (partial done system)
 }
 
 * {
@@ -84,28 +69,12 @@ body {
 
 .sidebar a:hover {
   background:var(--accent);
-<<<<<<< HEAD
-<<<<<<< HEAD
-  color:var(--button-text);
-=======
-  color:#000;
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
   color: var(--on-accent);
->>>>>>> ea5c816 (partial done system)
 }
 
 .sidebar a.active {
   background:var(--green);
-<<<<<<< HEAD
-<<<<<<< HEAD
-  color:var(--button-dark);
-=======
-  color:#000;
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
   color: var(--on-green);
->>>>>>> ea5c816 (partial done system)
 }
 
 /* MAIN */
@@ -125,49 +94,21 @@ body {
 .table {
   width:100%;
   border-collapse:collapse;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ea5c816 (partial done system)
   background:linear-gradient(145deg, var(--card), var(--card-soft));
   border-radius:10px;
   overflow:hidden;
   border:1px solid var(--border);
   box-shadow:0 10px 22px var(--shadow);
-<<<<<<< HEAD
-=======
-  background:var(--card);
-  border-radius:10px;
-  overflow:hidden;
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
->>>>>>> ea5c816 (partial done system)
 }
 
 .table th, .table td {
   padding:12px;
-<<<<<<< HEAD
-<<<<<<< HEAD
   border-bottom:1px solid var(--border);
-=======
-  border-bottom:1px solid #1f2937;
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
-  border-bottom:1px solid var(--border);
->>>>>>> ea5c816 (partial done system)
   text-align:left;
 }
 
 .table th {
-<<<<<<< HEAD
-<<<<<<< HEAD
   background:var(--card-soft);
-=======
-  background:#1f2937;
->>>>>>> ec6e45aa1a7825e015d77a9dd001ecf071781d8b
-=======
-  background:var(--card-soft);
->>>>>>> ea5c816 (partial done system)
   color:var(--muted);
 }
 
@@ -179,11 +120,7 @@ body {
 }
 
 .admin { background:#facc15; color:#000; }
-<<<<<<< HEAD
-.hr { background:#3b82f6; color:#fff; }
-=======
 .hr { background:#1d4ed8; color:#fff; }
->>>>>>> ea5c816 (partial done system)
 .employee { background:#22c55e; color:#000; }
 
 /* STATUS */
@@ -220,8 +157,5 @@ body {
 
 .export-btn {
     background: #22c55e;
-<<<<<<< HEAD
-=======
     color: #0f172a;
->>>>>>> ea5c816 (partial done system)
 }
