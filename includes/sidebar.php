@@ -19,6 +19,7 @@ function renderSidebar(string $role, string $active = ''): void
             ['admin.kpi', 'fa-gauge-high', 'My KPI'],
             ['admin.payroll', 'fa-money-bill', 'Payroll'],
             ['admin.login_logs', 'fa-clock-rotate-left', 'Login Logs'],
+            ['admin.password_tickets', 'fa-ticket', 'Password Reset Tickets'],
             ['admin.reports', 'fa-chart-pie', 'Reports'],
             ['logout', 'fa-right-from-bracket', 'Logout'],
         ],

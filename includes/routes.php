@@ -27,6 +27,7 @@ function route(string $name): string
         'admin.holidays' => 'admin/holidays.php',
         'admin.payroll' => 'admin/payroll.php',
         'admin.login_logs' => 'admin/login_logs.php',
+        'admin.password_tickets' => 'admin/password_tickets.php',
         'hr.dashboard' => 'hr/dashboard.php',
         'hr.task_submissions' => 'hr/task_submissions.php',
         'hr.score_submission' => 'hr/score_submission.php',

@@ -45,3 +45,11 @@ The scripts in `tests` use Playwright. Runtime tests require a disposable databa
 External AI scoring was not called during testing. PDF extraction now uses the installed PDF parser instead of requiring an external `pdftotext` command. AI errors no longer save artificial scores or mark evaluations reviewed. `GEMINI_API_KEY` and `GEMINI_MODEL` override the local protected AI settings; the model default is `gemini-3.8-flash`. Existing cached scores were not changed.
 
 Runtime source: https://www.php.net/downloads.php?os=windows&version=8.4 . Model availability reference: https://ai.google.dev/gemini-api/docs/deprecations/ .
+
+## Forgot password tickets
+
+The login page includes **Forgot password?**, which opens a request form for the account email, optional employee ID and optional message. Matching active accounts receive a pending ticket; repeated requests keep the existing open ticket. Responses do not disclose whether an email exists. Requests require a session token and are limited to five attempts per source IP in 15 minutes, across browser sessions.
+
+Admins open **Password Reset Tickets** in the sidebar to filter open, pending, in-progress, resolved and rejected tickets. They can save notes, mark a request in progress or reject it with a reason. To resolve a ticket, verify the requester's identity independently, check the verification box and enter matching new passwords (12–72 bytes). Provide the password directly to the verified requester through your approved communication channel. Passwords are stored as hashes; resetting signs out the account's existing sessions. Closed tickets cannot reset passwords again. Ticket history records the handling admin, notes and timestamps. The page shows the latest 100 tickets for the selected filter.
+
+The two password ticket tables are created automatically on first submission or when admins open the ticket page. No SQL import is needed. The database account needs CREATE TABLE permission. Run `php tests/password_tickets.php` for 35 isolated workflow and security checks; it creates a disposable database with synthetic users and removes it afterwards. It requires the configured database service, CREATE/DROP permission and loopback port 8091.

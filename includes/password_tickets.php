@@ -1,0 +1,100 @@
+<?php
+declare(strict_types=1);
+
+function ensurePasswordTicketSchema(mysqli $conn): void
+{
+    $conn->query("CREATE TABLE IF NOT EXISTS password_reset_tickets (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        employee_id VARCHAR(50) NOT NULL,
+        request_message TEXT NOT NULL,
+        status ENUM('pending','in_progress','resolved','rejected') NOT NULL DEFAULT 'pending',
+        admin_notes TEXT NULL,
+        handled_by INT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NULL DEFAULT NULL,
+        INDEX (user_id, status), INDEX (status, created_at),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (handled_by) REFERENCES users(id) ON DELETE SET NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    $conn->query("CREATE TABLE IF NOT EXISTS password_reset_throttle (
+        source_hash CHAR(64) NOT NULL PRIMARY KEY,
+        window_start DATETIME NOT NULL,
+        attempts INT NOT NULL DEFAULT 0
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+}
+
+// Database-backed limit applies across browser sessions; do not trust forwarded IP headers.
+function allowPasswordTicketRequest(mysqli $conn, string $source): bool
+{
+    $key = hash('sha256', $source);
+    $conn->begin_transaction();
+    try {
+        $stmt = $conn->prepare('INSERT IGNORE INTO password_reset_throttle (source_hash, window_start, attempts) VALUES (?, NOW(), 0)');
+        $stmt->bind_param('s', $key); $stmt->execute();
+        $stmt = $conn->prepare('SELECT attempts, window_start <= DATE_SUB(NOW(), INTERVAL 15 MINUTE) AS expired FROM password_reset_throttle WHERE source_hash = ? FOR UPDATE');
+        $stmt->bind_param('s', $key); $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $allowed = (bool) $row['expired'] || (int) $row['attempts'] < 5;
+        if ($allowed) {
+            $stmt = $conn->prepare('UPDATE password_reset_throttle SET attempts = IF(window_start <= DATE_SUB(NOW(), INTERVAL 15 MINUTE), 1, attempts + 1), window_start = IF(window_start <= DATE_SUB(NOW(), INTERVAL 15 MINUTE), NOW(), window_start) WHERE source_hash = ?');
+            $stmt->bind_param('s', $key); $stmt->execute();
+        }
+        $conn->commit();
+        return $allowed;
+    } catch (Throwable $error) { $conn->rollback(); throw $error; }
+}
+
+function submitPasswordTicket(mysqli $conn, string $email, string $employeeId, string $message): void
+{
+    $conn->begin_transaction();
+    try {
+        // Lock the account to prevent concurrent duplicate open tickets.
+        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ? AND status = 'active' FOR UPDATE");
+        $stmt->bind_param('s', $email); $stmt->execute();
+        $user = $stmt->get_result()->fetch_assoc();
+        if ($user) {
+            $id = (int) $user['id'];
+            $stmt = $conn->prepare("SELECT id FROM password_reset_tickets WHERE user_id = ? AND status IN ('pending','in_progress') LIMIT 1");
+            $stmt->bind_param('i', $id); $stmt->execute();
+            if (!$stmt->get_result()->fetch_assoc()) {
+                $stmt = $conn->prepare('INSERT INTO password_reset_tickets (user_id, employee_id, request_message) VALUES (?, ?, ?)');
+                $stmt->bind_param('iss', $id, $employeeId, $message); $stmt->execute();
+            }
+        }
+        $conn->commit();
+    } catch (Throwable $error) { $conn->rollback(); throw $error; }
+}
+
+function handlePasswordTicket(mysqli $conn, int $adminId, int $ticketId, string $action, string $notes, string $password, string $confirmation, bool $verified): void
+{
+    if (!in_array($action, ['in_progress', 'resolved', 'rejected'], true) || strlen($notes) > 2000) {
+        throw new InvalidArgumentException('Choose a valid action and keep notes under 2,000 characters.');
+    }
+    if ($action === 'resolved' && (!$verified || strlen($password) < 12 || strlen($password) > 72 || $password !== $confirmation)) {
+        throw new InvalidArgumentException('Verify the requester, then enter matching passwords of 12 to 72 bytes.');
+    }
+    if ($action === 'rejected' && trim($notes) === '') throw new InvalidArgumentException('Enter a reason for rejecting this request.');
+    $conn->begin_transaction();
+    try {
+        $stmt = $conn->prepare("SELECT id FROM users WHERE id = ? AND role = 'admin' AND status = 'active' FOR UPDATE");
+        $stmt->bind_param('i', $adminId); $stmt->execute();
+        if (!$stmt->get_result()->fetch_assoc()) throw new InvalidArgumentException('Only active admins can handle tickets.');
+        $stmt = $conn->prepare('SELECT * FROM password_reset_tickets WHERE id = ? FOR UPDATE');
+        $stmt->bind_param('i', $ticketId); $stmt->execute();
+        $ticket = $stmt->get_result()->fetch_assoc();
+        if (!$ticket || !in_array($ticket['status'], ['pending','in_progress'], true)) throw new InvalidArgumentException('This ticket is already closed or unavailable.');
+        if ($action === 'resolved') {
+            $userId = (int) $ticket['user_id'];
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $conn->prepare("UPDATE users SET password = ? WHERE id = ? AND status = 'active'");
+            $stmt->bind_param('si', $hash, $userId); $stmt->execute();
+            if ($stmt->affected_rows !== 1) throw new InvalidArgumentException('This account is unavailable or inactive.');
+            $stmt = $conn->prepare("UPDATE login_logs SET logout_time = NOW(), logout_reason = 'password_reset' WHERE user_id = ? AND logout_time IS NULL");
+            $stmt->bind_param('i', $userId); $stmt->execute();
+        }
+        $stmt = $conn->prepare('UPDATE password_reset_tickets SET status = ?, admin_notes = ?, handled_by = ?, updated_at = NOW() WHERE id = ?');
+        $stmt->bind_param('ssii', $action, $notes, $adminId, $ticketId); $stmt->execute();
+        $conn->commit();
+    } catch (Throwable $error) { $conn->rollback(); throw $error; }
+}
