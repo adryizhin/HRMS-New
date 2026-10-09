@@ -3,6 +3,7 @@ require '../includes/auth_check.php';
 checkRole(['admin']);
 require '../config.php';
 require_once __DIR__ . '/../includes/sidebar.php';
+require_once __DIR__ . '/../includes/chat_contacts.php';
 
 $admin_id = (int) $_SESSION['user_id'];
 
@@ -173,54 +174,23 @@ function timeAgo(?string $datetime): string {
 
 <!-- CHAT LIST (HR SELECTION) & ADMIN LIST -->
 <div class="dashboard-lower">
-<div class="chat-contacts" style="padding:12px; width: 30%; color:var(--text);">
-    <h3>Chat With HR</h3>
-    <br>
+<section class="chat-contacts" aria-labelledby="chat-contacts-heading">
+  <header class="contacts-header">
+    <div class="contacts-title"><span class="contacts-logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H5l-3 2v-8.5A8.5 8.5 0 0 1 10.5 5H13a8 8 0 0 1 8 6.5Z"/><path d="M7 12h.01M12 12h.01M17 12h.01" stroke-width="3" stroke-linecap="round"/></svg></span><div><h2 id="chat-contacts-heading">Messages</h2><p>Connect with your HR team and fellow admins.</p></div></div>
+  </header>
+  <div class="contacts-search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><label class="contacts-sr-only" for="contact-search">Search contacts</label><input id="contact-search" type="search" placeholder="Search contacts" autocomplete="off"></div>
+  <div class="contact-groups">
     <?php
-    $hrs = $conn->query("SELECT id, full_name FROM users WHERE role='hr'");
-    while($hr = $hrs->fetch_assoc()):
+    $hrs = $conn->query("SELECT id, full_name FROM users WHERE role='hr' AND status='active' ORDER BY full_name")->fetch_all(MYSQLI_ASSOC);
+    $otherAdmins = $conn->query("SELECT id, full_name FROM users WHERE role='admin' AND status='active' AND id != " . $admin_id . " ORDER BY full_name")->fetch_all(MYSQLI_ASSOC);
+    renderChatContactGroup('Chat with HR', $hrs, 'hr');
+    renderChatContactGroup('Chat with other admins', $otherAdmins, 'admin');
     ?>
-        <div onclick="startChat(<?= $hr['id']; ?>, '<?= htmlspecialchars($hr['full_name']) ?>')" style="
-            padding:8px;
-            margin:5px 0;
-            background:var(--card-soft);
-            color:var(--text);
-            border-radius:8px;
-            cursor:pointer;
-            border:1px solid var(--border);
-        ">
-            <?= htmlspecialchars($hr['full_name']); ?>
-        </div>
-    <?php endwhile; ?>
-    
-    <h3 style="margin-top:20px;">Chat With Other Admins</h3>
-    <br>
-    <?php
-    $otherAdmins = $conn->query("SELECT id, full_name FROM users WHERE role='admin' AND id != ".$admin_id);
-    if ($otherAdmins->num_rows > 0):
-        while($otherAdmin = $otherAdmins->fetch_assoc()):
-        ?>
-            <div onclick="startChat(<?= $otherAdmin['id']; ?>, '<?= htmlspecialchars($otherAdmin['full_name']) ?>')" style="
-                padding:8px;
-                margin:5px 0;
-                background:var(--card-soft);
-                color:var(--text);
-                border-radius:8px;
-                cursor:pointer;
-                border:1px solid var(--border);
-            ">
-                <?= htmlspecialchars($otherAdmin['full_name']); ?>
-            </div>
-        <?php
-        endwhile;
-    else:
-        ?>
-        <div style="color:var(--muted);font-size:12px;">No other admins available</div>
-        <?php
-    endif;
-    ?>
-</div>
-
+  </div>
+  <p class="contacts-no-results" role="status" hidden>No contacts match your search.</p>
+  <p class="contacts-footer"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H5l-3 2v-8.5A8.5 8.5 0 0 1 10.5 5H13a8 8 0 0 1 8 6.5Z"/><path d="M7 12h.01M12 12h.01M17 12h.01" stroke-width="3" stroke-linecap="round"/></svg>Select a contact to start a conversation.</p>
+</section>
+<script src="<?= htmlspecialchars(app_url('admin/chat_contacts.js')); ?>" defer></script>
 <aside class="online-users" aria-labelledby="online-users-heading">
     <h2 id="online-users-heading">Online Users</h2>
     <div id="online-users-list"><?php renderOnlineUsers($activeUsers); ?></div>
@@ -228,194 +198,27 @@ function timeAgo(?string $datetime): string {
 </aside>
 </div>
 </div>
-<!-- CHAT FLOAT -->
-<div id="chatAvatar" onclick="openChat()">
-    <span id="chatNotif"></span>
-    <img src="../images/chatbox.png">
-</div>
-
-<div id="chatBox">
-    <div class="chat-header">
-        <span>Chat</span>
-        <i class="fa-solid fa-xmark" onclick="closeChat()"></i>
-    </div>
-
-    <div id="typingIndicator" style="color:var(--muted);font-size:12px;padding:5px 12px;display:none;">
-    Someone is typing...
-</div>
-    <div class="chat-body" id="chatBody"></div>
-
-    <div class="chat-footer">
-        <input type="text" id="chatInput" placeholder = "Enter message...">
-        <button onclick="sendMessage()">
-            <i class="fa-solid fa-paper-plane"></i>
-        </button>
-    </div>
-</div>
-
-<script>
-const current_user_id = <?= $_SESSION['user_id']; ?>;
-let receiver_id = null;
-let lastMessageCount = 0;
-
-/* OPEN CHAT */
-function startChat(id, name) {
-    receiver_id = id;
-    document.getElementById("chatBox").style.display = "flex";
-    document.querySelector(".chat-header span").innerText = "Chat with " + name;
-
-    loadMessages(true);
-}
-
-/* OPEN FLOAT CHAT */
-function openChat() {
-    document.getElementById("chatBox").style.display = "flex";
-    document.getElementById("chatNotif").style.display = "none";
-
-    if (receiver_id) {
-        loadMessages(true);
-        markAsSeen(); // mark messages as seen when opened
-    }
-}
-
-function closeChat() {
-    document.getElementById("chatBox").style.display = "none";
-}
-
-/* SEND MESSAGE */
-function sendMessage() {
-    const input = document.getElementById("chatInput");
-    const message = input.value.trim();
-
-    if (!receiver_id || message === "") return;
-
-    fetch('../chat/send_message.php', {
-        method: 'POST',
-        headers: {'Content-Type':'application/x-www-form-urlencoded'},
-        body: `receiver_id=${receiver_id}&message=${encodeURIComponent(message)}`
-    }).then(() => {
-        input.value = "";
-        loadMessages(true);
-    });
-}
-
-/* LOAD MESSAGES (REAL TIME) */
-function loadMessages(scroll = false) {
-    if (!receiver_id) return;
-
-    fetch(`../chat/fetch_messages.php?receiver_id=${receiver_id}`)
-    .then(res => res.text())
-    .then(data => {
-
-        const chatBody = document.getElementById("chatBody");
-
-        chatBody.innerHTML = data;
-
-        if (scroll) {
-            chatBody.scrollTop = chatBody.scrollHeight;
-        }
-
-        lastMessageCount = chatBody.children.length;
-    });
-}
-
-/* REAL TIME CHECK (FASTER) */
-setInterval(() => {
-    if (receiver_id) checkNewMessages();
-    function checkTyping() {
-
-    if (!receiver_id) return;
-
-    fetch(`../chat/fetch_messages.php?receiver_id=${receiver_id}`)
-    .then(res => res.text())
-    .then(data => {
-
-        const temp = document.createElement("div");
-        temp.innerHTML = data;
-
-        let typingFound = false;
-
-        temp.querySelectorAll(".msg").forEach(msg => {
-            if (msg.dataset.typing === "1") {
-                typingFound = true;
-            }
-        });
-
-        document.getElementById("typingIndicator").style.display =
-            typingFound ? "block" : "none";
-    });
-}
-}, 1000); // 🔥 faster = more real-time
-
-function checkNewMessages() {
-    if (!receiver_id) return;
-
-    fetch(`../chat/fetch_messages.php?receiver_id=${receiver_id}`)
-    .then(res => res.text())
-    .then(data => {
-
-        const chatBody = document.getElementById("chatBody");
-
-        const temp = document.createElement("div");
-        temp.innerHTML = data;
-
-        const newCount = temp.children.length;
-
-        if (newCount > lastMessageCount) {
-
-            // 🔴 NOTIFICATION DOT
-            document.getElementById("chatNotif").style.display = "block";
-
-            // 🔔 browser alert (optional)
-            console.log("New message received!");
-
-            // auto scroll
-            chatBody.scrollTop = chatBody.scrollHeight;
-        }
-
-        chatBody.innerHTML = data;
-        lastMessageCount = newCount;
-    });
-}
-
-/* MARK AS SEEN */
-function markAsSeen() {
-    if (!receiver_id) return;
-
-    fetch('../chat/mark_seen.php', {
-        method: 'POST',
-        headers: {'Content-Type':'application/x-www-form-urlencoded'},
-        body: `receiver_id=${receiver_id}`
-    });
-}
-
-let typingTimeout = null;
-
-/* WHEN USER TYPES */
-document.getElementById("chatInput").addEventListener("input", function () {
-
-    if (!receiver_id) return;
-
-    fetch('../chat/typing_status.php', {
-        method: 'POST',
-        headers: {'Content-Type':'application/x-www-form-urlencoded'},
-        body: `receiver_id=${receiver_id}&is_typing=1`
-    });
-
-    clearTimeout(typingTimeout);
-
-    typingTimeout = setTimeout(() => {
-        fetch('../chat/typing_status.php', {
-            method: 'POST',
-            headers: {'Content-Type':'application/x-www-form-urlencoded'},
-            body: `receiver_id=${receiver_id}&is_typing=0`
-        });
-    }, 1500);
-});
-</script>
-
+<!-- MESSAGING POPUP -->
+<button id="chatAvatar" type="button" onclick="openChat()" aria-label="Open messages" aria-controls="chatBox" aria-expanded="false">
+  <span id="chatNotif" aria-hidden="true"></span>
+  <img src="../images/chat-robot-cutout.png" alt="" class="chat-launcher-image">
+</button>
+<section id="chatBox" data-user-name="<?= htmlspecialchars((string) ($_SESSION['name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>" role="dialog" aria-modal="false" aria-labelledby="chatContactName" hidden>
+  <header class="chat-header">
+    <span id="chatContactAvatar" class="chat-contact-avatar" aria-hidden="true">PC</span>
+    <div class="chat-contact-heading"><h2 id="chatContactName">Messages</h2><p id="chatContactRole">Choose a contact to get started</p></div>
+    <button type="button" class="chat-icon-button" onclick="closeChat()" aria-label="Minimize chat"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+    <button type="button" class="chat-icon-button" onclick="closeChat()" aria-label="Close chat"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </header>
+  <div class="chat-body" id="chatBody" role="log" aria-label="Conversation" aria-live="polite" aria-relevant="additions"></div>
+  <div id="chatError" class="chat-error" role="alert" hidden></div>
+  <form id="chatComposer" class="chat-footer">
+    <label class="contacts-sr-only" for="chatInput">Message</label>
+    <textarea id="chatInput" rows="1" placeholder="Write a message…" aria-describedby="chatComposerHint" disabled></textarea>
+    <button id="chatSend" type="submit" aria-label="Send message" disabled><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="m3 3 19 9-19 9 3-8 9-1-9-1-3-8Z"/></svg></button>
+  </form>
+  <p id="chatComposerHint" class="chat-composer-hint">Enter to send · Shift + Enter for a new line</p>
+</section>
+<script src="<?= htmlspecialchars(app_url('admin/chat_box.js')); ?>" defer></script>
 </body>
 </html>
-
-
-
