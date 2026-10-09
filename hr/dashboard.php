@@ -585,7 +585,7 @@ color: var(--on-accent);
 
 <!-- FLOAT CHAT -->
 <div id="chatAvatar" onclick="openChat()">
-    <img src="../images/chatbox.png">
+    <img src="../images/chatbox1.jpg">
     <span id="chatNotif"></span>
 </div>
 

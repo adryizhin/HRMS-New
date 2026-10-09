@@ -180,7 +180,7 @@ th {
     </div>
 
     <form method="get" style="margin:18px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-        <label for="attendance-search">Search attendance</label>
+        <label for="attendance-search"></label>
         <input id="attendance-search" type="search" name="search" placeholder="Name, employee ID or role" value="<?= htmlspecialchars($search); ?>" style="padding:10px;background:var(--attendance-card);color:var(--attendance-text);border:1px solid var(--attendance-border);border-radius:8px;">
         <button type="submit">Search</button>
         <a class="app-button secondary" href="<?= htmlspecialchars(route($activeRoute)); ?>">Clear</a>
@@ -190,8 +190,8 @@ th {
         <table>
             <thead>
                 <tr>
-                        <th>Name</th>
-                        <th>Role</th>
+                    <th>Name</th>
+                    <th>Role</th>
                     <th>Date</th>
                     <th>Schedule</th>
                     <th>Login Time</th>

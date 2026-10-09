@@ -81,7 +81,7 @@ $h = static fn($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8')
     <input type="hidden" name="csrf_token" value="<?= $h($_SESSION['password_ticket_csrf']) ?>">
     <div class="field">
       <label for="email">Account email <span class="reset-required">Required</span></label>
-      <input id="email" name="email" type="email" maxlength="191" autocomplete="email" placeholder="you@pagecom.com" aria-describedby="email-help" required value="<?= $h($email) ?>">
+      <input id="email" name="email" type="email" maxlength="191" autocomplete="email" placeholder="email@pagecom.com" aria-describedby="email-help" required value="<?= $h($email) ?>">
       <small id="email-help" class="reset-hint">Use the email you normally sign in with.</small>
     </div>
     <div class="field">
