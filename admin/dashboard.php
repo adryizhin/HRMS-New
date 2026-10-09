@@ -63,14 +63,7 @@ $logs = $conn->query($query);
    ACTIVE USERS
 ========================= */
 
-$activeQuery = "
-SELECT * 
-FROM login_logs
-WHERE logout_time IS NULL
-ORDER BY login_time DESC
-";
-
-$activeUsers = $conn->query($activeQuery);
+$activeUsers = getOnlineUsers($conn);
 
 /* =========================
    TIME AGO FUNCTION
@@ -230,16 +223,8 @@ function timeAgo(?string $datetime): string {
 
 <aside class="online-users" aria-labelledby="online-users-heading">
     <h2 id="online-users-heading">Online Users</h2>
-    <?php if ($activeUsers->num_rows > 0): ?>
-        <?php while ($a = $activeUsers->fetch_assoc()): ?>
-            <div class="online-user-row">
-                <div class="online-user-name"><span class="dot"></span><strong><?= htmlspecialchars($a['username']); ?></strong></div>
-                <span class="badge <?= htmlspecialchars($a['role']); ?>"><?= strtoupper(htmlspecialchars($a['role'])); ?></span>
-            </div>
-        <?php endwhile; ?>
-    <?php else: ?>
-        <p class="online-users-empty">No active users</p>
-    <?php endif; ?>
+    <div id="online-users-list"><?php renderOnlineUsers($activeUsers); ?></div>
+    <script src="<?= htmlspecialchars(app_url('admin/online_users.js')); ?>" defer></script>
 </aside>
 </div>
 </div>

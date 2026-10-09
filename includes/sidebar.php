@@ -254,7 +254,9 @@ function renderIdleTimeoutScript(): void
         }
 
         lastKeepalive = now;
-        fetch(keepaliveUrl, { method: "POST", credentials: "same-origin" }).catch(function () {});
+        fetch(keepaliveUrl, { method: "POST", credentials: "same-origin" }).then(function (response) {
+            if (response.status === 401) window.location.href = timeoutUrl;
+        }).catch(function () {});
     }
 
     function resetIdleTimer() {
@@ -267,6 +269,17 @@ function renderIdleTimeoutScript(): void
         window.addEventListener(eventName, resetIdleTimer, { passive: true });
     });
 
+    // Presence signals must not renew the inactivity timer.
+    function pingPresence() {
+        fetch(keepaliveUrl, {
+            method: "POST", credentials: "same-origin",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: "presence=1"
+        }).then(function (response) {
+            if (response.status === 401) window.location.href = timeoutUrl;
+        }).catch(function () {});
+    }
+    setInterval(pingPresence, 30000);
+    window.addEventListener("pageshow", pingPresence);
     resetIdleTimer();
 })();
 

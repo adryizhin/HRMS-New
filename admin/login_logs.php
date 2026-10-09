@@ -41,19 +41,19 @@ if (isset($_POST['export_excel'])) {
         'Status'
     ]);
 
-    $query = "SELECT * FROM login_logs ORDER BY id DESC";
+    $query = "SELECT l.*, (l.logout_time IS NULL AND l.last_seen > DATE_SUB(NOW(), INTERVAL 90 SECOND) AND l.last_ping > DATE_SUB(NOW(), INTERVAL 15 MINUTE) AND l.session_token IS NOT NULL AND l.session_token <> '' AND u.status = 'active') AS is_online FROM login_logs l LEFT JOIN users u ON u.id = l.user_id ORDER BY l.id DESC";
     $result = $conn->query($query);
 
     while ($row = $result->fetch_assoc()) {
 
         $reason = $row['logout_reason'] ?? '';
-        $status = !$row['logout_time'] ? 'Active' : ($reason === 'timeout' ? 'Timed Out' : 'Inactive');
+        $status = !$row['logout_time'] ? (!empty($row['is_online']) ? 'Active' : 'Offline') : ($reason === 'timeout' ? 'Timed Out' : 'Inactive');
 
         fputcsv($output, [
             $row['username'],
             strtoupper($row['role']),
             $row['login_time'],
-            $row['logout_time'] ?? 'Still Logged In',
+            $row['logout_time'] ?? 'Session open',
             $reason === 'timeout' ? 'Timeout' : ($reason === 'logout' ? 'Logout' : ''),
             $status
         ]);
@@ -64,7 +64,7 @@ if (isset($_POST['export_excel'])) {
 }
 
 /* FETCH LOGS */
-$query = "SELECT * FROM login_logs ORDER BY id DESC";
+$query = "SELECT l.*, (l.logout_time IS NULL AND l.last_seen > DATE_SUB(NOW(), INTERVAL 90 SECOND) AND l.last_ping > DATE_SUB(NOW(), INTERVAL 15 MINUTE) AND l.session_token IS NOT NULL AND l.session_token <> '' AND u.status = 'active') AS is_online FROM login_logs l LEFT JOIN users u ON u.id = l.user_id ORDER BY l.id DESC";
 $logs = $conn->query($query);
 ?>
 
@@ -135,7 +135,7 @@ $logs = $conn->query($query);
   <td style="text-align:center;">
     <?= $row['logout_time']
          ? date("M d, Y h:i A", strtotime($row['logout_time']))
-         : 'Still Login';
+         : 'Session open';
     ?>
   </td>
 
@@ -154,6 +154,8 @@ $logs = $conn->query($query);
         <span class="status inactive">Timed Out</span>
     <?php elseif ($row['logout_time']): ?>
         <span class="status inactive">Inactive</span>
+    <?php elseif (empty($row['is_online'])): ?>
+        <span class="status inactive">Offline</span>
     <?php else: ?>
         <span class="status active">Active</span>
     <?php endif; ?>

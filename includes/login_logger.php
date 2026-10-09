@@ -3,12 +3,25 @@ declare(strict_types=1);
 
 function logLogin(mysqli $conn, int $user_id, string $username, string $role, string $session_token): void
 {
+    ensureLoginPresenceColumn($conn);
     $stmt = $conn->prepare("
-        INSERT INTO login_logs (user_id, username, role, session_token, login_time, last_ping)
-        VALUES (?, ?, ?, ?, NOW(), NOW())
+        INSERT INTO login_logs (user_id, username, role, session_token, login_time, last_ping, last_seen)
+        VALUES (?, ?, ?, ?, NOW(), NOW(), NOW())
     ");
     $stmt->bind_param("isss", $user_id, $username, $role, $session_token);
     $stmt->execute();
+}
+
+function ensureLoginPresenceColumn(mysqli $conn): void
+{
+    static $checked = false;
+    if ($checked) return;
+    $column = $conn->query("SHOW COLUMNS FROM login_logs LIKE 'last_seen'");
+    if ($column->num_rows === 0) {
+        // Legacy open logs stay offline until their actual session contacts the server.
+        $conn->query('ALTER TABLE login_logs ADD COLUMN last_seen DATETIME NULL DEFAULT NULL');
+    }
+    $checked = true;
 }
 
 function ensureLoginLogReasonColumn(mysqli $conn): void
