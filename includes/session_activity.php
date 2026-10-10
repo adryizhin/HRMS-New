@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/login_logger.php';
+require_once __DIR__ . '/account_profile.php';
 
 function expireLoginSessions(mysqli $conn): void
 {
@@ -38,13 +39,13 @@ function getOnlineUsers(mysqli $conn): array
     ensureLoginPresenceColumn($conn);
     expireLoginSessions($conn);
     // One user may have several valid browser sessions, but appears only once.
-    return $conn->query("SELECT u.id, u.full_name AS username, u.role, MAX(l.last_seen) AS last_seen
+    return $conn->query("SELECT u.id, u.full_name AS username, u.role, u.profile_picture, MAX(l.last_seen) AS last_seen
         FROM users u JOIN login_logs l ON l.user_id = u.id
         WHERE u.status = 'active' AND l.logout_time IS NULL
         AND l.session_token IS NOT NULL AND l.session_token <> ''
         AND l.last_seen > DATE_SUB(NOW(), INTERVAL 90 SECOND)
         AND l.last_ping > DATE_SUB(NOW(), INTERVAL 15 MINUTE)
-        GROUP BY u.id, u.full_name, u.role ORDER BY last_seen DESC, u.id")->fetch_all(MYSQLI_ASSOC);
+        GROUP BY u.id, u.full_name, u.role, u.profile_picture ORDER BY last_seen DESC, u.id")->fetch_all(MYSQLI_ASSOC);
 }
 
 function renderOnlineUsers(array $users): void
@@ -53,6 +54,11 @@ function renderOnlineUsers(array $users): void
     foreach ($users as $user) {
         $name = htmlspecialchars((string) $user['username'], ENT_QUOTES, 'UTF-8');
         $role = htmlspecialchars((string) $user['role'], ENT_QUOTES, 'UTF-8');
-        echo '<div class="online-user-row"><div class="online-user-name"><span class="dot"></span><strong>' . $name . '</strong></div><span class="badge ' . $role . '">' . strtoupper($role) . '</span></div>';
+        $parts = preg_split('/\s+/u', trim((string) $user['username']), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $initials = $parts ? mb_substr($parts[0], 0, 1) . (count($parts) > 1 ? mb_substr($parts[count($parts) - 1], 0, 1) : '') : '?';
+        $photo = htmlspecialchars(profilePhotoUrl($user), ENT_QUOTES, 'UTF-8');
+        $avatar = '<span class="online-user-initials">' . htmlspecialchars(mb_strtoupper($initials), ENT_QUOTES, 'UTF-8') . '</span>';
+        if ($photo !== '') $avatar .= '<img src="' . $photo . '" alt="" width="48" height="48" loading="lazy">';
+        echo '<div class="online-user-row"><div class="online-user-name"><span class="online-user-avatar" aria-hidden="true">' . $avatar . '<span class="dot"></span></span><strong>' . $name . '</strong></div><span class="badge ' . $role . '">' . strtoupper($role) . '</span></div>';
     }
 }

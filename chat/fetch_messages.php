@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../includes/session.php';
+$refreshSessionActivity = false;
+require_once __DIR__ . '/../includes/auth_check.php';
+header('Cache-Control: no-store');
+require_once __DIR__.'/../includes/chat_attachments.php';ensureChatAttachments($conn);
 
 if (!isset($_SESSION['user_id'], $_GET['receiver_id'])) {
     exit;
@@ -46,10 +49,10 @@ while ($row = $result->fetch_assoc()) {
        MARK AS SEEN
        (only if I am receiver and message is visible)
     ========================= */
-    if ($row['receiver_id'] == $user_id && $row['status'] != 'seen') {
+    if (($_GET['read'] ?? '') === '1' && $row['receiver_id'] == $user_id && $row['status'] != 'seen') {
         $seen = $conn->prepare("
             UPDATE chat_messages 
-            SET status = 'seen', seen_at = NOW()
+            SET status = 'seen', is_seen = 1, seen_at = NOW()
             WHERE id = ?
         ");
         $seen->bind_param("i", $row['id']);
@@ -58,6 +61,9 @@ while ($row = $result->fetch_assoc()) {
 
     echo "<div class='msg $class'>";
     echo htmlspecialchars($row['message']);
+    if (!empty($row['attachment_path'])) {
+        echo '<a class="chat-file-link" href="'.htmlspecialchars(app_url('chat/download_attachment.php?id='.(int)$row['id']),ENT_QUOTES,'UTF-8').'" download><span aria-hidden="true">📎</span> '.htmlspecialchars($row['attachment_name'],ENT_QUOTES,'UTF-8').' <small>'.round($row['attachment_size']/1024).' KB</small></a>';
+    }
 
     /* STATUS LABEL (for sender only) */
     if ($row['sender_id'] == $user_id) {

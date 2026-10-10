@@ -115,8 +115,8 @@ function timeAgo(?string $datetime): string {
 <title>Pagecom HRIS</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="stylesheet" href="dashboard.css">
-<link rel="stylesheet" href="chat.css">
+<link rel="stylesheet" href="dashboard.css?v=<?= filemtime(__DIR__ . '/dashboard.css') ?>">
+<link rel="stylesheet" href="chat.css?v=<?= filemtime(__DIR__ . '/chat.css') ?>">
 
 <style>
 
@@ -132,16 +132,7 @@ function timeAgo(?string $datetime): string {
 
 <div class="topbar">
   <h1>Welcome, <?= $_SESSION['name']; ?></h1>
-  <div style="display:flex; justify-content:flex-end;">
-  <div style= "display:inline-block;
-   padding:8px 18px;
-    background:var(--card-soft);
-    border:1px solid var(--border);
-    border-radius:20px;
-    color:var(--accent);
-    font-weight:bold;
-    font-size:15px;">Admin</div>
-</div>
+  <div class="activity-header-slot"></div>
 </div>
 
 <!-- CARDS -->
@@ -181,8 +172,8 @@ function timeAgo(?string $datetime): string {
   <div class="contacts-search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><label class="contacts-sr-only" for="contact-search">Search contacts</label><input id="contact-search" type="search" placeholder="Search contacts" autocomplete="off"></div>
   <div class="contact-groups">
     <?php
-    $hrs = $conn->query("SELECT id, full_name FROM users WHERE role='hr' AND status='active' ORDER BY full_name")->fetch_all(MYSQLI_ASSOC);
-    $otherAdmins = $conn->query("SELECT id, full_name FROM users WHERE role='admin' AND status='active' AND id != " . $admin_id . " ORDER BY full_name")->fetch_all(MYSQLI_ASSOC);
+    $hrs = $conn->query("SELECT id, full_name, profile_picture FROM users WHERE role='hr' AND status='active' ORDER BY full_name")->fetch_all(MYSQLI_ASSOC);
+    $otherAdmins = $conn->query("SELECT id, full_name, profile_picture FROM users WHERE role='admin' AND status='active' AND id != " . $admin_id . " ORDER BY full_name")->fetch_all(MYSQLI_ASSOC);
     renderChatContactGroup('Chat with HR', $hrs, 'hr');
     renderChatContactGroup('Chat with other admins', $otherAdmins, 'admin');
     ?>
@@ -198,27 +189,6 @@ function timeAgo(?string $datetime): string {
 </aside>
 </div>
 </div>
-<!-- MESSAGING POPUP -->
-<button id="chatAvatar" type="button" onclick="openChat()" aria-label="Open messages" aria-controls="chatBox" aria-expanded="false">
-  <span id="chatNotif" aria-hidden="true"></span>
-  <img src="../images/chat-robot-cutout.png" alt="" class="chat-launcher-image">
-</button>
-<section id="chatBox" data-user-name="<?= htmlspecialchars((string) ($_SESSION['name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>" role="dialog" aria-modal="false" aria-labelledby="chatContactName" hidden>
-  <header class="chat-header">
-    <span id="chatContactAvatar" class="chat-contact-avatar" aria-hidden="true">PC</span>
-    <div class="chat-contact-heading"><h2 id="chatContactName">Messages</h2><p id="chatContactRole">Choose a contact to get started</p></div>
-    <button type="button" class="chat-icon-button" onclick="closeChat()" aria-label="Minimize chat"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14"/></svg></button>
-    <button type="button" class="chat-icon-button" onclick="closeChat()" aria-label="Close chat"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
-  </header>
-  <div class="chat-body" id="chatBody" role="log" aria-label="Conversation" aria-live="polite" aria-relevant="additions"></div>
-  <div id="chatError" class="chat-error" role="alert" hidden></div>
-  <form id="chatComposer" class="chat-footer">
-    <label class="contacts-sr-only" for="chatInput">Message</label>
-    <textarea id="chatInput" rows="1" placeholder="Write a message…" aria-describedby="chatComposerHint" disabled></textarea>
-    <button id="chatSend" type="submit" aria-label="Send message" disabled><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="m3 3 19 9-19 9 3-8 9-1-9-1-3-8Z"/></svg></button>
-  </form>
-  <p id="chatComposerHint" class="chat-composer-hint">Enter to send · Shift + Enter for a new line</p>
-</section>
-<script src="<?= htmlspecialchars(app_url('admin/chat_box.js')); ?>" defer></script>
+<?php require __DIR__ . '/../includes/chat_widget.php'; ?>
 </body>
 </html>

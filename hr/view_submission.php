@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../includes/auth_check.php';
-checkRole(['hr']);
+checkRole(['hr','admin']);
+require_once __DIR__ . '/../includes/evaluation_access.php';
+if ($_SESSION['role']==='admin' && !isSystemAdministrator($conn,(int)$_SESSION['user_id'])) {http_response_code(403);exit('Access denied.');}
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/sidebar.php';
 require_once __DIR__ . '/../includes/task_schema.php';
@@ -318,9 +320,10 @@ if (!empty($task['ai_feedback'])) {
 </head>
 <body>
 
-<?php renderSidebar('hr', 'hr.dashboard'); ?>
+<?php renderSidebar($_SESSION['role'], $_SESSION['role'] === 'admin' ? 'admin.review_hr_evaluations' : 'hr.task_submissions'); ?>
 
 <div class="main">
+<?php if($_SESSION['role']==='admin'): ?><p style="margin-bottom:16px"><a class="app-button secondary" href="<?= htmlspecialchars(route('admin.review_hr_evaluations')); ?>"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to HR Evaluations</a></p><?php endif ?>
 
 <div class="card-box">
     <h2><i class="fa-solid fa-file-lines"></i> Task Submission Review</h2>

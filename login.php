@@ -77,7 +77,7 @@ session_start();
 
         <div class="field">
           <label for="password">Password</label>
-          <input type="password" id="password" name="password" placeholder="••••••••" required>
+          <div class="login-password"><input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required><button type="button" data-password-target="password" aria-controls="password" aria-label="Show password" aria-pressed="false"><i class="fa-solid fa-eye" aria-hidden="true"></i></button></div>
         </div>
 
         <div class="role-bar" id="roleBar">
@@ -156,5 +156,6 @@ window.onload = function () { showPopup("Your session timed out after 15 minutes
   detectRetina: true
 });
 </script>
+<script src="login/password_toggle.js" defer></script>
 </body>
 </html>

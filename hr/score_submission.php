@@ -1,11 +1,14 @@
 <?php
 require_once __DIR__ . '/../includes/auth_check.php';
-checkRole(['hr']);
+checkRole(['hr','admin']);
+require_once __DIR__ . '/../includes/evaluation_access.php';
+if ($_SESSION['role']==='admin' && !isSystemAdministrator($conn,(int)$_SESSION['user_id'])) {http_response_code(403);exit('Access denied.');}
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/sidebar.php';
 require_once __DIR__ . '/../includes/task_schema.php';
 
 ensureTaskSchema($conn);
+ensureActivitySchema($conn);
 
 $hr_id = (int) $_SESSION['user_id'];
 $task_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
@@ -60,6 +63,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $update->bind_param("isii", $hr_score, $hr_feedback, $task_id, $hr_id);
         
         if ($update->execute()) {
+            if ($task['status'] !== 'reviewed') {
+                $notice = 'Your evaluation "' . $task['title'] . '" has been reviewed.';
+                $notify = $conn->prepare("INSERT INTO notifications (user_id,message,activity_type) VALUES (?,?,'evaluation')");
+                $notify->bind_param('is',$task['employee_id'],$notice);$notify->execute();
+            }
+            $task['status'] = 'reviewed';
             $message = '<div class="alert success">✓ Score saved successfully</div>';
             $task['hr_score'] = $hr_score;
             $task['hr_feedback'] = $hr_feedback;
@@ -353,9 +362,10 @@ textarea:focus {
 
 <body>
 
-<?php renderSidebar('hr', 'hr.task_submissions'); ?>
+<?php renderSidebar($_SESSION['role'], $_SESSION['role'] === 'admin' ? 'admin.review_hr_evaluations' : 'hr.task_submissions'); ?>
 
 <div class="main">
+<?php if($_SESSION['role']==='admin'): ?><p style="margin-bottom:16px"><a class="app-button secondary" href="<?= htmlspecialchars(route('admin.review_hr_evaluations')); ?>"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to HR Evaluations</a></p><?php endif ?>
 
 <div class="header">
     <h1><i class="fa-solid fa-star"></i> Score Task Submission</h1>

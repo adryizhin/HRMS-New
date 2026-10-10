@@ -11,21 +11,6 @@ $user_id = (int) $_SESSION['user_id'];
 $today = new DateTimeImmutable('today', new DateTimeZone('Asia/Manila'));
 $todayDate = $today->format('Y-m-d');
 
-/* NOTIFICATIONS */
-$notifQuery = $conn->query("
-    SELECT * FROM notifications 
-    WHERE user_id = $user_id 
-    ORDER BY id DESC
-");
-
-$notifCountResult = $conn->query("
-    SELECT COUNT(*) as total 
-    FROM notifications 
-    WHERE user_id = $user_id AND is_read = 0
-");
-
-$notifCount = $notifCountResult ? $notifCountResult->fetch_assoc()['total'] : 0;
-
 /* ASSIGNMENTS */
 $assignments = $conn->prepare("
     SELECT 
@@ -73,14 +58,7 @@ $assignments = $assignments->get_result();
 
 <div class="topbar">
     <h2>Welcome, <?= $_SESSION['name']; ?></h2>
-  <div style="display:flex; justify-content:flex-end;">
-  <div style= "display:inline-block;
-   padding:8px 18px;
-    background:green;
-    border-radius:20px;
-    color:#ffffff;
-    font-weight:bold;
-    font-size:15px;"><?= htmlspecialchars(ucfirst($_SESSION['role'])); ?></div></div>
+  <div class="activity-header-slot"></div>
 </div>
 
 <?php if (isset($_GET['success'])): ?>
@@ -201,7 +179,7 @@ $assignments = $assignments->get_result();
   <div class="empty-tasks">
     <i class="fa-solid fa-clipboard-list"></i>
     <h3>No assigned tasks</h3>
-    <p>New HR assignments will appear here.</p>
+    <p>New evaluation assignments will appear here.</p>
   </div>
 <?php endif; ?>
 

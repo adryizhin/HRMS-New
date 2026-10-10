@@ -13,10 +13,17 @@ function route(string $name): string
 {
     static $routes = [
         'login' => 'login.php',
+        'account.settings' => 'account/settings.php',
+        'admin.settings' => 'account/settings.php',
+        'hr.settings' => 'account/settings.php',
+        'employee.settings' => 'account/settings.php',
         'logout' => 'logout.php',
         'timeout_logout' => 'timeout_logout.php',
         'keepalive' => 'keepalive.php',
         'admin.dashboard' => 'admin/dashboard.php',
+        'admin.hr_evaluations' => 'admin/hr_evaluations.php',
+        'admin.assign_evaluations' => 'admin/hr_evaluations.php',
+        'admin.review_hr_evaluations' => 'admin/hr_evaluations.php?tab=review',
         'admin.users' => 'admin/create_user_account.php',
         'admin.departments' => 'admin/departments.php',
         'admin.attendance' => 'admin/attendance.php',

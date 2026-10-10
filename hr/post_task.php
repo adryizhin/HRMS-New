@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__ . '/../includes/auth_check.php';
-checkRole(['hr']);
+checkRole(['hr','admin']);
+require_once __DIR__ . '/../includes/evaluation_access.php';
+if ($_SESSION['role'] === 'admin' && !isSystemAdministrator($conn,(int)$_SESSION['user_id'])) {http_response_code(403);exit('Only the System Administrator can assign evaluations to Human Resource staff.');}
+$returnUrl = $_SESSION['role'] === 'admin' ? route('admin.assign_evaluations') : route('hr.dashboard');
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/task_schema.php';
 
@@ -9,10 +12,11 @@ ensureTaskSchema($conn);
 $hr_id = (int) $_SESSION['user_id'];
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: dashboard.php");
+    header("Location: " . $returnUrl . "");
     exit;
 }
 
+if (empty($_SESSION['evaluation_assignment_csrf']) || !hash_equals($_SESSION['evaluation_assignment_csrf'],(string)($_POST['csrf_token'] ?? ''))) {http_response_code(400);exit('Reload the assignment form and try again.');}
 /* =========================
    VALIDATION
 ========================= */
@@ -22,19 +26,19 @@ $deadline = trim($_POST['deadline'] ?? '');
 $employee_ids = $_POST['employee_ids'] ?? [];
 
 if ($title === '' || $description === '' || $deadline === '' || empty($employee_ids) || !is_array($employee_ids)) {
-    header("Location: dashboard.php?task_error=1");
+    header("Location: " . $returnUrl . "?task_error=1");
     exit;
 }
 
 $deadlineDate = DateTime::createFromFormat('Y-m-d', $deadline);
 if (!$deadlineDate || $deadlineDate->format('Y-m-d') !== $deadline) {
-    header("Location: dashboard.php?task_error=1");
+    header("Location: " . $returnUrl . "?task_error=1");
     exit;
 }
 
 $today = new DateTimeImmutable('today', new DateTimeZone('Asia/Manila'));
 if ($deadlineDate < $today) {
-    header("Location: dashboard.php?task_date_error=1");
+    header("Location: " . $returnUrl . "?task_date_error=1");
     exit;
 }
 
@@ -43,10 +47,11 @@ $employee_ids = array_values(array_unique(array_filter(
     static fn (int $employeeId): bool => $employeeId > 0
 )));
 if ($employee_ids === []) {
-    header("Location: dashboard.php?task_error=1");
+    header("Location: " . $returnUrl . "?task_error=1");
     exit;
 }
 
+if (!validateEvaluationRecipients($conn,$hr_id,$employee_ids)) {http_response_code(403);exit('These recipients cannot be assigned evaluations by this account.');}
 /* =========================
    FILE UPLOAD (OPTIONAL)
 ========================= */
@@ -59,7 +64,7 @@ $uploadPending = !empty($_FILES['file']['name']) && is_uploaded_file($_FILES['fi
 if ($uploadPending) {
     $attachmentDigest = hash_file('sha256', $_FILES['file']['tmp_name']);
     if ($attachmentDigest === false) {
-        header("Location: dashboard.php?task_error=1");
+        header("Location: " . $returnUrl . "?task_error=1");
         exit;
     }
 }
@@ -111,7 +116,7 @@ foreach ($employee_ids as $employeeId) {
 $duplicateCheck->close();
 
 if ($eligibleEmployeeIds === []) {
-    header("Location: dashboard.php?task_sent=0&task_duplicate=" . $duplicate_count);
+    header("Location: " . $returnUrl . "?task_sent=0&task_duplicate=" . $duplicate_count);
     exit;
 }
 
@@ -130,7 +135,7 @@ if ($uploadPending) {
     $file_type = $_FILES['file']['type'] ?: pathinfo($file_name, PATHINFO_EXTENSION);
 
     if (!move_uploaded_file($_FILES['file']['tmp_name'], $target_path)) {
-        header("Location: dashboard.php?task_error=1");
+        header("Location: " . $returnUrl . "?task_error=1");
         exit;
     }
 }
@@ -225,7 +230,7 @@ if ($success_count === 0 && $file_name !== null) {
     }
 }
 
-header('Location: dashboard.php?' . http_build_query([
+header('Location: ' . $returnUrl . '?' . http_build_query([
     'task_sent' => $success_count,
     'task_duplicate' => $duplicate_count,
 ]));

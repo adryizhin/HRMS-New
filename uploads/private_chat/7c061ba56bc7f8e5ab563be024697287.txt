@@ -1,0 +1,27 @@
+to do:
+
+HR 
+* 201 files - add also the admins and other HR 
+* Attendance - add search bar to sort out the names of specific employee,admin or hr
+* Create report for monthly, quarterly, and yearly (accomplishments report and also includes KPI stats)it could be by bar graph or pie graph
+
+Admin
+* Attendance - add search bar to sort out the names of specific employee,admin or hr
+* Holiday Calendar - add automatic holidays in non working holidays
+* Create report for monthly, quarterly, and yearly (accomplishments report and also includes KPI stats) it could be by bar graph or pie graph
+
+Employee
+* Request Leave - The leaves remaining will deduct once the transaction is success
+* Attendance - add search bar to sort out the names of specific employee,admin or hr
+* Create report for monthly, quarterly, and yearly (accomplishments report and also includes KPI stats) it could be by bar graph or pie graph
+
+other things to do on system:
+* Add KPI also on IT admins because they are also employees
+
+* Fix the button of Print/Save PDF in Reports and Download CSV
+* Do not use military time instead use AM and PM time
+* The color of the present in the graph is Blue not Green and make the Red color lighter
+
+All Done for Today!
+
+

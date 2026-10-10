@@ -2,9 +2,13 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/routes.php';
+require_once __DIR__ . '/evaluation_access.php';
+require_once __DIR__ . '/account_profile.php';
+require_once __DIR__ . '/notifications.php';
 
 function renderSidebar(string $role, string $active = ''): void
 {
+    if(in_array($active,['admin.assign_evaluations','admin.review_hr_evaluations'],true))$active='admin.hr_evaluations';
     renderSidebarStyles();
 
     $menus = [
@@ -49,23 +53,35 @@ function renderSidebar(string $role, string $active = ''): void
         ],
     ];
 
-    echo '<header class="mobile-header"><span>Pagecom HRIS</span><button id="sidebar-toggle" type="button" aria-label="Open menu" aria-controls="app-sidebar" aria-expanded="false"><span aria-hidden="true">☰</span></button></header>';
+    global $conn;
+    ensureAccountSchema($conn);
+    $_SESSION['activity_csrf'] ??= bin2hex(random_bytes(32));
+    $activity = activitySummary($conn,(int)$_SESSION['user_id'],$role);
+    $activityCount = $activity['total'];
+    $bell = '<button type="button" class="activity-toggle" aria-label="Notifications" aria-controls="activity-panel" aria-expanded="false"><i class="fa-solid fa-bell" aria-hidden="true"></i><span class="activity-toggle-label">Notifications</span><span class="activity-total"' . ($activityCount ? '' : ' hidden') . '>' . ($activityCount>99?'99+':$activityCount) . '</span></button>';
+    $menus[$role] = array_merge(array_slice($menus[$role],0,-1),[[$role.'.settings','fa-gear','Account Settings']],array_slice($menus[$role],-1));
+    if ($role === 'admin' && isSystemAdministrator($conn,(int)$_SESSION['user_id'])) {
+        array_splice($menus['admin'], 2, 0, [['admin.hr_evaluations','fa-clipboard-check','HR Evaluations']]);
+    }
+    echo '<header class="mobile-header"><span>Pagecom HRIS</span>' . $bell . '<button id="sidebar-toggle" type="button" aria-label="Open menu" aria-controls="app-sidebar" aria-expanded="false"><span aria-hidden="true">☰</span></button></header>';
     echo '<div id="sidebar-backdrop" class="sidebar-backdrop" hidden aria-hidden="true"></div>';
     echo '<div class="sidebar" id="app-sidebar" aria-label="Main navigation">';
     echo '<div class="sidebar-heading"><h2>Pagecom HRIS</h2><button id="sidebar-close" type="button" aria-label="Close menu"><span aria-hidden="true">×</span></button></div>';
+
 
     foreach ($menus[$role] ?? [] as [$routeName, $icon, $label]) {
         $href = $routeName === '#' ? '#' : route($routeName);
         $class = $active === $routeName ? ' class="active"' : '';
         echo '<a href="' . htmlspecialchars($href) . '"' . $class . '>';
         echo '<i class="fa-solid ' . htmlspecialchars($icon) . '"></i> ';
-        echo htmlspecialchars($label);
+        echo '<span class="sidebar-label">' . htmlspecialchars($label) . '</span>';
         echo '</a>';
     }
 
     echo '<button id="theme-toggle-btn" class="theme-toggle-btn">🌙 Dark Mode</button>';
     echo '</div>';
     
+    require __DIR__ . '/activity_widget.php';
     renderIdleTimeoutScript();
     echo '<script src="' . htmlspecialchars(app_url('includes/sidebar.js')) . '" defer></script>';
 }
@@ -79,6 +95,8 @@ function renderSidebarStyles(): void
     }
 
     $rendered = true;
+    echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">';
+    echo '<style>' . file_get_contents(__DIR__ . '/activity.css') . '</style>';
     echo '<style>' . file_get_contents(__DIR__ . '/buttons.css') . '</style>';
     echo '<style>' . file_get_contents(__DIR__ . '/contrast.css') . '</style>';
 

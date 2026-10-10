@@ -344,3 +344,24 @@
 /* Visible keyboard focus and opaque placeholder text. */
 .field input::placeholder { opacity: 1; }
 :is(input, button, a):focus-visible { outline: 3px solid #b3d4ff; outline-offset: 3px; }
+
+.login-password { position: relative; }
+.field .login-password input { padding-left: 16px; padding-right: 50px; }
+.login-password button {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-pri);
+  font-size: 18px;
+  cursor: pointer;
+}
+.login-password button:hover { background: var(--surface); }

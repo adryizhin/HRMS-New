@@ -269,3 +269,40 @@ html body #chatAvatar:hover { transform:none; filter:none; }
 html body #chatBox { bottom:164px; max-height:calc(100dvh - 180px); }
 @media(max-width:480px) { html body #chatAvatar { width:112px; height:112px; right:10px; bottom:10px; } html body #chatBox { bottom:134px; max-height:calc(100dvh - 150px); } }
 @media(prefers-reduced-motion:reduce) { #chatAvatar .chat-launcher-image,#chatAvatar:hover .chat-launcher-image { animation:none; } }
+
+/* Shared HR/admin unread counter. */
+#chatAvatar #chatNotif { display:grid; place-items:center; width:auto; min-width:24px; height:24px; padding:0 5px; border:2px solid var(--chat-panel-bg); background:#dc2626; color:#fff; font-size:11px; font-weight:700; box-shadow:none; top:8px; right:8px; }
+#chatAvatar #chatNotif[hidden] { display:none; }
+
+#chatBox #chatAttach {display:grid;place-items:center;width:32px;min-height:42px;padding:4px;border:0;background:transparent;color:var(--accent);flex-shrink:0;} #chatBox #chatAttachment[hidden]{display:none;} .chat-attachment-preview{display:flex;align-items:center;gap:8px;padding:8px 14px;border-top:1px solid var(--chat-border);font-size:12px;flex-shrink:0;color:var(--chat-text);} .chat-attachment-preview[hidden]{display:none;} #chatAttachmentName{flex:1;min-width:0;overflow-wrap:anywhere;} #chatAttachmentRemove{min-height:28px;padding:2px 8px;background:transparent;color:var(--chat-text);border:0;} #chatBox .msg .chat-file-link{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;padding:8px;border:1px solid currentColor;border-radius:8px;color:inherit;text-decoration:underline;font-size:12px;} #chatBox .msg .chat-file-link small{display:block;width:100%;font-size:10px;} .contact-avatar img,.chat-contact-avatar img,.chat-message-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;} .contact-avatar,.chat-contact-avatar,.chat-message-avatar{overflow:hidden;}
+
+/* Fixed circular profile photos in both dashboard contact lists. */
+.chat-contacts .contact-avatar { flex: 0 0 48px; width: 48px; height: 48px; overflow: hidden; border-radius: 50%; }
+.chat-contacts .contact-avatar img { display: block; width: 48px; height: 48px; max-width: 48px; object-fit: cover; border-radius: 50%; }
+
+.chat-empty-avatar { overflow: hidden; }
+.chat-empty-avatar img { display: block; width: 64px; height: 64px; object-fit: cover; border-radius: 50%; }
+
+/* Keep messaging usable on narrow screens and above the on-screen keyboard. */
+html body #chatBox { z-index: 1500; width: min(380px, calc(100vw - 32px)); max-height: calc(var(--chat-visible-height, 100dvh) - 180px); }
+#chatBox .chat-footer { min-width: 0; }
+#chatBox #chatInput { overflow-x: hidden; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none; }
+#chatBox #chatInput::-webkit-scrollbar { display: none; width: 0; height: 0; }
+#chatBox #chatSend { flex: 0 0 40px; }
+@media (max-width: 600px), (max-height: 500px) {
+ html body #chatBox { right: 12px; bottom: calc(var(--chat-keyboard-offset, 0px) + 12px + env(safe-area-inset-bottom, 0px)); width: min(380px, calc(100vw - 24px)); height: 520px; max-height: calc(var(--chat-visible-height, 100dvh) - 88px - env(safe-area-inset-bottom, 0px)); border-radius: 16px; }
+ html body #chatAvatar[aria-expanded="true"] { visibility: hidden; pointer-events: none; }
+ #chatBox .chat-header { padding: 10px; gap: 6px; }
+ #chatBox .chat-body { padding: 12px 10px; }
+ #chatBox .chat-footer { padding: 8px 8px 6px; gap: 6px; }
+ #chatBox #chatInput { font-size: 16px; max-height: 80px; padding: 9px 12px; }
+ #chatBox #chatSend { flex-basis: 34px; width: 34px; padding: 6px; }
+ #chatBox #chatAttach { width: 28px; }
+ .chat-composer-hint { padding-bottom: 8px; }
+}
+html body #chatBox.chat-compact { bottom: calc(var(--chat-keyboard-offset, 0px) + 12px + env(safe-area-inset-bottom, 0px)); max-height: calc(var(--chat-visible-height, 100dvh) - 24px - env(safe-area-inset-bottom, 0px)); }
+#chatBox.chat-compact .chat-composer-hint { display: none; }
+#chatBox.chat-compact #chatInput { max-height: 64px; }
+#chatBox.chat-compact .chat-contact-avatar { width: 34px; height: 34px; }
+#chatBox.chat-compact .chat-header { padding: 8px 10px; }
+#chatBox.chat-compact .chat-contact-heading p { display: none; }

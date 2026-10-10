@@ -66,7 +66,7 @@ try {
     verify((int)$conn->query('SELECT COUNT(*) FROM password_reset_tickets')->fetch_row()[0] === 1, 'Repeat requests do not duplicate open tickets');
     $form['email'] = 'unknown@feature.example';
     [$code,$body] = requestFeature('guest','forgot_password.php',$form);
-    verify($code === 200 && str_contains($body,'If the email matches an active account') && (int)$conn->query('SELECT COUNT(*) FROM password_reset_tickets')->fetch_row()[0] === 1, 'Unknown email receives same response without ticket');
+    verify($code === 200 && str_contains($body,'If the email matches an active account') && (int)$conn->query('SELECT COUNT(*) FROM password_reset_tickets')->fetch_row()[0] === 2, 'Unknown email receives same response and an admin review ticket');
     foreach (['hr','employee','admin'] as $role) {
         [$code,$body] = requestFeature($role,'login/login_process.php',['email'=>$role.'@feature.example','password'=>'TemporaryFeaturePassword!']);
         verify($code === 200 && str_contains($body,'sidebar'), "$role test login");

@@ -33,17 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $remainingDays = remainingLeaveDays($conn, (int) $employee_id, (int) date('Y'));
 $success = isset($_GET['sent']) ? 'Leave request sent successfully. Working days have been deducted.' : '';
 
-$notifQuery = $conn->query("
-    SELECT * FROM notifications 
-    WHERE user_id = $employee_id 
-    ORDER BY id DESC
-");
-
-$notifCount = $conn->query("
-    SELECT COUNT(*) as total 
-    FROM notifications 
-    WHERE user_id = $employee_id AND is_read = 0
-")->fetch_assoc()['total'];
 ?>
 
 <!DOCTYPE html>
@@ -68,64 +57,6 @@ $notifCount = $conn->query("
   <div class="topbar">
     <h1>Employee Dashboard</h1>
     <div>Welcome, <?php echo $_SESSION['name']; ?></div>
-    <div class="icons">
-      <div class="icons notification" style="position:relative;">
-
-  <i class="fa-solid fa-bell" onclick="toggleNotif()"></i>
-
-  <?php if($notifCount > 0): ?>
-    <span style="
-      position:absolute;
-      top:-5px;
-      right:40px;
-      background: #b91c1c;
-      color:white;
-      font-size:10px;
-      padding:3px 6px;
-      border-radius:50%;
-    ">
-      <?= $notifCount ?>
-    </span>
-  <?php endif; ?>
-
-  <!-- DROPDOWN -->
-  <div id="notifBox" style="
-      display:none;
-      position:absolute;
-      right:0;
-      top:30px;
-      width:300px;
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:10px;
-      box-shadow:0 10px 25px rgba(0,0,0,0.12);
-      max-height:300px;
-      overflow-y:auto;
-      z-index:999;
-  ">
-
-    <?php if($notifQuery->num_rows > 0): ?>
-      <?php while($n = $notifQuery->fetch_assoc()): ?>
-        <div style="
-            padding:10px;
-            border-bottom:1px solid var(--border);
-            font-size:13px;
-            color:var(--text);
-        ">
-          <?= $n['message']; ?><br>
-          <small style="color:var(--muted);">
-            <?= date("M d, h:i A", strtotime($n['created_at'])); ?>
-          </small>
-        </div>
-      <?php endwhile; ?>
-    <?php else: ?>
-      <div style="padding:10px;">No notifications</div>
-    <?php endif; ?>
-
-  </div>
-
-</div>
-    </div>
   </div>
 
     <!-- CARDS -->
@@ -206,16 +137,6 @@ $notifCount = $conn->query("
   </div>
 
 </div>
-<script>
-function toggleNotif() {
-    let box = document.getElementById("notifBox");
-    box.style.display = (box.style.display === "block") ? "none" : "block";
 
-    // mark as read when opened
-    if (box.style.display === "block") {
-        fetch('mark_read.php');
-    }
-}
-</script>
 </body>
 </html>

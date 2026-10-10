@@ -5,7 +5,9 @@ function ensurePasswordTicketSchema(mysqli $conn): void
 {
     $conn->query("CREATE TABLE IF NOT EXISTS password_reset_tickets (
         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        user_id INT NOT NULL,
+        user_id INT NULL,
+        requested_email VARCHAR(191) NULL,
+        system_note VARCHAR(255) NULL,
         employee_id VARCHAR(50) NOT NULL,
         request_message TEXT NOT NULL,
         status ENUM('pending','in_progress','resolved','rejected') NOT NULL DEFAULT 'pending',
@@ -17,6 +19,12 @@ function ensurePasswordTicketSchema(mysqli $conn): void
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (handled_by) REFERENCES users(id) ON DELETE SET NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    $columns = [];
+    $result = $conn->query('SHOW COLUMNS FROM password_reset_tickets');
+    while ($column = $result->fetch_assoc()) $columns[$column['Field']] = $column;
+    if (!isset($columns['requested_email'])) $conn->query('ALTER TABLE password_reset_tickets ADD COLUMN requested_email VARCHAR(191) NULL');
+    if (!isset($columns['system_note'])) $conn->query('ALTER TABLE password_reset_tickets ADD COLUMN system_note VARCHAR(255) NULL');
+    if ($columns['user_id']['Null'] === 'NO') $conn->query('ALTER TABLE password_reset_tickets MODIFY user_id INT NULL');
     $conn->query("CREATE TABLE IF NOT EXISTS password_reset_throttle (
         source_hash CHAR(64) NOT NULL PRIMARY KEY,
         window_start DATETIME NOT NULL,
@@ -50,7 +58,7 @@ function submitPasswordTicket(mysqli $conn, string $email, string $employeeId, s
     $conn->begin_transaction();
     try {
         // Lock the account to prevent concurrent duplicate open tickets.
-        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ? AND status = 'active' FOR UPDATE");
+        $stmt = $conn->prepare("SELECT id, status FROM users WHERE email = ? FOR UPDATE");
         $stmt->bind_param('s', $email); $stmt->execute();
         $user = $stmt->get_result()->fetch_assoc();
         if ($user) {
@@ -58,8 +66,18 @@ function submitPasswordTicket(mysqli $conn, string $email, string $employeeId, s
             $stmt = $conn->prepare("SELECT id FROM password_reset_tickets WHERE user_id = ? AND status IN ('pending','in_progress') LIMIT 1");
             $stmt->bind_param('i', $id); $stmt->execute();
             if (!$stmt->get_result()->fetch_assoc()) {
-                $stmt = $conn->prepare('INSERT INTO password_reset_tickets (user_id, employee_id, request_message) VALUES (?, ?, ?)');
-                $stmt->bind_param('iss', $id, $employeeId, $message); $stmt->execute();
+                $note = $user['status'] === 'active' ? null : 'This account is inactive. Verify its status before handling this request.';
+                $stmt = $conn->prepare('INSERT INTO password_reset_tickets (user_id, employee_id, request_message, requested_email, system_note) VALUES (?, ?, ?, ?, ?)');
+                $stmt->bind_param('issss', $id, $employeeId, $message, $email, $note); $stmt->execute();
+            }
+        }
+        if (!$user) {
+            $stmt = $conn->prepare("SELECT id FROM password_reset_tickets WHERE user_id IS NULL AND requested_email = ? AND status IN ('pending','in_progress') LIMIT 1 FOR UPDATE");
+            $stmt->bind_param('s', $email); $stmt->execute();
+            if (!$stmt->get_result()->fetch_assoc()) {
+                $note = 'Email not found in the system. No account can be reset for this request.';
+                $stmt = $conn->prepare('INSERT INTO password_reset_tickets (employee_id, request_message, requested_email, system_note) VALUES (?, ?, ?, ?)');
+                $stmt->bind_param('ssss', $employeeId, $message, $email, $note); $stmt->execute();
             }
         }
         $conn->commit();
@@ -85,6 +103,7 @@ function handlePasswordTicket(mysqli $conn, int $adminId, int $ticketId, string 
         $ticket = $stmt->get_result()->fetch_assoc();
         if (!$ticket || !in_array($ticket['status'], ['pending','in_progress'], true)) throw new InvalidArgumentException('This ticket is already closed or unavailable.');
         if ($action === 'resolved') {
+            if (empty($ticket['user_id'])) throw new InvalidArgumentException('Email not found in the system. Add notes or reject this request; a password cannot be reset.');
             $userId = (int) $ticket['user_id'];
             $hash = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $conn->prepare("UPDATE users SET password = ? WHERE id = ? AND status = 'active'");

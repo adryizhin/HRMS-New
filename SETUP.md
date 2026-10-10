@@ -4,7 +4,7 @@
 
 All role pages use shared responsive layouts. At widths of 1024 pixels or less, the sidebar becomes a hamburger menu with an X close button. Clicking the backdrop, pressing Escape or choosing a navigation link closes it. The menu traps keyboard focus while open and restores focus when closed. Tables scroll within their sections; forms, cards and charts stack on narrow screens. Browser checks cover 320, 390, 768, 1024 and 1440 pixel widths.
 
-HR's 201 Files and KPI list include employees, admins and HR. Admins and HR can upload their own documents and submit assigned evaluations through My Documents and My Evaluations. Admins also have My KPI. HR can assign evaluations to all active staff.
+HR's 201 Files and KPI list include employees, admins and HR. Admins and HR can upload their own documents and submit assigned evaluations through My Documents and My Evaluations. Admins also have My KPI. HR can assign evaluations to active employees and admins. Only the System Administrator assigns evaluation work to Human Resource staff.
 
 Attendance supports searches by name, employee ID or role. HR and admins can search all staff; employees see only their own attendance. Summary cards remain totals for the authorized scope, rather than the filtered search.
 
@@ -61,3 +61,34 @@ Online Users now requires a valid, unexpired session from an active account and 
 Presence signals run every 30 seconds while the browser can run timers. They do not renew the existing 15-minute inactivity timeout. Actual interaction or authenticated page navigation renews activity. Expired sessions are marked timed out on the server and cannot be revived by a heartbeat. Login Logs and CSV exports distinguish offline open sessions from active online users.
 
 The nullable `login_logs.last_seen` column is added automatically when needed; existing logs remain offline until their actual session contacts the server. The database user needs ALTER permission for this one-time migration. No SQL import is required. Run `php tests/online_users.php` for 24 isolated checks against a disposable schema and synthetic accounts; the test uses loopback port 8091 and requires database CREATE/DROP permission.
+
+## HR and administrator workflow updates
+
+Admin and Human Resource dashboards share the animated robot launcher, message window, sender initials, composer and unread counter. The red badge counts unseen messages from every sender, including while the window is closed. Opening an unread conversation marks only that conversation as seen; other conversations remain unread. Background polling does not mark messages as read or extend the inactivity timeout.
+
+The existing System Administrator account (user ID 1) has Assign HR Evaluations and Review HR Evaluations sidebar pages. Other admins cannot access those pages, and Human Resource accounts cannot assign work to Human Resource recipients, even through a direct request. HR retains assignments to employees and admins. Set `HRMS_SYSTEM_ADMIN_ID` only when migrating this installation to a different privileged account. Assignment forms require a session token and active, authorized recipients. Human Resource recipients see their work in My Evaluations, with the full Human Resource role label.
+
+HR leave review includes status filtering, responsive request cards, escaped request text and approval/rejection feedback. Existing ownership checks, allowance restoration and notification behavior are retained.
+
+Unknown-email password-reset requests are retained for admin review with the automatic note “Email not found in the system.” Admins can save notes or reject these tickets; they cannot reset a password without a linked account. The ticket inbox displays a count of unmatched open requests. Public success responses remain neutral. The requested email and system note columns and nullable account reference migrate automatically when the ticket feature is accessed; existing tickets are preserved.
+
+Run `php tests/todo_updates.php` for 26 isolated authorization and workflow checks. Set `HRMS_TODO_BROWSER=1` and make Playwright available on `NODE_PATH` to check actual admin/HR badges, messaging, both themes, responsive layouts and leave filtering. These checks use a disposable database and loopback port 8091, never production records.
+## Account settings and chat attachments
+
+Account Settings is available in every role's sidebar. Users can edit their name, phone number, email, profile photo and password. Email/password changes require the current password and sign out other sessions. Role, employee ID and work shift remain read-only. Photos accept validated JPG, PNG and WebP files up to 2 MB and 5,000 pixels per side; uploaded photos appear in chat contacts, headers and message avatars, with initials as the fallback.
+
+HR/admin chat composers have an attachment button and a removable filename preview. Files can be sent with or without message text. Supported types are PDF, DOCX, XLSX, PPTX, TXT, CSV, JPG, PNG and WebP. Office containers and MIME types are validated. The effective upload limit is the smaller of 10 MB and PHP's configured upload/post limits. PHP's default limit on this installation is reflected by the chat picker. Only conversation participants can download attachments. Private chat files and profile photos have direct Apache access denied; they are served by authenticated PHP endpoints. Preserve the upload directories' `.htaccess` protection when moving this installation.
+
+The profile fields and chat attachment columns migrate automatically without replacing existing records. Login has an accessible password visibility button. HR leave requests use Font Awesome again for navigation, summary cards and review actions.
+
+Run `php tests/account_chat.php` for 25 isolated upload/account checks on loopback port 8093. Set `HRMS_ACCOUNT_BROWSER=1` with Playwright on `NODE_PATH` to verify attachment selection/removal/sending/downloads, settings in both themes at desktop/mobile widths and the login eye toggle. Test uploads and the disposable database are removed afterward.
+
+Profile photo editing now includes a live circular crop preview, zoom, drag positioning, horizontal/vertical alignment and reset/cancel controls. Choose a new photo or use Adjust current photo, then Save changes to upload the selected crop as a 512 × 512 PNG. The smaller avatar preview updates immediately. Existing photo size/type validation remains in place, and the browser tests verify that the saved image matches the selected crop.
+
+The Human Resource dashboard shows Messages on the left and Send Evaluation on the right. On smaller screens these panels stack. Sent evaluation history is collapsed by default, and submission results return to the dashboard.
+
+All roles share a notification bell beside the role label in the upper-right page header and in the mobile header. Counts refresh every 15 seconds for open password-reset tickets (Admin), pending personal evaluations, submitted evaluations awaiting the assigned reviewer, pending leave requests assigned to HR, and unread personal updates. Completed reviews create personal evaluation updates; leave decisions use existing personal notifications. Marking displayed updates read does not dismiss unfinished work. The notification endpoint scopes records to the logged-in user, requires CSRF for read actions, and background polling does not renew idle sessions.
+
+Admin and HR unread-message notifications appear only on the chatbot icon and are excluded from the header bell to avoid duplicate alerts.
+
+The System Administrator uses a single **HR Evaluations** sidebar entry with **Assign Evaluations** and **Review Evaluations** tabs on one page. Existing assignment/review URLs redirect to this page, and review detail pages link back to its Review tab. Other administrators cannot access this workflow.
