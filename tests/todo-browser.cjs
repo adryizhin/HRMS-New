@@ -63,6 +63,22 @@ const fs=require('fs'),path=require('path');const {chromium}=require('playwright
      if(width===390)await page.screenshot({path:path.join(out,'combined-hr-evaluations-assign-mobile.png'),fullPage:true});
     }
     console.log('PASS combined System Administrator HR evaluation tabs, one sidebar link, scoring return and responsive layouts');
+    await page.setViewportSize({width:1440,height:900});await page.goto('http://127.0.0.1:8091/HRMS/admin/create_user_account.php');
+    const employeeEdit=page.locator('[data-edit-department][data-user-id="3"]');await employeeEdit.click();
+    await page.locator('#employee-department-dialog').waitFor({state:'visible'});
+    if(await page.locator('#department-employee-name').textContent()!=='Employee Feature Person')throw Error('Wrong employee editor');
+    await page.locator('#edit-department-id').selectOption({label:'Department Test A'});await page.getByRole('button',{name:'Save Department',exact:true}).click();
+    await page.getByText('Employee department updated successfully.',{exact:true}).waitFor();await employeeEdit.click();
+    if(await page.locator('#edit-department-id option:checked').textContent()!=='Department Test A')throw Error('Current department not selected');
+    await page.locator('#edit-department-id').selectOption({label:'Department Test B'});await page.getByRole('button',{name:'Cancel',exact:true}).click();await employeeEdit.click();
+    if(await page.locator('#edit-department-id option:checked').textContent()!=='Department Test A')throw Error('Cancel changed department');
+    for(const width of [1440,390,320]){
+     await page.setViewportSize({width,height:900});await page.waitForTimeout(250);
+     const bounds=await page.locator('#employee-department-dialog').boundingBox();if(bounds.x<0||bounds.x+bounds.width>width+1)throw Error('Department editor overflow');
+     if(width===390)await page.screenshot({path:path.join(out,'employee-department-editor-mobile.png')});
+    }
+    await page.keyboard.press('Escape');if(await page.locator('#employee-department-dialog').isVisible())throw Error('Escape did not close editor');
+    console.log('PASS employee department edit, current selection, saving, cancel/Escape and mobile dialog');
    }
    if(role==='hr'){
     await page.goto('http://127.0.0.1:8091/HRMS/hr/dashboard.php');

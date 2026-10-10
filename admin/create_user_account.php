@@ -4,6 +4,7 @@ require '../includes/auth_check.php';
 require_once __DIR__ . '/../includes/sidebar.php';
 
 checkRole(['admin']);
+$_SESSION['employee_department_csrf'] ??= bin2hex(random_bytes(32));
 
 /* =========================
    ADD USER
@@ -86,7 +87,7 @@ $users = $conn->query("
 
 $departments = $conn->query("
     SELECT id, name FROM departments ORDER BY name ASC
-");
+")->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -98,7 +99,7 @@ $departments = $conn->query("
 <title>Pagecom HRIS</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="stylesheet" href="create_user_account.css">
+<link rel="stylesheet" href="create_user_account.css?v=<?= filemtime(__DIR__.'/create_user_account.css') ?>">
 </head>
 
 <body>
@@ -145,11 +146,11 @@ $departments = $conn->query("
     <div class="form-group">
       <select name="department_id">
         <option value="">Select Department</option>
-        <?php while ($department = $departments->fetch_assoc()): ?>
+        <?php foreach ($departments as $department): ?>
           <option value="<?= $department['id']; ?>">
             <?= htmlspecialchars($department['name']); ?>
           </option>
-        <?php endwhile; ?>
+        <?php endforeach; ?>
       </select>
     </div>
 
@@ -169,6 +170,8 @@ $departments = $conn->query("
     </div>
   <?php endif; ?>
 
+  <?php if (isset($_GET['department_updated'])): ?><p class="department-update-notice" role="status">Employee department updated successfully.</p><?php endif ?>
+  <?php if (isset($_GET['department_error'])): ?><p class="department-update-notice" role="alert">The department could not be updated. Refresh the page and try again.</p><?php endif ?>
   <div class="table-wrapper">
 
     <table>
@@ -193,11 +196,14 @@ $departments = $conn->query("
         <td><?= htmlspecialchars($row['department_name'] ?? 'Unassigned'); ?></td>
         <td>8:00 AM - 5:00 PM</td>
         <td>
+          <div class="employee-row-actions">
+          <button type="button" class="edit-department-btn" data-edit-department data-user-id="<?= (int)$row['id']; ?>" data-user-name="<?= htmlspecialchars($row['full_name'],ENT_QUOTES,'UTF-8'); ?>" data-department-id="<?= (int)($row['department_id']??0); ?>" aria-haspopup="dialog" aria-controls="employee-department-dialog"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i> Edit</button>
           <a class="delete-btn"
              href="?delete=<?= $row['id']; ?>"
              onclick="return confirm('Delete this user?')">
              Delete
           </a>
+          </div>
         </td>
       </tr>
       <?php endwhile; ?>
@@ -211,5 +217,17 @@ $departments = $conn->query("
 </div>
 </div>
 
+<dialog id="employee-department-dialog" aria-labelledby="department-dialog-heading">
+  <header><h2 id="department-dialog-heading">Edit Department</h2><button type="button" data-close-department aria-label="Close department editor"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></header>
+  <p id="department-employee-name"></p>
+  <form method="post" action="<?= htmlspecialchars(app_url('admin/update_employee_department.php')); ?>">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['employee_department_csrf']); ?>">
+    <input type="hidden" id="department-user-id" name="user_id">
+    <label for="edit-department-id">Department</label>
+    <select id="edit-department-id" name="department_id"><option value="">Unassigned</option><?php foreach($departments as $department): ?><option value="<?= (int)$department['id']; ?>"><?= htmlspecialchars($department['name']); ?></option><?php endforeach ?></select>
+    <div class="department-dialog-actions"><button type="button" class="department-cancel" data-close-department>Cancel</button><button type="submit">Save Department</button></div>
+  </form>
+</dialog>
+<script src="<?= htmlspecialchars(app_url('admin/employee_department.js').'?v='.filemtime(__DIR__.'/employee_department.js')); ?>" defer></script>
 </body>
 </html>

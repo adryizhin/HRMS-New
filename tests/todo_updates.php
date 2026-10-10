@@ -132,6 +132,24 @@ try {
     $conn->query("UPDATE tasks SET status='submitted',submission_file='combined-review-fixture.txt',submitted_at=NOW() WHERE hr_id=1 AND employee_id=2");
     [$code,$body]=requestFeature('admin','admin/hr_evaluations.php?tab=review');
     verify($code===200 && str_contains($body,'HR assignment security fixture') && str_contains($body,'hr/score_submission.php?id=') && !str_contains($body,'name="employee_ids[]"'),'Review tab displays only own HR submissions with working score links');
+    $conn->query("INSERT INTO departments (name) VALUES ('Department Test A'),('Department Test B')");
+    $departmentId=(int)$conn->query("SELECT id FROM departments WHERE name='Department Test A'")->fetch_row()[0];
+    [$code,$body]=requestFeature('admin','admin/create_user_account.php');
+    preg_match('/name="csrf_token" value="([a-f0-9]+)"/',$body,$departmentToken);
+    verify($code===200 && str_contains($body,'data-edit-department') && str_contains($body,'employee-department-dialog'),'Create Employees includes department Edit buttons and editor');
+    $original=$conn->query('SELECT email,password,role,full_name FROM users WHERE id=3')->fetch_assoc();
+    $departmentForm=['user_id'=>3,'department_id'=>$departmentId,'csrf_token'=>$departmentToken[1]];
+    [$code]=requestFeature('admin','admin/update_employee_department.php',array_merge($departmentForm,['csrf_token'=>'invalid']));verify($code===400,'Department changes require CSRF');
+    [$code]=requestFeature('admin','admin/update_employee_department.php',array_merge($departmentForm,['department_id'=>999999]));verify($code===400,'Unknown departments are rejected');
+    [$code]=requestFeature('admin','admin/update_employee_department.php',array_merge($departmentForm,['user_id'=>999999]));verify($code===404,'Unknown employee cannot be updated');
+    [$code,$body]=requestFeature('admin','admin/update_employee_department.php',$departmentForm);
+    verify($code===200 && str_contains($body,'department updated successfully') && (int)$conn->query('SELECT department_id FROM users WHERE id=3')->fetch_row()[0]===$departmentId,'Admin saves department and sees confirmation');
+    verify($original===$conn->query('SELECT email,password,role,full_name FROM users WHERE id=3')->fetch_assoc(),'Department edit preserves other account fields');
+    requestFeature('hr','admin/update_employee_department.php',array_merge($departmentForm,['department_id'=>'']));
+    requestFeature('employee','admin/update_employee_department.php',array_merge($departmentForm,['department_id'=>'']));
+    verify((int)$conn->query('SELECT department_id FROM users WHERE id=3')->fetch_row()[0]===$departmentId,'HR and Employee cannot edit departments');
+    requestFeature('admin','admin/update_employee_department.php',array_merge($departmentForm,['department_id'=>'']));
+    verify($conn->query('SELECT department_id FROM users WHERE id=3')->fetch_row()[0]===null,'Admin can set department to Unassigned');
     if(getenv('HRMS_TODO_BROWSER')==='1'){
       $conn->query("INSERT INTO leave_requests (employee_id,hr_id,leave_type,start_date,end_date,reason,status) VALUES (3,2,'Sick Leave','2027-01-04','2027-01-05','Leave reason fixture &lt;script&gt;','pending'),(3,2,'Vacation Leave','2027-02-01','2027-02-02','Family trip','approved')");
       $browser=proc_open(['node',__DIR__.'/todo-browser.cjs'],[0=>['pipe','r'],1=>STDOUT,2=>STDERR],$browserPipes,dirname(__DIR__),$environment);

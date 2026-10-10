@@ -92,3 +92,5 @@ All roles share a notification bell beside the role label in the upper-right pag
 Admin and HR unread-message notifications appear only on the chatbot icon and are excluded from the header bell to avoid duplicate alerts.
 
 The System Administrator uses a single **HR Evaluations** sidebar entry with **Assign Evaluations** and **Review Evaluations** tabs on one page. Existing assignment/review URLs redirect to this page, and review detail pages link back to its Review tab. Other administrators cannot access this workflow.
+
+On **Create Employees**, admins can use each row’s **Edit** button to change its department or select **Unassigned**. The dialog starts with the saved department selected. Department updates require an authenticated admin and CSRF token, validate employee/department IDs, and change only the department field.
