@@ -48,6 +48,7 @@ try {
     require dirname(__DIR__) . '/includes/password_tickets.php';
     ensurePasswordTicketSchema($conn);
     $environment = getenv();
+    $environment['HRMS_MAIL_ENABLED']='false';$environment['HRMS_MAIL_USERNAME']='';$environment['HRMS_MAIL_PASSWORD']='';
     $environment['HRMS_DB_NAME'] = $database; $environment['HRMS_BASE_URL'] = '/HRMS';
     $server = proc_open([PHP_BINARY,'-S','127.0.0.1:8091',dirname(__DIR__) . '/tests/features-router.php'], [0=>['pipe','r'],1=>['file',__DIR__.'/password-tickets-server.log','w'],2=>['file',__DIR__.'/password-tickets-server.log','a']], $pipes, dirname(__DIR__), $environment);
     if (!is_resource($server)) throw new RuntimeException('Unable to start test server');
