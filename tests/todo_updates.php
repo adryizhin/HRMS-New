@@ -150,6 +150,11 @@ try {
     verify((int)$conn->query('SELECT department_id FROM users WHERE id=3')->fetch_row()[0]===$departmentId,'HR and Employee cannot edit departments');
     requestFeature('admin','admin/update_employee_department.php',array_merge($departmentForm,['department_id'=>'']));
     verify($conn->query('SELECT department_id FROM users WHERE id=3')->fetch_row()[0]===null,'Admin can set department to Unassigned');
+    foreach(['admin'=>['dashboard.php','create_user_account.php','departments.php','attendance.php','holidays.php','documents.php','evaluations.php','kpi.php','payroll.php','login_logs.php','password_tickets.php','reports.php','hr_evaluations.php'],'hr'=>['dashboard.php','task_submissions.php','201_files.php','hr_leave_requests.php','attendance.php','kpi.php','payroll.php','reports.php','documents.php','evaluations.php']] as $role=>$pages){
+        foreach($pages as $page){[$code,$body]=requestFeature($role,$role.'/'.$page);verify($code===200 && substr_count($body,'id="chatAvatar"')===1 && substr_count($body,'id="chatBox"')===1 && str_contains($body,'id="chatContactsData"'),$role.'/'.$page.' has one shared messaging robot and contact picker');}
+        [$code,$body]=requestFeature($role,'account/settings.php');verify($code===200 && substr_count($body,'id="chatAvatar"')===1,$role.' account settings has messaging robot');
+    }
+    [$code,$body]=requestFeature('employee','employee/dashboard.php');verify(!str_contains($body,'id="chatAvatar"'),'Employee pages do not receive Admin/HR robot');
     if(getenv('HRMS_TODO_BROWSER')==='1'){
       $conn->query("INSERT INTO leave_requests (employee_id,hr_id,leave_type,start_date,end_date,reason,status) VALUES (3,2,'Sick Leave','2027-01-04','2027-01-05','Leave reason fixture &lt;script&gt;','pending'),(3,2,'Vacation Leave','2027-02-01','2027-02-02','Family trip','approved')");
       $browser=proc_open(['node',__DIR__.'/todo-browser.cjs'],[0=>['pipe','r'],1=>STDOUT,2=>STDERR],$browserPipes,dirname(__DIR__),$environment);

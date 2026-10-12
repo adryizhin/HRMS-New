@@ -306,3 +306,13 @@ html body #chatBox.chat-compact { bottom: calc(var(--chat-keyboard-offset, 0px) 
 #chatBox.chat-compact .chat-contact-avatar { width: 34px; height: 34px; }
 #chatBox.chat-compact .chat-header { padding: 8px 10px; }
 #chatBox.chat-compact .chat-contact-heading p { display: none; }
+
+#chatBox [hidden] { display:none!important; }
+#chatBox .chat-picker { display:flex;flex-direction:column;gap:12px;min-width:0; }
+#chatBox .chat-picker > input { width:100%;padding:10px 12px;border:1px solid var(--chat-border);border-radius:20px;background:var(--chat-panel-alt);color:var(--chat-text);font-size:16px; }
+#chatBox .chat-picker-list { display:grid;gap:4px; }
+#chatBox .chat-picker-row { display:flex;align-items:center;gap:12px;width:100%;padding:10px;border:0;border-radius:12px;background:transparent;color:var(--chat-text);text-align:left;cursor:pointer; }
+#chatBox .chat-picker-row:hover { background:var(--chat-panel-alt); }
+#chatBox .chat-picker-details { display:grid;gap:3px;min-width:0;overflow-wrap:anywhere; }
+#chatBox .chat-picker-details strong { font-size:14px; }
+#chatBox .chat-picker-details small,#chatBox .chat-picker-empty { font-size:12px;color:var(--chat-subtext); }

@@ -1,7 +1,7 @@
 <?php
 $h=static fn($v)=>htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');
 ?>
-<div class="activity-desktop-tools"><span class="activity-role"><?= $h($role==='hr'?'Human Resource':ucfirst($role)) ?></span><?= $bell ?></div>
+<div class="activity-desktop-tools"><span class="activity-role"><?= $h($role==='hr'?'Human Resource':ucfirst($role)) ?></span><?= $bell ?><?= $themeToggle ?></div>
 <section id="activity-panel" class="activity-panel" role="dialog" aria-modal="false" aria-labelledby="activity-title" data-url="<?= $h(app_url('notifications/activity.php')) ?>" data-token="<?= $h($_SESSION['activity_csrf']) ?>" hidden>
 <header><h2 id="activity-title">Notifications</h2><button type="button" id="activity-close" aria-label="Close notifications"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></header>
 <p class="activity-help">Unread updates and items that need your attention.</p>

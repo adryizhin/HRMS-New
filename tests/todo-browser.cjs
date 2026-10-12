@@ -109,6 +109,26 @@ const fs=require('fs'),path=require('path');const {chromium}=require('playwright
    }
    await sender.close();await context.close();
   }
+  for(const role of ['admin','hr']){
+   const context=await browser.newContext();const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+   await context.route('**/*',r=>r.request().url().startsWith('http://127.0.0.1:8091/')?r.continue():r.abort());
+   await context.request.post('http://127.0.0.1:8091/HRMS/login/login_process.php',{form:{email:role+'@feature.example',password:'TemporaryFeaturePassword!'}});
+   for(const path of [role+'/kpi.php',role+'/documents.php','account/settings.php']){
+    await page.goto('http://127.0.0.1:8091/HRMS/'+path);await page.waitForFunction(()=>typeof openChat==='function');
+    if(await page.locator('#chatAvatar').count()!==1||await page.locator('#chatBox').count()!==1)throw Error('Duplicate robot on '+path);
+    if(!await page.locator('#chatAvatar .chat-launcher-image').evaluate(img=>img.complete&&img.naturalWidth>0))throw Error('Robot image missing on '+path);
+    await page.locator('#chatAvatar').click();
+    if(!await page.locator('.chat-picker').count())await page.getByRole('button',{name:'Choose conversation',exact:true}).click();
+    const search=page.getByRole('searchbox',{name:'Search messaging contacts',exact:true});await search.fill('no-such-contact');
+    if(await page.locator('.chat-picker-row:visible').count())throw Error('Contact search did not filter');await search.fill('');
+    await page.locator('.chat-picker-row').first().click();await page.locator('#chatInput').fill('Chat from '+path);await page.getByRole('button',{name:'Send message',exact:true}).click();await page.waitForFunction(()=>document.getElementById('chatInput').value==='');
+    await page.locator('.msg.user').filter({hasText:'Chat from '+path}).waitFor();
+    await page.getByRole('button',{name:'Choose conversation',exact:true}).click();await search.waitFor();
+    await page.setViewportSize({width:320,height:568});await page.waitForTimeout(250);const bounds=await page.locator('#chatBox').boundingBox();if(bounds.x<0||bounds.x+bounds.width>321||bounds.y<0||bounds.y+bounds.height>569)throw Error('Off-dashboard chat overflow');
+    await page.setViewportSize({width:1440,height:900});
+   }
+   if(errors.length)throw Error(role+' shared chat errors: '+errors.join('; '));console.log('PASS '+role+' robot, contact search, conversations and sending from KPI, documents and account settings');await context.close();
+  }
   for(const role of ['admin','hr','employee']){
    const context=await browser.newContext();const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
    await context.route('**/*',r=>r.request().url().startsWith('http://127.0.0.1:8091/')?r.continue():r.abort());

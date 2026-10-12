@@ -9,6 +9,8 @@
     const attachButton = document.getElementById('chatAttach');
     const attachmentPreview = document.getElementById('chatAttachmentPreview');
     const script = document.currentScript;
+    const contacts = JSON.parse(document.getElementById('chatContactsData')?.textContent || '[]');
+    const chooseContact = document.getElementById('chatChooseContact');
     const api = new URL('../chat/', script.src);
     let recipient = null, recipientName = '', sending = false, loading = false;
     let previousFocus = null, lastHtml = null, version = 0;
@@ -65,6 +67,27 @@
         if (!words.length) return '?';
         return (Array.from(words[0])[0] + (words.length > 1 ? Array.from(words.at(-1))[0] : '')).toLocaleUpperCase();
     }
+    function contactDetails(id) {
+        const stored = contacts.find(contact => Number(contact.id) === id);
+        if (stored) return stored;
+        const row = [...document.querySelectorAll('.contact-row')].find(row => Number(row.dataset.contactId) === id);
+        return row ? {name:row.dataset.contactName,photo:row.dataset.contactPhoto,role:row.querySelector('.contact-subtitle')?.textContent} : null;
+    }
+    function showContacts() {
+        recipient=null;recipientName='';lastHtml=null;version++;input.value='';input.disabled=true;attachButton.disabled=true;clearAttachment();showError('');
+        document.getElementById('chatContactName').textContent='Messages';document.getElementById('chatContactRole').textContent='Choose a conversation';document.getElementById('chatContactAvatar').textContent='PC';if(chooseContact)chooseContact.hidden=true;
+        const picker=document.createElement('div');picker.className='chat-picker';
+        const search=document.createElement('input');search.type='search';search.placeholder='Search contacts';search.setAttribute('aria-label','Search messaging contacts');
+        const list=document.createElement('div');list.className='chat-picker-list';
+        for(const contact of contacts){const button=document.createElement('button');button.type='button';button.className='chat-picker-row';button.dataset.search=contact.name.toLocaleLowerCase();button.setAttribute('aria-label','Chat with '+contact.name);
+            const avatar=document.createElement('span');avatar.className='chat-contact-avatar';avatar.textContent=initials(contact.name);setAvatarPhoto(avatar,contact.photo);
+            const text=document.createElement('span');text.className='chat-picker-details';const name=document.createElement('strong');name.textContent=contact.name;const role=document.createElement('small');role.textContent=contact.role;text.append(name,role);button.append(avatar,text);button.addEventListener('click',()=>window.startChat(Number(contact.id),contact.name));list.append(button);
+        }
+        const empty=document.createElement('p');empty.className='chat-picker-empty';empty.textContent=contacts.length?'No matching contacts.':'No active contacts available.';empty.hidden=contacts.length>0;
+        search.addEventListener('input',()=>{const term=search.value.trim().toLocaleLowerCase();let count=0;list.querySelectorAll('button').forEach(button=>{button.hidden=!button.dataset.search.includes(term);if(!button.hidden)count++;});empty.hidden=count>0;});
+        picker.append(search,list,empty);body.replaceChildren(picker);
+    }
+    chooseContact?.addEventListener('click',showContacts);
     function addMessageAvatars() {
         body.querySelectorAll('.msg').forEach(message => {
             const outgoing = message.classList.contains('user');
@@ -74,8 +97,8 @@
             const avatar = document.createElement('span');
             avatar.className = 'chat-message-avatar';
             avatar.textContent = initials(name);
-            const contact=[...document.querySelectorAll('.contact-row')].find(row=>Number(row.dataset.contactId)===recipient);
-            setAvatarPhoto(avatar,outgoing?box.dataset.userPhoto:contact?.dataset.contactPhoto);
+            const contact=contactDetails(recipient);
+            setAvatarPhoto(avatar,outgoing?box.dataset.userPhoto:contact?.photo);
             avatar.title = name;
             avatar.setAttribute('role', 'img');
             avatar.setAttribute('aria-label', outgoing ? name + ' (you)' : name);
@@ -109,11 +132,11 @@
         if (changed) { input.value = ''; clearAttachment(); lastHtml = null; version++; }
         recipient = id; recipientName = name;
         document.getElementById('chatContactName').textContent = name;
-        const contact = [...document.querySelectorAll('.contact-row')].find(row=>Number(row.dataset.contactId) === id);
-        const parts = name.trim().split(/\s+/);
+        const contact = contactDetails(id);
         document.getElementById('chatContactAvatar').textContent = initials(name);
-        document.getElementById('chatContactRole').textContent = contact?.querySelector('.contact-subtitle')?.textContent || 'Direct message';
-        setAvatarPhoto(document.getElementById('chatContactAvatar'),contact?.dataset.contactPhoto);
+        document.getElementById('chatContactRole').textContent = contact?.role || 'Direct message';
+        setAvatarPhoto(document.getElementById('chatContactAvatar'),contact?.photo);
+        if(chooseContact)chooseContact.hidden=false;
         attachButton.disabled=false; input.disabled = false; showError('');
         if (changed || lastHtml === null) emptyState('Loading conversation…', 'Your messages will appear here.');
         window.openChat(); resizeInput(); input.focus();
@@ -123,7 +146,7 @@
         box.hidden = false; launcher.setAttribute('aria-expanded','true'); fitViewport();
         if (!recipient && unreadSenders.length) { window.startChat(Number(unreadSenders[0].id), unreadSenders[0].full_name); return; }
         if (recipient) { loadMessages(true); input.focus(); }
-        else { emptyState('Your conversations', 'Choose someone from the Messages list to start chatting.'); box.querySelector('[aria-label="Close chat"]').focus(); }
+        else { showContacts(); body.querySelector('input')?.focus(); }
     };
     window.closeChat = function () {
         box.hidden = true; launcher.setAttribute('aria-expanded','false');

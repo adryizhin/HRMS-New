@@ -1,15 +1,24 @@
 <?php
+if(!empty($GLOBALS['chat_widget_rendered']))return;
+$GLOBALS['chat_widget_rendered']=true;
 require_once __DIR__.'/account_profile.php';require_once __DIR__.'/chat_attachments.php';ensureAccountSchema($conn);
 $_SESSION['chat_upload_csrf']??=bin2hex(random_bytes(32));
 $photoStmt=$conn->prepare('SELECT id,profile_picture FROM users WHERE id=?');$photoStmt->bind_param('i',$_SESSION['user_id']);$photoStmt->execute();$chatProfile=$photoStmt->get_result()->fetch_assoc();
+$chatUserId=(int)$_SESSION['user_id'];
+$chatRoles=$_SESSION['role']==='admin'?"('admin','hr')":"('admin')";
+$chatContacts=$conn->query("SELECT id,full_name,role,profile_picture FROM users WHERE status='active' AND id<>".$chatUserId." AND role IN ".$chatRoles." ORDER BY full_name")->fetch_all(MYSQLI_ASSOC);
+foreach($chatContacts as &$chatContact){$chatContact=['id'=>(int)$chatContact['id'],'name'=>$chatContact['full_name'],'photo'=>profilePhotoUrl($chatContact),'role'=>$chatContact['role']==='hr'?'Human Resource':'Administrator'];}unset($chatContact);
 ?>
+<link rel="stylesheet" href="<?= htmlspecialchars(app_url('admin/chat.css').'?v='.filemtime(__DIR__.'/../admin/chat.css')); ?>">
+<script type="application/json" id="chatContactsData"><?= json_encode($chatContacts,JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT) ?></script>
 <!-- MESSAGING POPUP -->
 <button id="chatAvatar" type="button" onclick="openChat()" aria-label="Open messages" aria-controls="chatBox" aria-expanded="false">
   <span id="chatNotif" aria-hidden="true" hidden></span>
-  <img src="../images/chat-robot-cutout.png" alt="" class="chat-launcher-image">
+  <img src="<?= htmlspecialchars(app_url('images/chat-robot-cutout.png')); ?>" alt="" class="chat-launcher-image">
 </button>
 <section id="chatBox" data-upload-token="<?= htmlspecialchars($_SESSION['chat_upload_csrf'],ENT_QUOTES,'UTF-8') ?>" data-upload-limit="<?= chatUploadLimit() ?>" data-user-photo="<?= htmlspecialchars(profilePhotoUrl($chatProfile),ENT_QUOTES,'UTF-8') ?>" data-user-name="<?= htmlspecialchars((string) ($_SESSION['name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>" role="dialog" aria-modal="false" aria-labelledby="chatContactName" hidden>
   <header class="chat-header">
+    <button type="button" id="chatChooseContact" class="chat-icon-button" aria-label="Choose conversation" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
     <span id="chatContactAvatar" class="chat-contact-avatar" aria-hidden="true">PC</span>
     <div class="chat-contact-heading"><h2 id="chatContactName">Messages</h2><p id="chatContactRole">Choose a contact to get started</p></div>
     <button type="button" class="chat-icon-button" onclick="closeChat()" aria-label="Minimize chat"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14"/></svg></button>

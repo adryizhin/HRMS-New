@@ -111,6 +111,33 @@ try {
     verify($code === 200 && str_contains($body,'Offline') && str_contains($body,'Session open'), 'Login logs distinguish an offline browser from an active online user');
     [$code,$body] = requestFeature('admin','admin/login_logs.php',['export_excel'=>'1']);
     verify($code === 200 && str_contains($body,'Offline') && !str_contains($body,'<html'), 'Export uses the same online status as login logs');
+    $conn->query("INSERT INTO login_logs (user_id,username,role,session_token,login_time,last_ping,last_seen,logout_time,logout_reason) VALUES
+      (2,'Timeout search fixture','hr','timeout-search','2026-01-02 09:00:00','2026-01-02 09:00:00','2026-01-02 09:00:00','2026-01-02 09:15:00','timeout'),
+      (2,'Logout search fixture','hr','logout-search','2026-01-02 09:00:00','2026-01-02 09:00:00','2026-01-02 09:00:00','2026-01-02 09:10:00','logout'),
+      (2,'Literal 100% fixture','hr','literal-search','2026-01-02 09:00:00','2026-01-02 09:00:00','2026-01-02 09:00:00','2026-01-02 09:10:00','logout')");
+    foreach (['time out', 'timeout', 'timed out'] as $term) {
+        [$code,$body] = requestFeature('admin','admin/login_logs.php?q=' . urlencode($term));
+        verify($code === 200 && str_contains($body,'<td>Timeout search fixture</td>') && !str_contains($body,'<td>Disconnected fixture</td>') && !str_contains($body,'<td>Logout search fixture</td>'), "Search finds timed-out sessions using '$term'");
+    }
+    [$code,$body] = requestFeature('admin','admin/login_logs.php?status=timeout&q=Timeout+search+fixture');
+    verify($code === 200 && str_contains($body,'1 session found') && str_contains($body,'<td>Timeout search fixture</td>'), 'Timeout filter combines with name search');
+    [$code,$body] = requestFeature('admin','admin/login_logs.php?status=offline');
+    verify($code === 200 && str_contains($body,'<td>Disconnected fixture</td>') && !str_contains($body,'<td>Timeout search fixture</td>'), 'Offline filter excludes timed-out sessions');
+    [$code,$body] = requestFeature('admin','admin/login_logs.php?status=active');
+    verify($code === 200 && str_contains($body,'<td>Admin Feature Person</td>') && !str_contains($body,'<td>Disconnected fixture</td>'), 'Active filter shows online sessions');
+    [$code,$body] = requestFeature('admin','admin/login_logs.php?q=100%25');
+    verify($code === 200 && str_contains($body,'1 session found') && str_contains($body,'<td>Literal 100% fixture</td>'), 'Search treats SQL wildcard characters literally');
+    [$code,$body] = requestFeature('admin','admin/login_logs.php?q=2026-01-02&status=logout');
+    verify($code === 200 && str_contains($body,'<td>Logout search fixture</td>') && !str_contains($body,'<td>Timeout search fixture</td>'), 'Date search combines with logged-out status');
+    [$code,$body] = requestFeature('admin','admin/login_logs.php?q=' . urlencode("' OR 1=1 -- <script>"));
+    verify($code === 200 && str_contains($body,'No login sessions match your search.') && !str_contains($body,'<td>Timeout search fixture</td>') && str_contains($body,'&lt;script&gt;'), 'Search is safely parameterized and escaped, with a clear empty state');
+    [$code,$body] = requestFeature('admin','admin/login_logs.php',['export_excel'=>'1','q'=>'Timeout search fixture','status'=>'timeout']);
+    $csvLines = preg_split('/\r?\n/', trim($body));
+    verify($code === 200 && count($csvLines) === 2 && str_contains($body,'Timeout search fixture') && !str_contains($body,'Logout search fixture'), 'Export contains only matching filtered sessions');
+    if (getenv('HRMS_THEME_BROWSER') === '1') {
+        $browser = proc_open(['node', __DIR__ . '/theme-browser.cjs'], [0=>['pipe','r'],1=>STDOUT,2=>STDERR], $browserPipes, dirname(__DIR__), $environment);
+        if (!is_resource($browser) || proc_close($browser) !== 0) throw new RuntimeException('Theme browser checks failed');
+    }
     echo "Completed $checks online-user checks.\n";
 } finally {
     if (is_resource($server)) { proc_terminate($server); proc_close($server); }

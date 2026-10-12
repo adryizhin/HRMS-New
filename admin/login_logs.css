@@ -159,3 +159,41 @@ body {
     background: #22c55e;
     color: #0f172a;
 }
+
+/* Search controls match the page cards and wrap on smaller screens. */
+.log-filters {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 18px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+}
+.log-search-field { flex: 1 1 280px; min-width: 0; }
+.log-status-field { flex: 0 1 210px; }
+.log-filters label { display: block; margin-bottom: 7px; font-size: 14px; font-weight: 600; }
+.log-search-input { position: relative; }
+.log-search-input > i { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.log-filters input, .log-filters select {
+  width: 100%; height: 42px; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--card-soft); color: var(--text); padding: 0 12px; font-size: 14px;
+}
+.log-filters input { padding-left: 38px; }
+.log-filters input::placeholder { color: var(--muted); }
+.log-filters input:focus-visible, .log-filters select:focus-visible, .log-filters button:focus-visible, .log-clear:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+.log-filters .clean-btn { min-height: 42px; }
+.log-clear { color: var(--accent); padding: 11px 0; font-size: 14px; }
+.log-results { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+.top-actions { flex-wrap: wrap; }
+.log-table-wrap { max-width: 100%; overflow-x: auto; }
+.log-empty { text-align: center !important; color: var(--muted); padding: 28px !important; }
+@media (max-width: 600px) {
+  .log-filters { padding: 14px; }
+  .log-search-field, .log-status-field { flex-basis: 100%; }
+  .log-table-wrap .table { min-width: 720px; }
+}

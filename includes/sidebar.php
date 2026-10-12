@@ -59,11 +59,12 @@ function renderSidebar(string $role, string $active = ''): void
     $activity = activitySummary($conn,(int)$_SESSION['user_id'],$role);
     $activityCount = $activity['total'];
     $bell = '<button type="button" class="activity-toggle" aria-label="Notifications" aria-controls="activity-panel" aria-expanded="false"><i class="fa-solid fa-bell" aria-hidden="true"></i><span class="activity-toggle-label">Notifications</span><span class="activity-total"' . ($activityCount ? '' : ' hidden') . '>' . ($activityCount>99?'99+':$activityCount) . '</span></button>';
+    $themeToggle = '<button type="button" class="theme-toggle-btn" aria-label="Switch to dark mode" title="Switch to dark mode"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>';
     $menus[$role] = array_merge(array_slice($menus[$role],0,-1),[[$role.'.settings','fa-gear','Account Settings']],array_slice($menus[$role],-1));
     if ($role === 'admin' && isSystemAdministrator($conn,(int)$_SESSION['user_id'])) {
         array_splice($menus['admin'], 2, 0, [['admin.hr_evaluations','fa-clipboard-check','HR Evaluations']]);
     }
-    echo '<header class="mobile-header"><span>Pagecom HRIS</span>' . $bell . '<button id="sidebar-toggle" type="button" aria-label="Open menu" aria-controls="app-sidebar" aria-expanded="false"><span aria-hidden="true">☰</span></button></header>';
+    echo '<header class="mobile-header"><span>Pagecom HRIS</span>' . $bell . $themeToggle . '<button id="sidebar-toggle" type="button" aria-label="Open menu" aria-controls="app-sidebar" aria-expanded="false"><span aria-hidden="true">☰</span></button></header>';
     echo '<div id="sidebar-backdrop" class="sidebar-backdrop" hidden aria-hidden="true"></div>';
     echo '<div class="sidebar" id="app-sidebar" aria-label="Main navigation">';
     echo '<div class="sidebar-heading"><h2>Pagecom HRIS</h2><button id="sidebar-close" type="button" aria-label="Close menu"><span aria-hidden="true">×</span></button></div>';
@@ -78,10 +79,10 @@ function renderSidebar(string $role, string $active = ''): void
         echo '</a>';
     }
 
-    echo '<button id="theme-toggle-btn" class="theme-toggle-btn">🌙 Dark Mode</button>';
     echo '</div>';
     
     require __DIR__ . '/activity_widget.php';
+    if(in_array($role,['admin','hr'],true))require __DIR__ . '/chat_widget.php';
     renderIdleTimeoutScript();
     echo '<script src="' . htmlspecialchars(app_url('includes/sidebar.js')) . '" defer></script>';
 }
@@ -210,24 +211,29 @@ body {
 }
 
 .theme-toggle-btn {
-    margin-top: auto !important;
-    padding: 10px 15px !important;
-    background: transparent !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    flex: 0 0 44px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: var(--hover-bg) !important;
     border: 1px solid var(--btn-border) !important;
     color: var(--text-color) !important;
-    border-radius: 8px !important;
+    border-radius: 50% !important;
     cursor: pointer !important;
-    text-align: left !important;
-    font-weight: 500 !important;
-    transition: all 0.2s ease !important;
-    font-size: 0.9rem !important;
+    font-size: 20px !important;
+    transition: background-color 0.2s ease !important;
 }
-
-.theme-toggle-btn:hover {
-    background: var(--hover-bg) !important;
-    color: var(--hover-text) !important;
-    border-color: var(--accent) !important;
+.theme-toggle-btn:hover { background: var(--card-bg) !important; }
+.theme-toggle-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 400px) {
+    .mobile-header { gap: 8px !important; }
+    .mobile-header > span:first-child { font-size: 14px; min-width: 0; }
 }
+@media print { .theme-toggle-btn { display: none !important; } }
 
 .main {
     margin-left: 240px !important;
@@ -302,20 +308,26 @@ function renderIdleTimeoutScript(): void
 })();
 
 document.addEventListener("DOMContentLoaded", () => {
-    const currentTheme = localStorage.getItem("theme") || "light";
-    document.documentElement.setAttribute("data-theme", currentTheme);
-
-    const toggleBtn = document.getElementById("theme-toggle-btn");
-    if (toggleBtn) {
-        toggleBtn.innerText = currentTheme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode";
-        toggleBtn.addEventListener("click", () => {
-            let theme = document.documentElement.getAttribute("data-theme");
-            let newTheme = theme === "dark" ? "light" : "dark";
-            document.documentElement.setAttribute("data-theme", newTheme);
-            localStorage.setItem("theme", newTheme);
-            toggleBtn.innerText = newTheme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode";
+    const toggles = document.querySelectorAll(".theme-toggle-btn");
+    function applyTheme(theme) {
+        theme = theme === "dark" ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", theme);
+        const label = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+        toggles.forEach(button => {
+            button.setAttribute("aria-label", label);
+            button.title = label;
+            button.querySelector("i").className = "fa-solid " + (theme === "dark" ? "fa-sun" : "fa-moon");
         });
     }
+    applyTheme(localStorage.getItem("theme"));
+    toggles.forEach(button => button.addEventListener("click", () => {
+        const newTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        applyTheme(newTheme);
+        localStorage.setItem("theme", newTheme);
+    }));
+    window.addEventListener("storage", event => {
+        if (event.key === "theme") applyTheme(event.newValue);
+    });
 });
 </script>
 HTML;

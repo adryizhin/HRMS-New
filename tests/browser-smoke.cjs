@@ -10,7 +10,7 @@ const accounts=JSON.parse(fs.readFileSync('.runtime/test-accounts.json','utf8'))
   await ctx.request.post('login/login_process.php',{form:{email:user.email,password:accounts.password}});
   const page=await ctx.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(role+'/dashboard.php');
-  await page.locator('#theme-toggle-btn').click();
+  await page.locator('.theme-toggle-btn:visible').click();
   const theme=await page.locator('html').getAttribute('data-theme');
   results.push({role,theme,errors});await ctx.close();
  }

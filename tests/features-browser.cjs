@@ -34,7 +34,7 @@ const fs = require('fs');
     await printPage.screenshot({ path: path.join(__dirname, 'features-report-print.png'), fullPage: true });
     await printPage.close();
     await page.screenshot({ path: path.join(__dirname, 'features-report-light.png'), fullPage: true });
-    await page.locator('#theme-toggle-btn').click();
+    await page.locator('.theme-toggle-btn:visible').click();
     await page.waitForTimeout(300);
     await page.screenshot({ path: path.join(__dirname, 'features-report-dark.png'), fullPage: true });
     await page.locator('select[name="chart"]').selectOption('bar');

@@ -189,6 +189,6 @@ function timeAgo(?string $datetime): string {
 </aside>
 </div>
 </div>
-<?php require __DIR__ . '/../includes/chat_widget.php'; ?>
+
 </body>
 </html>

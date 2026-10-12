@@ -244,7 +244,7 @@ $systemLogs = $result ? $result->fetch_assoc()['total'] : 0;
 <script src="<?= htmlspecialchars(app_url('admin/chat_contacts.js')); ?>" defer></script>
 </div>
 
-<?php require __DIR__ . '/../includes/chat_widget.php'; ?>
+
 
 <script>let employeesSelected=false; function toggleEmployees(){employeesSelected=!employeesSelected;document.querySelectorAll('input[name="employee_ids[]"]').forEach(box=>box.checked=employeesSelected);}</script>
 </body></html>

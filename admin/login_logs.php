@@ -23,6 +23,38 @@ if (isset($_POST['cleanup_duplicates'])) {
     exit();
 }
 
+/* SEARCH AND STATUS FILTERS (shared by the table and export). */
+$searchInput = $_GET['q'] ?? $_POST['q'] ?? '';
+$search = is_string($searchInput) ? mb_substr(trim($searchInput), 0, 160) : '';
+$statusInput = $_GET['status'] ?? $_POST['status'] ?? 'all';
+$statusFilter = is_string($statusInput) && in_array($statusInput, ['all', 'timeout', 'active', 'offline', 'logout'], true) ? $statusInput : 'all';
+$query = "SELECT logs.* FROM (
+    SELECT l.*, (l.logout_time IS NULL AND l.last_seen > DATE_SUB(NOW(), INTERVAL 90 SECOND)
+        AND l.last_ping > DATE_SUB(NOW(), INTERVAL 15 MINUTE) AND l.session_token IS NOT NULL
+        AND l.session_token <> '' AND u.status = 'active') AS is_online
+    FROM login_logs l LEFT JOIN users u ON u.id = l.user_id
+) AS logs WHERE 1 = 1";
+$params = [];
+if ($search !== '') {
+    $query .= " AND LOWER(CONCAT_WS(' ', username, role, login_time, logout_time,
+        DATE_FORMAT(login_time, '%b %d, %Y %h:%i %p'), DATE_FORMAT(logout_time, '%b %d, %Y %h:%i %p'),
+        logout_reason, CASE WHEN logout_reason = 'timeout' THEN 'timeout time out timed out'
+            WHEN logout_time IS NOT NULL THEN 'inactive logout'
+            WHEN is_online = 1 THEN 'active session open' ELSE 'offline session open' END)) LIKE ? ESCAPE '!'";
+    $params[] = '%' . str_replace(['!', '%', '_'], ['!!', '!%', '!_'], mb_strtolower($search)) . '%';
+}
+switch ($statusFilter) {
+    case 'timeout': $query .= " AND logout_reason = 'timeout'"; break;
+    case 'active': $query .= " AND is_online = 1"; break;
+    case 'offline': $query .= " AND logout_time IS NULL AND (is_online = 0 OR is_online IS NULL)"; break;
+    case 'logout': $query .= " AND logout_time IS NOT NULL AND (logout_reason <> 'timeout' OR logout_reason IS NULL)"; break;
+}
+$query .= " ORDER BY id DESC";
+$statement = $conn->prepare($query);
+if ($params) $statement->bind_param('s', $params[0]);
+$statement->execute();
+$logs = $statement->get_result();
+
 /* EXPORT TO CSV (EXCEL FORMAT) */
 if (isset($_POST['export_excel'])) {
 
@@ -41,8 +73,7 @@ if (isset($_POST['export_excel'])) {
         'Status'
     ]);
 
-    $query = "SELECT l.*, (l.logout_time IS NULL AND l.last_seen > DATE_SUB(NOW(), INTERVAL 90 SECOND) AND l.last_ping > DATE_SUB(NOW(), INTERVAL 15 MINUTE) AND l.session_token IS NOT NULL AND l.session_token <> '' AND u.status = 'active') AS is_online FROM login_logs l LEFT JOIN users u ON u.id = l.user_id ORDER BY l.id DESC";
-    $result = $conn->query($query);
+    $result = $logs;
 
     while ($row = $result->fetch_assoc()) {
 
@@ -63,9 +94,6 @@ if (isset($_POST['export_excel'])) {
     exit();
 }
 
-/* FETCH LOGS */
-$query = "SELECT l.*, (l.logout_time IS NULL AND l.last_seen > DATE_SUB(NOW(), INTERVAL 90 SECOND) AND l.last_ping > DATE_SUB(NOW(), INTERVAL 15 MINUTE) AND l.session_token IS NOT NULL AND l.session_token <> '' AND u.status = 'active') AS is_online FROM login_logs l LEFT JOIN users u ON u.id = l.user_id ORDER BY l.id DESC";
-$logs = $conn->query($query);
 ?>
 
 <!DOCTYPE html>
@@ -76,7 +104,7 @@ $logs = $conn->query($query);
 <title>Login Logs</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="stylesheet" href="login_logs.css">
+<link rel="stylesheet" href="login_logs.css?v=20261012">
 </head>
 
 <body>
@@ -89,6 +117,31 @@ $logs = $conn->query($query);
 <h1>Login Logs</h1>
 <br>
 
+<form method="GET" class="log-filters" role="search">
+    <div class="log-search-field">
+        <label for="log-search">Search login logs</label>
+        <div class="log-search-input">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <input id="log-search" name="q" type="search" maxlength="160"
+                   value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>"
+                   placeholder="Name, date, time, or time out">
+        </div>
+    </div>
+    <div class="log-status-field">
+        <label for="log-status">Session status</label>
+        <select id="log-status" name="status">
+            <?php foreach (['all' => 'All sessions', 'timeout' => 'Timed Out', 'active' => 'Active', 'offline' => 'Offline', 'logout' => 'Logged Out / Inactive'] as $value => $label): ?>
+                <option value="<?= $value; ?>" <?= $statusFilter === $value ? 'selected' : ''; ?>><?= $label; ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <button type="submit" class="clean-btn"><i class="fa-solid fa-filter" aria-hidden="true"></i> Search</button>
+    <?php if ($search !== '' || $statusFilter !== 'all'): ?>
+        <a href="login_logs.php" class="log-clear">Clear filters</a>
+    <?php endif; ?>
+</form>
+<p class="log-results" role="status"><?= $logs->num_rows; ?> <?= $logs->num_rows === 1 ? 'session' : 'sessions'; ?> found</p>
+
 <div class="top-actions">
 
     <!-- CLEAN DUPLICATES -->
@@ -100,6 +153,8 @@ $logs = $conn->query($query);
 
     <!-- EXPORT -->
     <form method="POST">
+        <input type="hidden" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>">
+        <input type="hidden" name="status" value="<?= $statusFilter; ?>">
         <button name="export_excel" class="clean-btn export-btn">
             <i class="fa-solid fa-file-excel"></i> Export to Excel
         </button>
@@ -107,6 +162,7 @@ $logs = $conn->query($query);
 
 </div>
 
+<div class="log-table-wrap">
 <table class="table">
 <thead>
 <tr>
@@ -120,6 +176,9 @@ $logs = $conn->query($query);
 </thead>
 
 <tbody>
+<?php if ($logs->num_rows === 0): ?>
+<tr><td colspan="6" class="log-empty">No login sessions match your search. Try another search or clear the filters.</td></tr>
+<?php endif; ?>
 <?php while($row = $logs->fetch_assoc()): ?>
 <tr>
   <td><?= htmlspecialchars($row['username']); ?></td>
@@ -166,6 +225,7 @@ $logs = $conn->query($query);
 </tbody>
 
 </table>
+</div>
 
 </div>
 
