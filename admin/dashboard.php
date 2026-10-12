@@ -70,6 +70,11 @@ $activeUsers = getOnlineUsers($conn);
    TIME AGO FUNCTION
 ========================= */
 
+/**
+ * Format a database timestamp as elapsed time.
+ * @param string|null $datetime
+ * @return string
+ */
 function timeAgo(?string $datetime): string {
 
     if (!$datetime) {
