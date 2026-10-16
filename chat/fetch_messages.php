@@ -59,10 +59,18 @@ while ($row = $result->fetch_assoc()) {
         $seen->execute();
     }
 
-    echo "<div class='msg $class'>";
+    $imageClass = !empty($row['attachment_path']) && chatAttachmentImageMime($row['attachment_path']) ? ' chat-image-message' : '';
+    echo "<div class='msg $class$imageClass'>";
     echo htmlspecialchars($row['message']);
     if (!empty($row['attachment_path'])) {
-        echo '<a class="chat-file-link" href="'.htmlspecialchars(app_url('chat/download_attachment.php?id='.(int)$row['id']),ENT_QUOTES,'UTF-8').'" download><span aria-hidden="true">📎</span> '.htmlspecialchars($row['attachment_name'],ENT_QUOTES,'UTF-8').' <small>'.round($row['attachment_size']/1024).' KB</small></a>';
+        $attachmentUrl = app_url('chat/download_attachment.php?id=' . (int)$row['id']);
+        $attachmentName = htmlspecialchars($row['attachment_name'], ENT_QUOTES, 'UTF-8');
+        if (chatAttachmentImageMime($row['attachment_path'])) {
+            $previewUrl = htmlspecialchars($attachmentUrl . '&preview=1', ENT_QUOTES, 'UTF-8');
+            echo '<a class="chat-image-link" href="' . $previewUrl . '" target="_blank" rel="noopener" aria-label="Open picture: ' . $attachmentName . '"><img class="chat-message-image" src="' . $previewUrl . '" alt="' . $attachmentName . '" decoding="async"></a>';
+        } else {
+            echo '<a class="chat-file-link" href="'.htmlspecialchars($attachmentUrl,ENT_QUOTES,'UTF-8').'" download><span aria-hidden="true">📎</span> '.$attachmentName.' <small>'.round($row['attachment_size']/1024).' KB</small></a>';
+        }
     }
 
     /* STATUS LABEL (for sender only) */

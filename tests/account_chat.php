@@ -25,9 +25,10 @@ function requestFeature(string $role, string $path, ?array $form = null): array 
     $body = curl_exec($curl);
     if ($body === false) throw new RuntimeException(curl_error($curl));
     $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    $contentType = curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
     curl_close($curl);
     if (preg_match('/Fatal error|Parse error|Warning:|Deprecated:/', $body)) throw new RuntimeException('PHP error at ' . $path . ': ' . strip_tags($body));
-    return [$code, $body];
+    return [$code, $body, $contentType];
 }
 try {
     $conn->query('SET FOREIGN_KEY_CHECKS = 0');
@@ -64,6 +65,22 @@ try {
     [$code]=requestFeature('employee','chat/download_attachment.php?id='.$messageId);verify($code===404,'Nonparticipant cannot download attachment');
     [$code,$body]=requestFeature('hr','hr/dashboard.php');preg_match('/data-upload-token="([a-f0-9]+)"/',$body,$token);
     [$code,$body]=uploadFeature('hr','chat/send_message.php',['receiver_id'=>'1','message'=>'HR attachment','csrf_token'=>$token[1],'attachment'=>new CURLFile($uploadFixture,'text/plain','hr-report.txt')]);verify($code===200&&$body==='success','HR can send attachments');
+    [$code]=requestFeature('admin','chat/download_attachment.php?id='.$messageId.'&preview=1');verify($code===415,'Documents cannot be served as inline images');
+    foreach (['admin','hr'] as $imageSender) {
+        $receiver = $imageSender === 'admin' ? '2' : '1';
+        $uploadToken = $imageSender === 'admin' ? $chatToken : $token[1];
+        [$code,$body]=uploadFeature($imageSender,'chat/send_message.php',['receiver_id'=>$receiver,'message'=>'Picture caption','csrf_token'=>$uploadToken,'attachment'=>new CURLFile(dirname(__DIR__).'/images/logo.png','image/png','picture <fixture>.png')]);
+        verify($code===200&&$body==='success',"$imageSender can send a picture");
+        $imageId=(int)$conn->query('SELECT id FROM chat_messages ORDER BY id DESC LIMIT 1')->fetch_row()[0];
+        foreach (['admin','hr'] as $viewer) {
+            [$code,$body]=requestFeature($viewer,'chat/fetch_messages.php?receiver_id='.($viewer==='admin'?'2':'1'));
+            verify($code===200&&str_contains($body,'class="chat-message-image"')&&str_contains($body,'id='.$imageId.'&amp;preview=1')&&str_contains($body,'picture &lt;fixture&gt;.png')&&str_contains($body,'Picture caption'),"$viewer sees $imageSender picture as an image with safe name and caption");
+            [$code,$body,$mime]=requestFeature($viewer,'chat/download_attachment.php?id='.$imageId.'&preview=1');
+            verify($code===200&&$mime==='image/png'&&str_starts_with($body,"\x89PNG"),"$viewer can load $imageSender inline picture with correct MIME type");
+        }
+        [$code]=requestFeature('employee','chat/download_attachment.php?id='.$imageId.'&preview=1');verify($code===404,'Nonparticipant cannot view inline picture');
+    }
+    [$code]=uploadFeature('admin','chat/send_message.php',['receiver_id'=>'2','csrf_token'=>$chatToken,'attachment'=>new CURLFile($uploadFixture,'image/png','fake.png')]);verify($code===400,'Non-image content disguised as a picture is rejected');
     [$code]=uploadFeature('admin','chat/send_message.php',['receiver_id'=>'2','csrf_token'=>'bad','attachment'=>new CURLFile($uploadFixture,'text/plain','blocked.txt')]);verify($code===400,'Invalid upload token is blocked');
     [$code]=uploadFeature('admin','chat/send_message.php',['receiver_id'=>'2','csrf_token'=>$chatToken,'attachment'=>new CURLFile($uploadFixture,'text/plain','blocked.php')]);verify($code===400,'Executable file extension is blocked');
     [$code]=uploadFeature('admin','chat/send_message.php',['receiver_id'=>'9999','csrf_token'=>$chatToken,'attachment'=>new CURLFile($uploadFixture,'text/plain','invalid.txt')]);verify($code===400,'Unknown attachment recipient blocked');

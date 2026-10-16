@@ -639,28 +639,47 @@ body {
     }
 }
 @media print {
-    .sidebar,
-    .form-panel,
-    .topbar,
-    .btn {
+    /* Print only the payroll slip, regardless of shared navigation styles. */
+    html body > :not(.main),
+    html body .main > :not(.generator),
+    html body .generator > :not(.payslip) {
         display:none !important;
     }
-    body {
-        background:#fff;
+    html body {
+        display:block !important;
+        min-height:0 !important;
+        background:#fff !important;
+        color:#0f172a !important;
+        --payroll-panel:#fff;
+        --payroll-panel-soft:#f8fafc;
+        --payroll-line:#dfe7f1;
+        --payroll-text:#0f172a;
+        --payroll-muted:#475569;
+        --payroll-accent:#2563eb;
+        --payroll-green:#15803d;
+        --payroll-red:#be123c;
+        --payroll-yellow:#b45309;
+        --payroll-header-start:#eff6ff;
+        --payroll-header-mid:#e2e8f0;
+        --payroll-header-end:#f8fafc;
     }
-    .main {
+    html body .main {
         margin:0 !important;
         width:100% !important;
-        padding:0;
+        padding:0 !important;
     }
-    .generator {
-        display:block;
-    }
-    .payslip {
+    html body .generator { display:block !important; }
+    html body .payslip {
         border:0;
         border-radius:0;
+        box-shadow:none;
     }
+    .payslip .line-item { break-inside:avoid; }
+    .payslip .payslip-body { grid-template-columns:1fr 1fr; }
+    .payslip .summary-grid { grid-template-columns:repeat(4, minmax(0, 1fr)); }
+    .payslip .payslip-meta, .payslip .payslip-footer { flex-direction:row; }
 }
+
 </style>
 </head>
 <body>

@@ -18,3 +18,9 @@ function validateChatAttachment(array $file): string {
     if(in_array($ext,['docx','xlsx','pptx'],true)){$zip=new ZipArchive();$folder=['docx'=>'word/','xlsx'=>'xl/','pptx'=>'ppt/'][$ext];if($zip->open($file['tmp_name'])!==true)throw new InvalidArgumentException('Invalid Office document.');$valid=$zip->locateName('[Content_Types].xml')!==false; $found=false;for($i=0;$i<$zip->numFiles;$i++)if(str_starts_with($zip->getNameIndex($i),$folder)){$found=true;break;}$zip->close();if(!$valid||!$found)throw new InvalidArgumentException('Invalid Office document.');}
     return $ext;
 }
+
+/** Supported raster images can be previewed; documents always download. */
+function chatAttachmentImageMime(string $path): ?string {
+    if (!preg_match('/\A[a-f0-9]{32}\.(jpg|jpeg|png|webp)\z/', $path, $match)) return null;
+    return ['jpg'=>'image/jpeg', 'jpeg'=>'image/jpeg', 'png'=>'image/png', 'webp'=>'image/webp'][$match[1]];
+}

@@ -134,6 +134,10 @@ try {
     [$code,$body] = requestFeature('admin','admin/login_logs.php',['export_excel'=>'1','q'=>'Timeout search fixture','status'=>'timeout']);
     $csvLines = preg_split('/\r?\n/', trim($body));
     verify($code === 200 && count($csvLines) === 2 && str_contains($body,'Timeout search fixture') && !str_contains($body,'Logout search fixture'), 'Export contains only matching filtered sessions');
+    if (getenv('HRMS_PAYSLIP_PRINT_BROWSER') === '1') {
+        $browser = proc_open(['node', __DIR__ . '/payslip-print-browser.cjs'], [0=>['pipe','r'],1=>STDOUT,2=>STDERR], $browserPipes, dirname(__DIR__), $environment);
+        if (!is_resource($browser) || proc_close($browser) !== 0) throw new RuntimeException('Payslip print checks failed');
+    }
     if (getenv('HRMS_THEME_BROWSER') === '1') {
         $browser = proc_open(['node', __DIR__ . '/theme-browser.cjs'], [0=>['pipe','r'],1=>STDOUT,2=>STDERR], $browserPipes, dirname(__DIR__), $environment);
         if (!is_resource($browser) || proc_close($browser) !== 0) throw new RuntimeException('Theme browser checks failed');
