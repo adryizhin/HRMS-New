@@ -18,23 +18,38 @@ Run `php tests/features.php` for isolated feature checks. It clones only the dat
 
 Start Apache and MySQL in XAMPP, then open http://localhost/HRMS/ . Existing account passwords are unchanged.
 
-This installation uses its own PHP 8.4.26 CGI runtime in `.runtime/php`. The root `.htaccess` selects it for HRMS only; XAMPP's PHP installation is unchanged. The configuration contains this machine's absolute project path. If moving the project, update `.htaccess` and `.runtime/php/php.ini`, or use a web server already running PHP 8.4 and remove the custom `PHPRC`, `Action`, and PHP handler directives. The bundled CGI endpoint is restricted to local requests.
+This checkout uses the PHP runtime provided by XAMPP; no machine-specific CGI runtime is required.
 
 PHP needs mysqli, mbstring, curl, openssl, fileinfo, and zip. Database defaults are localhost, root, no password, database `hris`. Override them using `HRMS_DB_HOST`, `HRMS_DB_USER`, `HRMS_DB_PASS`, and `HRMS_DB_NAME`. Set `HRMS_BASE_URL` when the public URL differs from the folder under the web root.
 
-## Database
+## Database migration using hris.sql
 
-The existing database has already been repaired. Do not import the full SQL file over it.
+The root `hris.sql` is a full snapshot of the current database, including accounts (with existing password hashes), payroll, attendance, evaluations, tickets, chat, and settings stored in the database. It includes 20 tables. It uses InnoDB and `utf8mb4_general_ci`, with 191-character indexed email fields. It contains no DROP TABLE, CREATE DATABASE, USE, DEFINER, table-lock, or MariaDB client sandbox commands. This avoids several common cross-version import errors; it does not guarantee every historical XAMPP version can run the application.
 
-For a fresh installation, import `hris-no-comments.sql`; it creates/selects `hris` and includes the exported data. Email addresses use a 191-character column so the unique email index also imports on the installed MySQL 5.6 server. The fresh import was verified to contain 15 tables and 14 automatically incrementing ID columns.
+Use a XAMPP installation with **PHP 8.2 or newer** and the extensions listed above. The current export/import is verified on **MariaDB 10.4.32 with PHP 8.2.12**. The SQL uses syntax intended for MySQL 5.7+ / MariaDB 10.2+, but those other server versions have not been tested here. Older PHP packages cannot be made compatible merely by importing an SQL file. Reference: [MariaDB dump client compatibility](https://mariadb.org/mariadb-dump-file-compatibility-change/).
 
-For an interrupted import with existing data, back up the database first, then run:
+1. Copy the entire HRMS project to the new XAMPP `htdocs` folder, including `vendor/` and **`uploads/`**. Photos, message attachments, and documents are files; an SQL import cannot restore them. Do not copy old browser/PHP session files.
+2. Start Apache and MySQL. In phpMyAdmin, create an **empty** database named `hris` with `utf8mb4_general_ci`, select it, and import `hris.sql`. Do not import over an existing installation; back up an existing database first and restore into a separate empty database.
+3. Alternatively, from a Windows Command Prompt with the destination database already created, run:
 
-```powershell
-.\.runtime\php\php.exe -c .\.runtime\php\php.ini .\scripts\repair-database.php
-```
+   `C:\xampp\mysql\bin\mysql.exe -u root -p --default-character-set=utf8mb4 hris < C:\xampp\htdocs\HRMS\hris.sql`
 
-The repair restores missing indexes, automatic IDs, and foreign keys without replacing rows. It refuses to shorten email values longer than 191 characters. A pre-repair backup for this installation is stored in `.runtime/hris-before-checks.sql`.
+   This redirection example is for **Command Prompt**, not PowerShell. Enter the destination database password when prompted; press Enter if it is blank. For phpMyAdmin size limits, use this command-line import.
+4. Set `HRMS_DB_HOST`, `HRMS_DB_USER`, `HRMS_DB_PASS`, and `HRMS_DB_NAME` for the destination if its database credentials differ from the defaults. Configure `HRMS_BASE_URL` if the public folder name changes. Existing account passwords stay the same; users log in again on the destination.
+5. Configure email and AI service settings separately on the destination. The SQL contains no Gmail app password or server database password. Do not distribute personal local credential files with the export. Leave ticket email inactive until the destination sender is configured, to avoid sending queued status updates unintentionally.
+6. Open `http://localhost/HRMS/`, sign in, and check a profile photo, chat attachment, document, evaluation and payslip.
+
+Refresh the export before each migration with MySQL running (pause application writes/schema changes during backup and verification):
+
+`C:\xampp\php\php.exe scripts/export-database.php`
+
+The exporter reads the configured source database using a consistent transaction and replaces `hris.sql` only after a successful dump. It does not alter source records. If XAMPP is installed elsewhere, use its PHP path; set `HRMS_DUMP_BIN` if its dump executable cannot be found automatically. Temporary database credentials are deleted after export. Keep the SQL private; the root Apache rule denies web access to the dump.
+
+Verify a fresh export using a disposable database (requires CREATE/DROP privileges):
+
+`C:\xampp\php\php.exe tests/database_export.php`
+
+This imports into a randomly named test database, compares every row plus all table schemas/indexes/foreign keys/automatic ID counters, then deletes the test database. It never imports into or replaces the source database.
 
 ## Verification
 
