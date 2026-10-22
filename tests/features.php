@@ -96,6 +96,20 @@ try {
         if ($role === 'employee') verify(str_contains($body,'No attendance records match'), 'Employee cannot search another staff member attendance');
         else verify(str_contains($body, '<td>Admin Feature Person</td>') && !str_contains($body, '<td>Employee Feature Person</td>'), "$role attendance filters by staff name");
     }
+    $conn->query("INSERT INTO departments (name) VALUES ('Research 100% Team')");
+    $searchDepartment=(int)$conn->insert_id;
+    $conn->query('UPDATE users SET department_id='.$searchDepartment.' WHERE id=1');
+    foreach (['Admin Feature'=>'Admin Feature Person','TEST-1'=>'Admin Feature Person','admin@feature.example'=>'Admin Feature Person','Human Resource'=>'Hr Feature Person','Research'=>'Admin Feature Person','100%'=>'Admin Feature Person'] as $searchTerm=>$expected) {
+        [$code,$body]=requestFeature('hr','hr/201_files.php?q='.urlencode($searchTerm));
+        preg_match('/class="employee-list">([\s\S]*?)<\/aside>/', $body, $list);
+        verify($code===200 && str_contains($body,'1 staff record found') && str_contains($list[1]??'','<strong>'.$expected.'</strong>') && !str_contains($list[1]??'','<strong>Employee Feature Person</strong>'), '201 Files searches staff by '.$searchTerm);
+    }
+    [$code,$body]=requestFeature('hr','hr/201_files.php?employee_id=1&q=Admin+Feature');
+    verify($code===200 && str_contains($body,'employee_id=1&amp;q=Admin+Feature') && str_contains($body,'<h1>Admin Feature Person</h1>'), '201 Files preserves search and selected staff record');
+    [$code,$body]=requestFeature('hr','hr/201_files.php?q='.urlencode("' OR 1=1 -- <script>"));
+    verify($code===200 && str_contains($body,'No staff records match your search.') && str_contains($body,'&lt;script&gt;'), '201 Files safely escapes search and shows no-match state');
+    [$code,$body]=requestFeature('employee','hr/201_files.php?q=Admin');
+    verify(!str_contains($body,'class="employee-list"'), 'Employee cannot use HR staff search');
     foreach (['admin/kpi.php','admin/evaluations.php','admin/documents.php','hr/documents.php','hr/evaluations.php','hr/kpi.php','hr/201_files.php?employee_id=1','hr/201_files.php?employee_id=2'] as $path) {
         $role = explode('/', $path)[0]; [$code, $body] = requestFeature($role, $path);
         verify($code === 200 && str_contains($body, 'sidebar'), "$path accessible");

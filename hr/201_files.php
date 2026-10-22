@@ -14,6 +14,9 @@ ensureTaskSchema($conn);
 $hr_id = (int) $_SESSION['user_id'];
 $selectedEmployeeId = isset($_GET['employee_id']) ? (int) $_GET['employee_id'] : 0;
 $message = '';
+$searchInput = $_GET['q'] ?? $_POST['q'] ?? '';
+$search = is_string($searchInput) ? mb_substr(trim($searchInput), 0, 160) : '';
+$searchPattern = '%' . str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $search) . '%';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $documentId = isset($_POST['document_id']) ? (int) $_POST['document_id'] : 0;
@@ -33,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->execute()) {
             $redirectEmployee = isset($_POST['employee_id']) ? (int) $_POST['employee_id'] : 0;
-            header("Location: 201_files.php?employee_id={$redirectEmployee}&updated=1");
+            header('Location: 201_files.php?' . http_build_query(['employee_id' => $redirectEmployee, 'updated' => 1, 'q' => $search]));
             exit;
         }
 
@@ -41,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$employees = $conn->query("
+$employeesStmt = $conn->prepare("
     SELECT
         u.id,
         u.employee_id,
@@ -57,9 +60,16 @@ $employees = $conn->query("
     LEFT JOIN departments d ON u.department_id = d.id
     LEFT JOIN employee_documents ed ON ed.employee_id = u.id
     WHERE u.role IN ('employee', 'admin', 'hr')
+      AND CONCAT_WS(' ', u.full_name, u.employee_id, u.email, u.role,
+          CASE WHEN u.role = 'hr' THEN 'Human Resource' ELSE '' END,
+          COALESCE(d.name, 'Unassigned')) LIKE ? ESCAPE '!'
     GROUP BY u.id, u.employee_id, u.full_name, u.role, u.email, u.status, d.name
     ORDER BY u.full_name ASC
 ");
+
+$employeesStmt->bind_param('s', $searchPattern);
+$employeesStmt->execute();
+$employees = $employeesStmt->get_result();
 
 $selectedEmployee = null;
 $documents = null;
@@ -167,6 +177,17 @@ if ($selectedEmployeeId > 0) {
   box-shadow: 0 10px 22px rgba(15, 23, 42, 0.05);
 }
 .panel h2 { color: var(--files-text); font-size: 18px; margin-bottom: 14px; }
+.staff-search { margin-bottom:16px; }
+.staff-search label { display:block; font-size:13px; font-weight:600; margin-bottom:8px; color:var(--files-text); }
+.staff-search-box { position:relative; }
+.staff-search-box > i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--files-muted); pointer-events:none; }
+.staff-search input { width:100%; min-width:0; padding:11px 12px 11px 36px; border:1px solid var(--files-border); border-radius:8px; background:var(--files-panel-alt); color:var(--files-text); font:inherit; font-size:13px; }
+.staff-search input::placeholder { color:var(--files-muted); }
+.staff-search-actions { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-top:10px; }
+.staff-search-actions button { font-size:13px; }
+.staff-search-actions a { color:var(--files-accent); font-size:13px; }
+.staff-search-count { color:var(--files-muted); margin:0 0 12px; font-size:12px; }
+.staff-search :is(input,button,a):focus-visible { outline:2px solid var(--files-accent); outline-offset:2px; }
 .employee-list { display: grid; gap: 9px; max-height: 690px; overflow-y: auto; }
 .employee-item {
   background: var(--files-panel-alt);
@@ -298,10 +319,19 @@ if ($selectedEmployeeId > 0) {
   <div class="files-layout">
     <aside class="panel">
       <h2><i class="fa-solid fa-users"></i> All Staff</h2>
+      <form method="GET" class="staff-search" role="search">
+        <label for="staff-search">Search staff records</label>
+        <?php if ($selectedEmployeeId > 0): ?><input type="hidden" name="employee_id" value="<?= $selectedEmployeeId; ?>"><?php endif; ?>
+        <div class="staff-search-box"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="staff-search" type="search" name="q" maxlength="160" value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Name, ID, email, department or role"></div>
+        <div class="staff-search-actions"><button type="submit"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Search</button>
+          <?php if ($search !== ''): ?><a href="201_files.php<?= $selectedEmployeeId > 0 ? '?employee_id=' . $selectedEmployeeId : ''; ?>">Clear search</a><?php endif; ?>
+        </div>
+      </form>
+      <p class="staff-search-count" role="status"><?= $employees->num_rows; ?> staff <?= $employees->num_rows === 1 ? 'record' : 'records'; ?> found</p>
       <div class="employee-list">
         <?php if ($employees && $employees->num_rows > 0): ?>
           <?php while ($employee = $employees->fetch_assoc()): ?>
-            <a class="employee-item <?= (int) $employee['id'] === $selectedEmployeeId ? 'active' : ''; ?>" href="201_files.php?employee_id=<?= (int) $employee['id']; ?>">
+            <a class="employee-item <?= (int) $employee['id'] === $selectedEmployeeId ? 'active' : ''; ?>" href="<?= htmlspecialchars('201_files.php?' . http_build_query(['employee_id' => (int)$employee['id'], 'q' => $search]), ENT_QUOTES, 'UTF-8'); ?>">
               <strong><?= htmlspecialchars($employee['full_name']); ?></strong>
               <span><?= htmlspecialchars($employee['employee_id'] ?: 'No employee ID'); ?> · <?= strtoupper(htmlspecialchars($employee['role'])); ?></span>
               <span><?= htmlspecialchars($employee['department_name'] ?: 'Unassigned'); ?></span>
@@ -309,7 +339,7 @@ if ($selectedEmployeeId > 0) {
             </a>
           <?php endwhile; ?>
         <?php else: ?>
-          <div class="empty">No employees found.</div>
+          <div class="empty">No staff records match your search.</div>
         <?php endif; ?>
       </div>
     </aside>
@@ -369,6 +399,7 @@ if ($selectedEmployeeId > 0) {
                   </a>
 
                   <form class="review-form" method="POST">
+                    <input type="hidden" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="document_id" value="<?= (int) $document['id']; ?>">
                     <input type="hidden" name="employee_id" value="<?= (int) $selectedEmployeeId; ?>">
                     <select name="status" aria-label="Document status">
