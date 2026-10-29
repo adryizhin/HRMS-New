@@ -121,7 +121,7 @@ try {
     [$code, $body] = requestFeature('hr', 'hr/hr_leave_requests.php');
     preg_match('/name="csrf_token" value="([a-f0-9]+)"/', $body, $token);
     $id = (int) $conn->query("SELECT id FROM leave_requests WHERE request_key = '$key'")->fetch_row()[0];
-    [$code] = requestFeature('hr','hr/hr_leave_requests.php',['csrf_token'=>$token[1],'id'=>$id,'status'=>'rejected']);
+    [$code] = requestFeature('hr','hr/hr_leave_requests.php',['csrf_token'=>$token[1],'id'=>$id,'status'=>'rejected','review_notes'=>'Please reschedule <safely>.','return_status'=>'rejected']);
     verify($code === 200 && remainingLeaveDays($conn,3,2026) === 14, 'HR rejection restores reserved days');
     [$code] = requestFeature('hr','hr/hr_leave_requests.php',['csrf_token'=>$token[1],'id'=>$id,'status'=>'approved']);
     verify($code === 200 && remainingLeaveDays($conn,3,2026) === 14 && (int) $conn->query('SELECT COUNT(*) FROM notifications')->fetch_row()[0] === 1, 'Repeated review cannot change a finalized request or duplicate notification');
@@ -132,6 +132,38 @@ try {
     verify($code === 200 && str_contains($body,'Leave request sent successfully') && remainingLeaveDays($conn,3,2026) === 12, 'Leave form commits and displays updated balance');
     [$code] = requestFeature('employee','employee/request_leave.php',['csrf_token'=>'bad']);
     verify($code === 200 && remainingLeaveDays($conn,3,2026) === 12, 'Invalid form token does not deduct leave');
+    $reviewed=$conn->query('SELECT reviewed_at,reviewed_by,review_notes FROM leave_requests WHERE id='.$id)->fetch_assoc();
+    verify($reviewed['reviewed_at']!==null && (int)$reviewed['reviewed_by']===2 && $reviewed['review_notes']==='Please reschedule <safely>.','Leave decision stores reviewer, timestamp and notes');
+    [$code,$body]=requestFeature('employee','employee/request_leave.php');
+    verify(str_contains($body,'My leave requests') && str_contains($body,'Please reschedule &lt;safely&gt;.') && !str_contains($body,'<h3>My Payroll</h3>'),'Employee history shows safe review details without placeholder dashboard totals');
+    preg_match('/name="csrf_token" value="([a-f0-9]+)"/',$body,$csrf);
+    preg_match('/name="request_key" value="([a-f0-9]+)"/',$body,$requestKey);
+    $balanceBefore=remainingLeaveDays($conn,3,2027);
+    $form=['csrf_token'=>$csrf[1],'request_key'=>$requestKey[1],'hr_id'=>2,'leave_type'=>'Vacation Leave','start_date'=>'2027-02-01','end_date'=>'2027-02-03','reason'=>'Detailed request <example>'];
+    [$code,$body]=requestFeature('employee','employee/request_leave.php',$form+['action'=>'preview']);
+    verify($code===200 && str_contains($body,'3 requested working day(s)') && remainingLeaveDays($conn,3,2027)===$balanceBefore,'Working-day preview does not submit or reserve leave');
+    [$code,$body]=requestFeature('employee','employee/request_leave.php',array_replace($form,['end_date'=>'2027-01-30']));
+    verify(str_contains($body,'Select valid dates in order') && str_contains($body,'Detailed request &lt;example&gt;') && str_contains($body,'value="2027-02-01"'),'Date validation preserves safely escaped form entries');
+    [$code,$body]=requestFeature('employee','employee/request_leave.php',array_replace($form,['reason'=>str_repeat('x',2001)]));
+    verify(str_contains($body,'2,000 characters') && remainingLeaveDays($conn,3,2027)===$balanceBefore,'Overlong reason is rejected without balance change');
+    [$code,$body]=requestFeature('employee','employee/request_leave.php',array_replace($form,['hr_id'=>99999]));
+    verify(str_contains($body,'Select an active HR reviewer.') && remainingLeaveDays($conn,3,2027)===$balanceBefore,'Unavailable reviewer cannot receive a leave request');
+    [$code,$body]=requestFeature('employee','employee/request_leave.php',$form);
+    verify(str_contains($body,'Leave request sent successfully') && str_contains($body,'Detailed request &lt;example&gt;') && remainingLeaveDays($conn,3,2027)===$balanceBefore-3,'Submitted request appears in history and reserves correct working days');
+    $latest=(int)$conn->query("SELECT id FROM leave_requests WHERE request_key='".$requestKey[1]."'")->fetch_row()[0];
+    $blocked=false;try{reviewLeaveRequest($conn,9999,$latest,'approved');}catch(InvalidArgumentException $e){$blocked=true;}
+    verify($blocked && $conn->query('SELECT status FROM leave_requests WHERE id='.$latest)->fetch_row()[0]==='pending','Another HR reviewer cannot finalize the request');
+    verify(reviewLeaveRequest($conn,2,$latest,'approved','Enjoy your leave.') && !reviewLeaveRequest($conn,2,$latest,'rejected','Overwrite attempt'),'Final decision cannot be changed or notify twice');
+    verify(remainingLeaveDays($conn,3,2027)===$balanceBefore-3,'Approval keeps previously reserved days without double deduction');
+    [$code,$body]=requestFeature('hr','hr/hr_leave_requests.php?status=approved');
+    verify(str_contains($body,'3 working day(s)') && str_contains($body,'Enjoy your leave.') && str_contains($body,'TEST-3'),'HR sees working days, staff identity and saved review notes');
+    submitLeaveRequest($conn,1,2,'Vacation Leave','2027-03-01','2027-03-02','Private admin leave fixture',str_repeat('c',64));
+    [$code,$body]=requestFeature('employee','employee/request_leave.php');
+    verify(!str_contains($body,'Private admin leave fixture'),'Employee request history excludes other staff');
+    if(getenv('HRMS_LEAVE_BROWSER')==='1') {
+        $browser=proc_open(['node',__DIR__.'/leave-browser.cjs'],[0=>['pipe','r'],1=>STDOUT,2=>STDERR],$bp,dirname(__DIR__),$environment);
+        if(!is_resource($browser)||proc_close($browser)!==0)throw new RuntimeException('Leave browser checks failed');
+    }
     if (getenv('HRMS_FEATURE_BROWSER') === '1') {
         $node = getenv('HRMS_TEST_NODE') ?: 'node';
         $browserCheck = proc_open([$node, __DIR__ . '/features-browser.cjs'], [0=>['pipe','r'],1=>STDOUT,2=>STDERR], $browserPipes, dirname(__DIR__), $environment);

@@ -117,3 +117,11 @@ Gmail sending has been enabled in the local sender configuration and an activati
 Ticket updates commit independently of SMTP delivery. Administrators see pending/failed mail counts and can retry up to three messages per click after sender setup. SMTP acceptance is recorded as Sent; inbox delivery and spam filtering are controlled by the receiving provider. The dedicated `tests/ticket_email.php` uses a loopback SMTP receiver and a disposable database; it does not send real emails.
 
 All Admin and Human Resource pages using the shared navigation include one robot messaging launcher, including account settings and evaluation views. The chat popup includes a searchable contact picker and a back button to switch conversations, so messaging is usable without visiting the dashboard. Profile avatars, unread counts, file attachments, and responsive layout use the same shared widget. Employee pages do not receive this launcher.
+
+## Leave request details and review
+
+Employee Request Leave now shows the annual working-day balance and personal request history instead of unrelated dashboard totals. The form retains entered values after validation errors. Check working days previews the requested working days and available balance for each affected year without submitting or reserving leave. Submission validates dates, overlapping requests, active HR reviewer, allowance, request token, and a reason of at most 2,000 characters.
+
+Human Resource review includes staff ID, department, email, requested working days, submission time, optional employee-visible notes, and the recorded decision reviewer/time. Reviews retain the chosen status filter. A completed decision cannot be overwritten or generate duplicate updates. Submission and review use the same employee-lock order to serialize balance changes. Pending and approved requests reserve days; rejection restores them. Personal history is restricted to the signed-in employee.
+
+The review audit columns are added automatically by the shared leave schema helper. Existing decisions remain intact and are labeled legacy records when no review timestamp was recorded. Run `php tests/features.php` for 84 isolated feature checks; `HRMS_LEAVE_BROWSER=1` additionally exercises submission, review, and responsive layouts with Playwright.

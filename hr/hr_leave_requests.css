@@ -183,3 +183,8 @@ body {
 .leave-table .leave-status { justify-self:start; }
 
 .leave-header h1 i {color:var(--accent);font-size:24px;margin-right:6px;} .leave-stat-marker {width:24px;height:24px;background:transparent !important;color:var(--accent);font-size:20px;opacity:.8;} .leave-stat-marker.pending{color:var(--status-warning)} .leave-stat-marker.approved{color:var(--status-success)} .leave-stat-marker.rejected{color:var(--status-danger)}
+
+.leave-detail { display:block; color:var(--muted); font-size:11px; margin-top:5px; overflow-wrap:anywhere; }
+.leave-review-actions label { width:100%; font-size:11px; color:var(--muted); }
+.leave-review-actions textarea { width:100%; min-width:0; resize:vertical; border:1px solid var(--border); border-radius:8px; padding:9px; background:var(--card-soft); color:var(--text); font:inherit; font-size:12px; }
+.leave-reviewed p { margin-top:8px; white-space:pre-wrap; overflow-wrap:anywhere; }
