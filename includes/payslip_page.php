@@ -638,6 +638,13 @@ body {
         font-size:24px;
     }
 }
+.payee-search { margin-bottom:16px; }
+.payee-search-control { position:relative; }
+.payee-search-control > i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--payroll-muted); pointer-events:none; }
+.field .payee-search-control input { padding-left:36px; padding-right:42px; }
+.payee-search-control button { position:absolute; right:3px; top:50%; transform:translateY(-50%); width:34px; min-height:34px; padding:0; background:transparent; color:var(--payroll-muted); border:0; }
+.payee-search-control button[hidden] { display:none; }
+.payee-search-help { color:var(--payroll-muted); font-size:12px; line-height:1.5; margin:8px 0 0; }
 @media print {
     /* Print only the payroll slip, regardless of shared navigation styles. */
     html body > :not(.main),
@@ -710,13 +717,18 @@ body {
             <form method="<?= $canGenerate ? 'POST' : 'GET'; ?>">
                 <?php if ($canGenerate): ?>
                     <div class="field">
+                        <div class="payee-search">
+                            <label for="payee-search">Search staff</label>
+                            <div class="payee-search-control"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="payee-search" type="search" maxlength="160" placeholder="Name, ID, department or role" autocomplete="off" aria-controls="employee_id" aria-describedby="payee-search-result"><button type="button" id="payee-search-clear" aria-label="Clear staff search" hidden><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div>
+                            <p id="payee-search-result" class="payee-search-help" role="status">Search filters the payee list. Choose a payee, then Generate &amp; Save.</p>
+                        </div>
                         <label for="employee_id">Payee</label>
                         <select id="employee_id" name="employee_id" required>
                             <?php if (!$employees || $employees->num_rows === 0): ?>
                                 <option value="">No active users</option>
                             <?php else: ?>
                                 <?php while ($row = $employees->fetch_assoc()): ?>
-                                    <option value="<?= (int) $row['id']; ?>" <?= (int) $row['id'] === $employeeId ? 'selected' : ''; ?>>
+                                    <option value="<?= (int) $row['id']; ?>" data-search="<?= htmlspecialchars(implode(' ', [$row['full_name'], $row['employee_id'] ?? '', $row['department_name'] ?? 'Unassigned', $row['role'], $row['role'] === 'hr' ? 'Human Resource' : '']), ENT_QUOTES, 'UTF-8'); ?>" <?= (int) $row['id'] === $employeeId ? 'selected' : ''; ?>>
                                         <?= htmlspecialchars($row['full_name']); ?> - <?= strtoupper(htmlspecialchars($row['role'])); ?> (<?= htmlspecialchars($row['employee_id'] ?? 'No ID'); ?>)
                                     </option>
                                 <?php endwhile; ?>
@@ -924,6 +936,7 @@ body {
         </section>
     </div>
 </main>
+<?php if ($canGenerate): ?><script src="<?= htmlspecialchars(app_url('hr/payslip_search.js') . '?v=' . filemtime(__DIR__ . '/../hr/payslip_search.js'), ENT_QUOTES, 'UTF-8'); ?>" defer></script><?php endif; ?>
 </body>
 </html>
 <?php
