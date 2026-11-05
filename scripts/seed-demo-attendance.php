@@ -5,11 +5,7 @@ require dirname(__DIR__) . '/config.php';
 require_once dirname(__DIR__) . '/includes/attendance.php';
 ensureAttendanceTable($conn);
 $apply = in_array('--apply', $argv, true);
-$groups = [
- 'employee'=>['employee',['juancruz','mariasantos','josereyes','anagarcia','miguelmendoza','sofiaramos','carlobautista','isabellatorres','paoloflores','camilleaquino']],
- 'hr'=>['hr',['patriciavillanueva','markcruz','angelanavarro','rafaelmercado','christinecastillo','jeromesantiago','nicolevaldez','francistolentino','biancasoriano','danielmanalo']],
- 'admin'=>['itadmin',['gabrielfernandez','andreasalazar','joshualim','katrinapadilla','vincentpascual','alyssagonzales','kennethrivera','michelledominguez','christianleon','ericamagbanua']]
-];
+$groups = require dirname(__DIR__) . '/config/demo_accounts.php';
 $now = new DateTimeImmutable('now', new DateTimeZone('Asia/Manila'));
 $end = $now->setTime(0,0);
 if ($now < $end->setTime(17,0)) $end=$end->modify('-1 day');

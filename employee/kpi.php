@@ -15,7 +15,7 @@ $factors = $kpi['factors'];
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My KPI</title>
+<title>My Key Performance Indicators</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="<?= htmlspecialchars(app_url('employee/dashboard.css')); ?>">
 <style>
@@ -107,6 +107,10 @@ $factors = $kpi['factors'];
   overflow: hidden;
 }
 .progress span { background: var(--kpi-accent); display: block; height: 100%; }
+.kpi-method { margin-bottom:22px; padding:18px; border:1px solid var(--kpi-border); border-radius:8px; background:var(--kpi-panel); }
+.kpi-method h2 { font-size:17px; color:var(--kpi-text); margin-bottom:8px; }
+.kpi-method p { font-size:13px; color:var(--kpi-muted); line-height:1.7; margin-top:8px; }
+.factor-card .factor-definition { margin-top:10px; font-size:12px; }
 @media (max-width: 780px) {
   .kpi-hero { grid-template-columns: 1fr; }
 }
@@ -118,12 +122,14 @@ $factors = $kpi['factors'];
 <div class="main">
   <div class="kpi-hero">
     <div>
-      <p class="eyebrow">Performance Indicator</p>
-      <h1>My KPI</h1>
-      <p>Your KPI is calculated from available attendance records, HR-rated submissions, task completion, deadline discipline, and overdue task health. Missing categories are skipped until data exists.</p>
+      <p class="eyebrow">My performance</p>
+      <h1>Key Performance Indicators</h1>
+      <p>Key Performance Indicators (KPIs) are measurable values used to track work performance. These indicators measure your attendance reliability, reviewed work quality, task completion, and on-time delivery.</p>
     </div>
     <div class="kpi-score">
-      <strong class="<?= htmlspecialchars($kpi['color_class']); ?>"><?= number_format((float) $kpi['overall'], 1); ?>%</strong>
+      <strong class="<?= htmlspecialchars($kpi['color_class']); ?>"><?= number_format((float)$kpi['overall'],1); ?>%</strong>
+      <span>Overall performance</span>
+      <span><?= (int)$kpi['available_weight']; ?>% coverage</span>
       <span><?= htmlspecialchars($kpi['label']); ?></span>
     </div>
   </div>
@@ -151,6 +157,7 @@ $factors = $kpi['factors'];
     </div>
   </div>
 
+  <section class="kpi-method" aria-label="How performance is measured"><h2>How your score is calculated</h2><p>Reviewed work quality: 40%; task completion: 25%; attendance reliability: 20%; on-time delivery: 15%. The overall score starts at zero and adds each measure multiplied by its fixed weight. Missing measures contribute zero points; available weights never expand. For example, 100% attendance with no work data earns 20% overall. Coverage shows how much of the assessment has recorded data.</p><p>Ratings: Excellent 85–100%; On Track 70–84.9%; Needs Support 50–69.9%; At Risk below 50%. Missing measures count as zero; no records produce 0% overall. Future pending tasks are excluded until due or submitted. Overdue unsubmitted tasks count against completion and timeliness.</p></section>
   <div class="factor-grid">
     <?php foreach ($factors as $factor): ?>
       <?php
@@ -163,9 +170,10 @@ $factors = $kpi['factors'];
           <span class="factor-weight"><?= (int) $factor['weight']; ?>% weight</span>
         </div>
         <div class="factor-value <?= $displayScore === null ? 'muted' : htmlspecialchars(scoreColorClass($displayScore)); ?>">
-          <?= $displayScore === null ? 'N/A' : number_format($displayScore, 1) . '%'; ?>
+          <?= number_format($displayScore ?? 0.0, 1); ?>%<?php if($displayScore===null): ?> <small>(no data)</small><?php endif; ?>
         </div>
         <p><?= htmlspecialchars($factor['detail']); ?></p>
+        <p class="factor-definition"><?= htmlspecialchars($factor['definition']); ?></p>
         <div class="progress"><span style="width: <?= $displayScore === null ? 0 : $displayScore; ?>%;"></span></div>
       </article>
     <?php endforeach; ?>

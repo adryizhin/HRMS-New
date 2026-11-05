@@ -125,3 +125,29 @@ Employee Request Leave now shows the annual working-day balance and personal req
 Human Resource review includes staff ID, department, email, requested working days, submission time, optional employee-visible notes, and the recorded decision reviewer/time. Reviews retain the chosen status filter. A completed decision cannot be overwritten or generate duplicate updates. Submission and review use the same employee-lock order to serialize balance changes. Pending and approved requests reserve days; rejection restores them. Personal history is restricted to the signed-in employee.
 
 The review audit columns are added automatically by the shared leave schema helper. Existing decisions remain intact and are labeled legacy records when no review timestamp was recorded. Run `php tests/features.php` for 84 isolated feature checks; `HRMS_LEAVE_BROWSER=1` additionally exercises submission, review, and responsive layouts with Playwright.
+
+## Performance scoring
+
+Key Performance Indicators now use four measures: reviewed work quality 40%, task completion 25%, attendance reliability 20%, and on-time delivery 15%. The former separate overdue-task-health factor has been removed. Overdue unfinished work reduces completion and deadline delivery directly.
+
+Attendance reliability awards full credit to present days, 75% credit to late days and zero to absent days. Quality averages only final review scores on submitted work marked Reviewed, clamped individually to 0–100. Completion is submitted work divided by tasks already due or submitted; future and undated pending tasks have no measurable outcome and are excluded. On-time delivery is on-time submitted work divided by deadline-tracked tasks already due or submitted. Missing timestamps earn no on-time credit.
+
+All overall scores use a fixed 100-point scale: each measure contributes its score multiplied by its assigned weight; missing measures contribute zero points. Weights are never redistributed. Perfect attendance alone earns 20% overall. Perfect quality plus completion alone earns 65%. No records earn 0%. Every person receives an overall score and rating: Excellent at 85+, On Track at 70+, Needs Support at 50+, otherwise At Risk. Coverage remains visible to distinguish missing evidence from measured results; individual measures without evidence display 0% (no data). Reports, CSV exports, averages and rankings use the same fixed scores, including zeros. Historical periods exclude submissions after the period end and evaluate deadlines as of that end date (or now for ongoing periods); stored review scores remain the latest recorded values because review score history is not versioned.
+
+Run `php tests/features.php` for 98 isolated feature checks, including weighted formulas, overdue tasks, incomplete assessments, missing timestamps, future records and historical cutoffs.
+
+## Demo evaluation records
+
+All 36 currently active accounts have six sample evaluation assignments each (216 total), including reviewed work with sample scores/feedback, submitted work awaiting review, overdue pending work, and future assignments. Assignment instructions and submitted reports are real TXT files under uploads/tasks and uploads/submissions. These originated as fictional demonstration records. Their visible titles, descriptions, feedback and attachments now use normal evaluation wording; the internal demo-evaluation-v1 assignment keys retain their provenance and prevent duplicate seeding. AI score fields remain empty; no AI service or outbound email is called.
+
+The 30 named demo accounts follow their existing Excellent / Neutral / Low groups and currently produce 98%, 74%, and 38% overall respectively. Original staff accounts also have sample evaluations; their overall scores continue to include their existing records. All HR assignments belong to the System Administrator; Employee and IT Admin assignments belong to active Human Resource reviewers. Existing tasks and scores are preserved.
+
+Use `php scripts/seed-demo-evaluations.php --all-active` to preview recipients, then add `--apply` to seed missing assignments. Omit `--all-active` to target only the 30 named demo accounts. Unique assignment keys prevent duplicates on repeated runs. Set `HRMS_DEMO_EVALUATION_REPORT` to a writable CSV path to generate a per-account score summary. The source demo account identifiers are shared with the attendance seeder in config/demo_accounts.php.
+
+## Personnel document fixtures
+
+All 36 active accounts now have five PDF records in My Documents and HR 201 Files: Staff Profile, Role Responsibilities, Performance Summary, Training and Development Plan, and Onboarding Checklist. The 180 records include 108 verified, 36 awaiting review, and 36 returned for corrections. Existing documents and reviews are preserved. Performance summaries are snapshots of the recorded measures at generation time; they do not update automatically when attendance or evaluations change.
+
+The files are stored in uploads/201_files and must be copied with the database when migrating. No government IDs, medical records, signed contracts or formal credential claims are fabricated. The records use existing account information, role responsibilities, current performance measures and proposed development activities.
+
+To prepare a fresh fixture set, run `php scripts/seed-demo-documents.php <manifest-path>`, then use the bundled Python runtime to run `scripts/generate-personnel-pdfs.py <manifest-path>`, inspect the PDFs, and register them with `php scripts/seed-demo-documents.php <manifest-path> --apply`. The generator preserves existing PDFs, and repeated registration skips existing records. Keep the manifest private because it includes staff contact information.

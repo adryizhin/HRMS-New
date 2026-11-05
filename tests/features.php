@@ -160,6 +160,49 @@ try {
     submitLeaveRequest($conn,1,2,'Vacation Leave','2027-03-01','2027-03-02','Private admin leave fixture',str_repeat('c',64));
     [$code,$body]=requestFeature('employee','employee/request_leave.php');
     verify(!str_contains($body,'Private admin leave fixture'),'Employee request history excludes other staff');
+    $conn->query("INSERT INTO users (id,full_name,email,role,status,password,created_at) VALUES
+      (1001,'KPI complete fixture','kpi-complete@feature.example','employee','active','unused','2026-01-01'),
+      (1002,'KPI partial fixture','kpi-partial@feature.example','employee','active','unused','2026-01-01'),
+      (1003,'KPI empty fixture','kpi-empty@feature.example','employee','active','unused','2026-01-01')");
+    $conn->query("INSERT INTO attendance (user_id,attendance_date,shift,login_time,status,late_minutes) VALUES
+      (1001,'2026-09-01','morning','2026-09-01 08:00:00','present',0),
+      (1001,'2026-09-02','morning','2026-09-02 08:45:00','late',15),
+      (1001,'2026-09-03','morning','2026-09-03 17:00:00','absent',0),
+      (1002,'2026-09-01','morning','2026-09-01 08:00:00','present',0),
+      (1002,'2099-09-01','morning','2099-09-01 17:00:00','absent',0)");
+    $conn->query("INSERT INTO tasks (employee_id,hr_id,title,deadline,submission_file,submitted_at,status,hr_score,created_at) VALUES
+      (1001,2,'KPI on time','2026-09-10','fixture.txt','2026-09-10 12:00:00','reviewed',80,'2026-09-01'),
+      (1001,2,'KPI late','2026-09-11','fixture.txt','2026-09-12 12:00:00','submitted',95,'2026-09-01'),
+      (1001,2,'KPI overdue','2026-09-12',NULL,NULL,'pending',NULL,'2026-09-01'),
+      (1001,2,'KPI future','2099-12-31',NULL,NULL,'pending',100,'2026-09-01')");
+    $measured=calculateEmployeeKpi($conn,1001,'2026-09-01','2026-09-30');
+    verify(count($measured['factors'])===4 && array_sum(array_column($measured['factors'],'weight'))===100 && $measured['factors']['hr_rating']['weight']===40,'Performance uses four outcome measures with 100 percent total weight');
+    verify($measured['overall']===65.3 && $measured['label']==='Needs Support' && $measured['assessment_status']==='complete','Complete assessment matches the weighted scoring formula');
+    verify(abs($measured['factors']['completion']['score']-200/3)<0.001 && abs($measured['factors']['deadline']['score']-100/3)<0.001 && $measured['stats']['overdue_pending']===1,'Overdue unfinished work reduces completion and deadline scores');
+    verify($measured['stats']['eligible_tasks']===3 && $measured['stats']['assigned']===4,'Future pending work does not reduce delivery performance');
+    verify($measured['factors']['hr_rating']['score']===80.0 && $measured['stats']['scored']===1,'Draft and unreviewed scores cannot inflate work quality');
+    $past=calculateEmployeeKpi($conn,1001,'2026-09-01','2026-09-11');
+    verify($past['stats']['submitted']===1 && $past['stats']['eligible_tasks']===2 && $past['factors']['deadline']['score']===50.0,'Past period includes end-date deadlines but excludes later submissions');
+    $partial=calculateEmployeeKpi($conn,1002);
+    verify($partial['overall']===20.0 && $partial['available_weight']===20 && $partial['label']==='At Risk' && $partial['stats']['attendance_total']===1,'Perfect attendance alone contributes 20 overall points and future attendance is excluded');
+    $empty=calculateEmployeeKpi($conn,1003);
+    verify($empty['overall']===0.0 && $empty['available_weight']===0 && $empty['label']==='At Risk','No records produce a zero-based overall score and rating');
+    $conn->query("UPDATE tasks SET submitted_at=NULL,hr_score=150 WHERE employee_id=1001 AND title='KPI on time'");
+    $unknown=calculateEmployeeKpi($conn,1001,'2026-09-01','2026-09-30');
+    verify(abs((float)$unknown['factors']['deadline']['score'])<0.001 && abs((float)$unknown['factors']['hr_rating']['score']-100)<0.001,'Missing timestamps earn no on-time credit and final review scores are clamped');
+    [$code,$body]=requestFeature('employee','employee/kpi.php');
+    verify($code===200 && str_contains($body,'Key Performance Indicators') && str_contains($body,'coverage') && str_contains($body,'Missing measures count as zero'),'Personal performance page explains incomplete assessments');
+    [$code,$body]=requestFeature('hr','hr/kpi.php');
+    verify($code===200 && str_contains($body,'Attendance reliability') && str_contains($body,'40%') && str_contains($body,'Missing measures contribute zero points'),'HR performance table uses the new measures and coverage labels');
+    preg_match('/<tr>\s*<td>\s*<strong>KPI partial fixture<\/strong>([\s\S]*?)<\/tr>/', $body, $partialRow);
+    verify(str_contains($partialRow[1]??'','>20.0%</span>') && str_contains($partialRow[1]??'','20% coverage'), 'HR table gives only 20 overall points to perfect attendance with missing work data');
+    [$code,$body]=requestFeature('hr','hr/reports.php?period=monthly&year=2026&month=9&export=csv');
+    $csvRows=array_map('str_getcsv',preg_split('/\r?\n/',trim($body)));
+    $partialExport=array_values(array_filter($csvRows,static fn($row)=>($row[2]??'')==='KPI partial fixture'));
+    verify($code===200 && ($partialExport[0][10]??'')==='20' && ($partialExport[0][11]??'')==='20','CSV exports the fixed-weight overall score and data coverage');
+    $conn->query("INSERT INTO tasks (employee_id,hr_id,title,deadline,submission_file,submitted_at,status,hr_score,created_at) VALUES (1003,2,'Quality and completion only',NULL,'fixture.txt','2026-09-10 12:00:00','reviewed',100,'2026-09-01')");
+    $qualityOnly=calculateEmployeeKpi($conn,1003,'2026-09-01','2026-09-30');
+    verify($qualityOnly['overall']===65.0 && $qualityOnly['available_weight']===65 && $qualityOnly['label']==='Needs Support','Perfect quality plus completion earns 65 fixed points without attendance or deadline data');
     if(getenv('HRMS_LEAVE_BROWSER')==='1') {
         $browser=proc_open(['node',__DIR__.'/leave-browser.cjs'],[0=>['pipe','r'],1=>STDOUT,2=>STDERR],$bp,dirname(__DIR__),$environment);
         if(!is_resource($browser)||proc_close($browser)!==0)throw new RuntimeException('Leave browser checks failed');

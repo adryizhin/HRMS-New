@@ -23,7 +23,7 @@ if ($employees) {
 }
 
 usort($rows, static function (array $a, array $b): int {
-    return $b['kpi']['overall'] <=> $a['kpi']['overall'];
+    return ($b['kpi']['overall'] <=> $a['kpi']['overall']) ?: strcasecmp($a['full_name'],$b['full_name']);
 });
 ?>
 
@@ -32,7 +32,7 @@ usort($rows, static function (array $a, array $b): int {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Employee KPIs</title>
+<title>Staff Key Performance Indicators</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="dashboard.css">
 <style>
@@ -103,6 +103,10 @@ td { color: var(--kpi-text); }
   padding: 30px;
   text-align: center;
 }
+.kpi-method { padding:18px; margin-bottom:20px; background:var(--kpi-table-bg); border:1px solid var(--kpi-border); border-radius:8px; color:var(--kpi-text); font-size:13px; line-height:1.7; }
+.kpi-method summary { cursor:pointer; font-weight:600; }
+.kpi-method ul { padding-left:20px; margin-top:12px; }
+.kpi-method p { margin-top:12px; color:var(--kpi-muted); }
 @media (max-width: 760px) {
   .kpi-header { align-items: flex-start; flex-direction: column; }
 }
@@ -114,24 +118,30 @@ td { color: var(--kpi-text); }
 <div class="main">
   <div class="kpi-header">
     <div>
-      <p class="eyebrow">Performance Indicator</p>
-      <h1>Employee KPIs</h1>
-      <p>KPI combines attendance, HR-rated work, completion, deadline discipline, and overdue task health. Scores are recalculated from current records whenever this page loads.</p>
+      <p class="eyebrow">Staff performance</p>
+      <h1>Key Performance Indicators</h1>
+      <p>Key Performance Indicators (KPIs) are measurable values used to track staff work performance. Compare attendance reliability, reviewed work quality, task completion, and on-time delivery. Scores update from current records whenever this page loads.</p>
     </div>
   </div>
 
+  <details class="kpi-method"><summary>Understand the indicators and scoring</summary><ul>
+    <li><strong>Reviewed work quality (40%):</strong> average final reviewer score for reviewed, rated submissions.</li>
+    <li><strong>Task completion (25%):</strong> submitted tasks divided by assignments already due or submitted.</li>
+    <li><strong>Attendance reliability (20%):</strong> present days plus 75% of late days, divided by all recorded attendance days.</li>
+    <li><strong>On-time delivery (15%):</strong> on-time submissions divided by deadline-tracked tasks already due or submitted. Missing submission timestamps receive no on-time credit.</li>
+  </ul><p>Overdue unsubmitted work reduces completion and on-time delivery. Future and undated pending work are excluded until an outcome is measurable. Unrated work does not count toward quality. Scores range from 0 to 100.</p><p>Overall performance starts at zero on a fixed 100-point scale. Missing measures contribute zero points, and weights are never redistributed. Attendance at 100% with all other measures missing earns 20% overall. Coverage shows the combined weight of measures with data. Ratings apply to the overall score: Excellent 85–100%, On Track 70–84.9%, Needs Support 50–69.9%, At Risk below 50%.</p></details>
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
-          <th>Employee</th>
-          <th>KPI</th>
-          <th>Attendance</th>
-          <th>HR Rating</th>
-          <th>Completion</th>
-          <th>Deadline</th>
-          <th>Open Tasks</th>
-          <th>Status</th>
+          <th>Staff member</th>
+          <th>Overall performance</th>
+          <th>Attendance reliability</th>
+          <th>Reviewed work quality</th>
+          <th>Task completion</th>
+          <th>On-time delivery</th>
+          <th>Overdue pending tasks</th>
+          <th>Performance rating</th>
         </tr>
       </thead>
       <tbody>
@@ -146,17 +156,17 @@ td { color: var(--kpi-text); }
                   <?= $row['department_name'] ? ' - ' . htmlspecialchars($row['department_name']) : ''; ?>
                 </span>
               </td>
-              <td><span class="score-pill <?= htmlspecialchars($kpi['color_class']); ?>"><?= number_format((float) $kpi['overall'], 1); ?>%</span></td>
+              <td><span class="score-pill <?= htmlspecialchars($kpi['color_class']); ?>"><?= number_format((float)$kpi['overall'],1); ?>%</span></td>
               <?php foreach (['attendance', 'hr_rating', 'completion', 'deadline'] as $factorKey): ?>
                 <?php $score = $kpi['factors'][$factorKey]['score']; ?>
-                <td class="mini-score"><?= $score === null ? '<span>N/A</span>' : number_format(clampScore((float) $score), 1) . '%'; ?></td>
+                <td class="mini-score"><?= number_format($score===null ? 0.0 : clampScore((float)$score),1); ?>%<?php if($score===null): ?> <span>(no data)</span><?php endif; ?></td>
               <?php endforeach; ?>
               <td class="mini-score"><?= (int) $kpi['stats']['overdue_pending']; ?> <span>overdue</span></td>
-              <td><?= htmlspecialchars($kpi['label']); ?></td>
+              <td><?= htmlspecialchars($kpi['label']); ?><span class="employee-meta"><?= (int)$kpi['available_weight']; ?>% coverage</span></td>
             </tr>
           <?php endforeach; ?>
         <?php else: ?>
-          <tr><td colspan="8" class="empty">No active employees found.</td></tr>
+          <tr><td colspan="8" class="empty">No active staff found.</td></tr>
         <?php endif; ?>
       </tbody>
     </table>

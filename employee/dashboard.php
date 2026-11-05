@@ -92,13 +92,17 @@ $assignments = $assignments->get_result();
     $statusIcon = $status === 'reviewed' ? 'fa-circle-check' : ($status === 'submitted' ? 'fa-clock' : 'fa-hourglass-half');
     $deadlineText = $a['deadline'] ? date("M d, Y", strtotime($a['deadline'])) : 'No deadline';
     $isOverdue = $a['deadline'] && $a['deadline'] < $todayDate;
+    $batchLabel = $a['assignment_batch'] ?: 'TASK-' . $a['id'];
+    if (preg_match('/\Ademo-evaluation-v1-(employee|hr|admin)-(\d+)\z/', $batchLabel, $batchParts)) {
+        $batchLabel = 'EVAL-' . strtoupper($batchParts[1]) . '-' . str_pad((string)((int)$batchParts[2] + 1), 2, '0', STR_PAD_LEFT);
+    }
 ?>
 
 <article class="task-card <?= htmlspecialchars($status); ?>">
 
     <div class="task-card-head">
         <div>
-            <span class="task-batch"><?= htmlspecialchars($a['assignment_batch'] ?: 'TASK-' . $a['id']); ?></span>
+            <span class="task-batch"><?= htmlspecialchars($batchLabel); ?></span>
             <h3><?= htmlspecialchars($a['title']); ?></h3>
         </div>
         <span class="status-chip <?= htmlspecialchars($status); ?>">

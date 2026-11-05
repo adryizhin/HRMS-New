@@ -52,7 +52,7 @@ function renderReportsPage(mysqli $conn, string $role): void
         $totals['submitted'] += count($tasks);
         $reviewed = count(array_filter($tasks, static fn(array $task): bool => $task['status'] === 'reviewed'));
         $totals['reviewed'] += $reviewed;
-        if ($kpi['available_weight'] > 0) $scores[] = $kpi['overall'];
+        $scores[] = $kpi['overall'];
         $rows[] = ['user' => $user, 'kpi' => $kpi, 'submitted' => count($tasks), 'reviewed' => $reviewed, 'attendance' => $counts];
     }
     usort($accomplishments, static fn(array $a, array $b): int => strcmp($b['submitted_at'], $a['submitted_at']));
@@ -69,10 +69,10 @@ function renderReportsPage(mysqli $conn, string $role): void
             }, $cells);
             fputcsv($output, $cells, ',', '"', '');
         };
-        $writeCsv(['Period start', 'Period end', 'Name', 'Role', 'Assigned in period', 'Submitted in period', 'Reviewed submissions', 'Present', 'Late', 'Absent', 'KPI / 100']);
+        $writeCsv(['Period start', 'Period end', 'Name', 'Role', 'Assigned in period', 'Submitted in period', 'Reviewed submissions', 'Present', 'Late', 'Absent', 'Performance / 100', 'Assessment coverage %', 'Assessment']);
         foreach ($rows as $row) {
             $name = $row['user']['full_name'];
-            $writeCsv([$start, $end, $name, $row['user']['role'], $row['kpi']['stats']['assigned'], $row['submitted'], $row['reviewed'], $row['attendance']['present'], $row['attendance']['late'], $row['attendance']['absent'], $row['kpi']['available_weight'] ? $row['kpi']['overall'] : 'No data']);
+            $writeCsv([$start, $end, $name, $row['user']['role'], $row['kpi']['stats']['assigned'], $row['submitted'], $row['reviewed'], $row['attendance']['present'], $row['attendance']['late'], $row['attendance']['absent'], $row['kpi']['overall'], $row['kpi']['available_weight'], $row['kpi']['label']]);
         }
         $writeCsv([]);
         $writeCsv(['Accomplishments']);
@@ -120,7 +120,7 @@ function renderReportsPage(mysqli $conn, string $role): void
 </div>
 <div class="report-cards">
 <?php foreach (['assigned'=>'Assigned in period','submitted'=>'Accomplishments submitted','reviewed'=>'Reviewed accomplishments'] as $key => $label): ?><div class="report-panel"><small><?= $label ?></small><strong><?= $totals[$key] ?></strong></div><?php endforeach ?>
-<div class="report-panel"><small>Average staff KPI</small><strong><?= $average === null ? 'No data' : $average . '%' ?></strong></div>
+<div class="report-panel"><small>Average staff performance</small><strong><?= $average === null ? 'No staff' : $average . '%' ?></strong></div>
 </div>
 <div class="report-grid"><section class="report-panel"><h2>Attendance distribution</h2>
 <?php $attendanceTotal = $totals['present'] + $totals['late'] + $totals['absent']; $colors = ['present'=>'#3b82f6','late'=>'#b45309','absent'=>'#f87171']; ?>
@@ -131,10 +131,10 @@ function renderReportsPage(mysqli $conn, string $role): void
 <div class="legend"><?php foreach ($colors as $status => $color): ?><span><i style="background:<?= $color ?>"></i><?= ucfirst($status) ?> <?= $totals[$status] ?></span><?php endforeach ?></div>
 </section><section class="report-panel"><h2>KPI by staff member</h2>
 <?php if (!$rows): ?><p>No staff matched the selected scope.</p><?php endif ?>
-<?php foreach ($rows as $row): ?><div class="bar-row"><?= $h($row['user']['full_name']) ?>: <?= $row['kpi']['available_weight'] ? $row['kpi']['overall'] . '%' : 'No data' ?><?php if ($row['kpi']['available_weight']): ?><div class="report-bar" style="width:<?= $row['kpi']['overall'] ?>%"></div><?php endif ?></div><?php endforeach ?>
+<?php foreach ($rows as $row): ?><div class="bar-row"><?= $h($row['user']['full_name']) ?>: <?= $row['kpi']['overall'] . '%' ?> · <?= $h($row['kpi']['label']) ?> (<?= (int)$row['kpi']['available_weight'] ?>% coverage)<?php if ($row['kpi']['overall'] !== null): ?><div class="report-bar" style="width:<?= $row['kpi']['overall'] ?>%"></div><?php endif ?></div><?php endforeach ?>
 </section></div>
-<section class="report-panel"><h2>KPI statistics</h2><table><thead><tr><th>Name / role</th><th>Assigned</th><th>Submitted in period</th><th>Attendance</th><th>HR rating</th><th>Completion</th><th>Deadline</th><th>Task health</th><th>Overall KPI</th></tr></thead><tbody>
-<?php foreach ($rows as $row): ?><tr><td><?= $h($row['user']['full_name']) ?><br><small><?= $h(strtoupper($row['user']['role'])) ?></small></td><td><?= $row['kpi']['stats']['assigned'] ?></td><td><?= $row['submitted'] ?></td><?php foreach ($row['kpi']['factors'] as $factor): ?><td><?= $factor['score'] === null ? 'No data' : round($factor['score'],1) . '%' ?></td><?php endforeach ?><td><?= $row['kpi']['available_weight'] ? $row['kpi']['overall'] . '%' : 'No data' ?></td></tr><?php endforeach ?>
+<section class="report-panel"><h2>KPI statistics</h2><table><thead><tr><th>Name / role</th><th>Assigned</th><th>Submitted in period</th><th>Attendance reliability</th><th>Reviewed work quality</th><th>Task completion</th><th>On-time delivery</th><th>Assessment coverage</th><th>Overall KPI</th></tr></thead><tbody>
+<?php foreach ($rows as $row): ?><tr><td><?= $h($row['user']['full_name']) ?><br><small><?= $h(strtoupper($row['user']['role'])) ?></small></td><td><?= $row['kpi']['stats']['assigned'] ?></td><td><?= $row['submitted'] ?></td><?php foreach ($row['kpi']['factors'] as $factor): ?><td><?= $factor['score'] === null ? '0% (no data)' : round($factor['score'],1) . '%' ?></td><?php endforeach ?><td><?= (int)$row['kpi']['available_weight'] ?>% · <?= $h($row['kpi']['label']) ?></td><td><?= $row['kpi']['overall'] . '%' ?></td></tr><?php endforeach ?>
 <?php if (!$rows): ?><tr><td colspan="9">No staff matched the selected scope.</td></tr><?php endif ?>
 </tbody></table></section>
 <section class="report-panel"><h2>Accomplishments</h2><table><thead><tr><th>Staff member</th><th>Evaluation / task</th><th>Submitted</th><th>Status</th><th>HR score</th><th>HR feedback</th></tr></thead><tbody>
