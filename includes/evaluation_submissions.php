@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="<?= htmlspecialchars(app_url('includes/evaluation_search.css')) ?>">
+<form method="get" class="evaluation-search" role="search"><?php if($_SESSION['role']==='admin'): ?><input type="hidden" name="tab" value="review"><?php endif ?><label for="review-search">Search review evaluations<input id="review-search" type="search" name="q" value="<?= htmlspecialchars($reviewSearch??'',ENT_QUOTES,'UTF-8') ?>" placeholder="Staff name, ID, title or instructions"></label><button type="submit"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Search</button><a href="<?= htmlspecialchars(route($_SESSION['role']==='admin'?'admin.review_hr_evaluations':'hr.task_submissions')) ?>">Clear</a><span><?= (int)$submissions->num_rows ?> submission(s)</span></form>
 <?php if ($submissions && $submissions->num_rows > 0): ?>
 
 <div class="submissions-grid">
@@ -30,7 +32,7 @@
             <?php if ($task['hr_score'] !== null): ?>
                 <div class="score-display">
                     <div class="score-value" style="color: <?= $task['hr_score'] >= 70 ? 'var(--status-success)' : ($task['hr_score'] >= 50 ? 'var(--status-warning)' : 'var(--status-danger)') ?>">
-                        <?= (int) $task['hr_score'] ?>%
+                        <?= rtrim(rtrim(number_format((float)$task['hr_score'],2,'.',''),'0'),'.') ?>%
                     </div>
                     <div class="score-label">HR Score</div>
                 </div>
@@ -41,7 +43,7 @@
                     <i class="fa-solid fa-eye"></i> View
                 </a>
                 <a href="<?= htmlspecialchars(app_url('hr/score_submission.php')); ?>?id=<?= $task['id'] ?>" class="btn-score">
-                    <i class="fa-solid fa-star"></i> <?= $task['hr_score'] !== null ? 'Edit' : 'Score' ?>
+                    <i class="fa-solid fa-star"></i> <?= $task['hr_score'] !== null ? 'Edit Appraisal' : 'Appraise' ?>
                 </a>
             </div>
         </div>

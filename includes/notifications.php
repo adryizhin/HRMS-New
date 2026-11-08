@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/routes.php';
+require_once __DIR__ . '/promotions.php';
 require_once __DIR__ . '/task_schema.php';
 require_once __DIR__ . '/password_tickets.php';
 require_once __DIR__ . '/evaluation_access.php';
@@ -11,7 +12,7 @@ function ensureActivitySchema(mysqli $conn): void {
     $done=true;
 }
 function activitySummary(mysqli $conn,int $userId,string $role): array {
-    ensureActivitySchema($conn);ensureTaskSchema($conn);
+    ensureActivitySchema($conn);ensureTaskSchema($conn);ensurePromotionSchema($conn);
     $groups=[];$badges=[];
     $add=static function(string $key,string $label,string $routeName,string $icon,int $count) use (&$groups,&$badges): void {
         if($count<1)return;
@@ -22,7 +23,8 @@ function activitySummary(mysqli $conn,int $userId,string $role): array {
     $evaluationRoute=$role==='employee'?'employee.tasks':$role.'.evaluations';
     $add('evaluations','Evaluations to complete',$evaluationRoute,'fa-clipboard-list',$count("SELECT COUNT(*) FROM tasks WHERE employee_id=? AND status='pending'"));
     if($role==='hr'||($role==='admin'&&isSystemAdministrator($conn,$userId)))$add('reviews','Evaluations to review',$role==='hr'?'hr.task_submissions':'admin.review_hr_evaluations','fa-clipboard-check',$count("SELECT COUNT(*) FROM tasks WHERE hr_id=? AND status='submitted'"));
-    if($role==='hr')$add('leave','Leave requests to review','hr.leave_requests','fa-umbrella',$count("SELECT COUNT(*) FROM leave_requests WHERE hr_id=? AND status='pending'"));
+    if($role==='hr')$add('leave','Leave requests to review','hr.leave_requests','fa-umbrella',$count("SELECT COUNT(*) FROM leave_requests WHERE ? > 0 AND status='pending'"));
+    if($role==='hr')$add('promotions','Promotion suggestions to decide','hr.promotions','fa-arrow-trend-up',$count("SELECT COUNT(*) FROM promotion_suggestions WHERE ? > 0 AND status='pending'"));
     if($role==='admin') {
         ensurePasswordTicketSchema($conn);
         $open=(int)$conn->query("SELECT COUNT(*) FROM password_reset_tickets WHERE status IN ('pending','in_progress')")->fetch_row()[0];
@@ -31,8 +33,9 @@ function activitySummary(mysqli $conn,int $userId,string $role): array {
     $unread=$count('SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0');
     $stmt=$conn->prepare('SELECT id,message,created_at,activity_type FROM notifications WHERE user_id=? AND is_read=0 ORDER BY id DESC LIMIT 10');$stmt->bind_param('i',$userId);$stmt->execute();
     $updates=$stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    foreach($updates as &$update)$update['url']=route($update['activity_type']==='evaluation'?$evaluationRoute:($role==='employee'?'employee.leave_request':$role.'.dashboard'));unset($update);
+    $activityRoute=static fn($type)=>match($type){'evaluation'=>$evaluationRoute,'payroll'=>$role.'.payroll','promotion'=>$role==='employee'?'employee.settings':$role.'.promotions',default=>$role==='employee'?'employee.leave_request':($type==='leave'&&$role==='hr'?'hr.leave_requests':$role.'.dashboard')};
+    foreach($updates as &$update)$update['url']=route($activityRoute($update['activity_type']));unset($update);
     $stmt=$conn->prepare('SELECT activity_type,COUNT(*) AS total FROM notifications WHERE user_id=? AND is_read=0 GROUP BY activity_type');$stmt->bind_param('i',$userId);$stmt->execute();
-    foreach($stmt->get_result()->fetch_all(MYSQLI_ASSOC) as $row){$routeName=$row['activity_type']==='evaluation'?$evaluationRoute:($role==='employee'?'employee.leave_request':$role.'.dashboard');$badges[$routeName]=($badges[$routeName]??0)+(int)$row['total'];}
+    foreach($stmt->get_result()->fetch_all(MYSQLI_ASSOC) as $row){$routeName=$activityRoute($row['activity_type']);$badges[$routeName]=($badges[$routeName]??0)+(int)$row['total'];}
     return ['groups'=>$groups,'updates'=>$updates,'unreadUpdates'=>$unread,'badges'=>$badges,'total'=>array_sum(array_column($groups,'count'))+$unread];
 }

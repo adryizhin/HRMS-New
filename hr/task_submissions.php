@@ -12,7 +12,9 @@ ensureTaskSchema($conn);
 
 $hr_id = (int) $_SESSION['user_id'];
 
-// Get all submitted tasks for this HR
+$reviewSearch=is_string($_GET['q']??null)?mb_substr(trim($_GET['q']),0,160):'';
+$reviewPattern='%'.str_replace(['!','%','_'],['!!','!%','!_'],$reviewSearch).'%';
+// Get submitted work assigned to this reviewer
 $stmt = $conn->prepare("
     SELECT 
         t.id,
@@ -33,9 +35,10 @@ $stmt = $conn->prepare("
     WHERE t.hr_id = ?
     AND t.submission_file IS NOT NULL
     AND t.submission_file != ''
+    AND CONCAT_WS(' ',u.full_name,u.employee_id,t.title,t.description) LIKE ? ESCAPE '!'
     ORDER BY t.submitted_at DESC
 ");
-$stmt->bind_param("i", $hr_id);
+$stmt->bind_param("is", $hr_id, $reviewPattern);
 $stmt->execute();
 $submissions = $stmt->get_result();
 ?>

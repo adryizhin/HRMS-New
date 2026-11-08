@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/attendance.php';
 require_once __DIR__ . '/sidebar.php';
+require_once __DIR__ . '/payroll_profiles.php';
 
 function money(float $amount): string
 {
@@ -217,54 +218,43 @@ function payslipApplySavedValues(array $savedPayslip, string &$payoutDate, float
 
 function renderPayslipPage(mysqli $conn, string $role): void
 {
-    ensureAttendanceTable($conn);
-    ensureUserShiftColumn($conn);
-    ensurePayslipTable($conn);
-
-    [$defaultStart, $defaultEnd] = payslipDefaultCutoff();
-    $canGenerate = $role === 'hr';
-    $currentUserId = (int) ($_SESSION['user_id'] ?? 0);
-    $input = $_SERVER['REQUEST_METHOD'] === 'POST' ? $_POST : $_GET;
-    $dailyRate = 695.00;
-    $employeeId = $canGenerate ? (int) ($input['employee_id'] ?? 0) : $currentUserId;
-    $cutoffStart = $input['cutoff_start'] ?? $defaultStart;
-    $cutoffEnd = $input['cutoff_end'] ?? $defaultEnd;
-    $payoutDate = $input['payout_date'] ?? $cutoffEnd;
-    $allowance = $canGenerate ? max(0, (float) ($input['allowance'] ?? 0)) : 0.00;
-    $deduction = $canGenerate ? max(0, (float) ($input['deduction'] ?? 0)) : 0.00;
-    $tax = $canGenerate ? max(0, (float) ($input['tax'] ?? 0)) : 0.00;
-    $notice = '';
-
-    $employees = $conn->query("
-        SELECT users.id, users.employee_id, users.full_name, users.role, departments.name AS department_name
-        FROM users
-        LEFT JOIN departments ON users.department_id = departments.id
-        WHERE users.role IN ('employee', 'hr', 'admin')
-        AND users.status = 'active'
-        ORDER BY FIELD(users.role, 'employee', 'hr', 'admin'), users.full_name ASC
-    ");
-
-    if ($employeeId === 0 && $employees && $employees->num_rows > 0) {
-        $firstEmployee = $employees->fetch_assoc();
-        $employeeId = (int) $firstEmployee['id'];
-        $employees->data_seek(0);
+    ensureAttendanceTable($conn);ensureUserShiftColumn($conn);ensurePayslipTable($conn);ensurePayrollProfiles($conn);ensureActivitySchema($conn);
+    [$defaultStart,$defaultEnd]=payslipDefaultCutoff();[$defaultStart,$defaultEnd]=payrollCutoff($defaultStart);
+    $canGenerate=$role==='hr';$currentUserId=(int)$_SESSION['user_id'];$input=$_SERVER['REQUEST_METHOD']==='POST'?$_POST:$_GET;
+    $_SESSION['payroll_csrf']??=bin2hex(random_bytes(32));$error='';$notice='';$dailyRate=695.00;
+    $employeeId=$canGenerate?(int)($input['employee_id']??0):$currentUserId;
+    $cutoffStart=$defaultStart;$cutoffEnd=$defaultEnd;
+    try {$anchor=($input['cutoff_anchor']??'start')==='end'?'end':'start';$selectedDate=$input[$anchor==='end'?'cutoff_end':'cutoff_start']??$defaultStart;if(!is_string($selectedDate))throw new InvalidArgumentException('Select a valid payroll date.');[$cutoffStart,$cutoffEnd]=payrollCutoff($selectedDate,$anchor);}catch(InvalidArgumentException $e){$error=$e->getMessage();}
+    $payoutDate=is_string($input['payout_date']??$cutoffEnd)?($input['payout_date']??$cutoffEnd):'';
+    try{$payoutDate=payrollDate($payoutDate);}catch(InvalidArgumentException $e){$error=$e->getMessage();$payoutDate=$cutoffEnd;}
+    $deduction=0.0;$tax=0.0;
+    foreach(['deduction','tax'] as $key){$raw=$input[$key]??'0';if(!is_scalar($raw)||!preg_match('/\A\d{1,8}(?:\.\d{1,2})?\z/',(string)$raw))$error='Enter valid non-negative deductions and tax amounts.';else $$key=$canGenerate?(float)$raw:0.0;}
+    if($_SERVER['REQUEST_METHOD']==='POST'&&$canGenerate){
+        if(!is_string($_POST['csrf_token']??null)||!hash_equals($_SESSION['payroll_csrf'],$_POST['csrf_token'])){http_response_code(400);$error='Reload the payroll page and try again.';}
+        if(!$error&&($_POST['action']??'generate')==='save_allowance'){
+            try{savePayrollProfile($conn,$currentUserId,$employeeId,$_POST);$notice='Allowance settings saved. They apply automatically to newly generated payroll; saved payslips are unchanged.';}catch(InvalidArgumentException $e){$error=$e->getMessage();}
+        }
     }
-
-    $employee = null;
-    if ($employeeId > 0) {
-        $stmt = $conn->prepare("
-            SELECT users.id, users.employee_id, users.full_name, users.role, departments.name AS department_name
-            FROM users
-            LEFT JOIN departments ON users.department_id = departments.id
-            WHERE users.id = ?
-            AND users.role IN ('employee', 'hr', 'admin')
-            LIMIT 1
-        ");
-        $stmt->bind_param("i", $employeeId);
-        $stmt->execute();
-        $employee = $stmt->get_result()->fetch_assoc();
+    $profile=payrollProfile($conn,$employeeId);$allowance=$canGenerate?payrollAllowance($profile,$cutoffEnd):0.0;
+    $employee=null;
+    if($employeeId>0){$q=$conn->prepare("SELECT u.id,u.employee_id,u.full_name,u.role,d.name AS department_name FROM users u LEFT JOIN departments d ON d.id=u.department_id WHERE u.id=?".($canGenerate?" AND u.status='active'":''));$q->bind_param('i',$employeeId);$q->execute();$employee=$q->get_result()->fetch_assoc();}
+    $history=[];$selectedSaved=null;
+    if(!$canGenerate){
+        $q=$conn->prepare('SELECT * FROM payslips WHERE user_id=? ORDER BY cutoff_end DESC,id DESC');$q->bind_param('i',$currentUserId);$q->execute();$history=$q->get_result()->fetch_all(MYSQLI_ASSOC);
+        if(isset($_GET['payslip_id']))foreach($history as $slip)if((int)$slip['id']===(int)$_GET['payslip_id'])$selectedSaved=$slip;
+        if(isset($_GET['payslip_id'])&&!$selectedSaved){http_response_code(404);$error='Payslip not found for your account.';}
+        if($selectedSaved){$cutoffStart=$selectedSaved['cutoff_start'];$cutoffEnd=$selectedSaved['cutoff_end'];}
     }
-
+    $staffSearch=is_string($_GET['q']??null)?mb_substr(trim($_GET['q']),0,160):'';
+    $staffFilter=in_array($_GET['allowance_filter']??'all',['all','eligible','with_allowance'],true)?($_GET['allowance_filter']??'all'):'all';
+    $staffSort=($_GET['sort']??'name')==='tenured'?'tenured':'name';$staff=[];
+    if($canGenerate){
+        $pattern='%'.str_replace(['!','%','_'],['!!','!%','!_'],$staffSearch).'%';
+        $sql="SELECT u.id,u.full_name,u.employee_id,u.role,d.name AS department_name,COALESCE(p.is_tenured,0) AS is_tenured,COALESCE(p.allowance,0) AS allowance,p.effective_from FROM users u LEFT JOIN departments d ON d.id=u.department_id LEFT JOIN payroll_profiles p ON p.user_id=u.id WHERE u.status='active' AND u.role IN ('employee','hr','admin') AND CONCAT_WS(' ',u.full_name,u.employee_id,u.role,d.name,IF(u.role='hr','Human Resource','')) LIKE ? ESCAPE '!'";
+        if($staffFilter!=='all')$sql.=' AND p.is_tenured=1';if($staffFilter==='with_allowance')$sql.=' AND p.allowance>0';
+        $sql.=$staffSort==='tenured'?' ORDER BY is_tenured DESC,allowance DESC,u.full_name':' ORDER BY u.full_name';
+        $q=$conn->prepare($sql);$q->bind_param('s',$pattern);$q->execute();$staff=$q->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
     $attendance = $employee
         ? payslipAttendanceSummary($conn, $employeeId, $cutoffStart, $cutoffEnd)
         : ['present' => 0, 'late' => 0, 'absent' => 0, 'recorded' => 0];
@@ -283,9 +273,14 @@ function renderPayslipPage(mysqli $conn, string $role): void
     $grossPay = ($paidDays * $dailyRate) + $overtimePay + $allowance;
     $totalDeductions = $deduction + $tax + $requiredDeductions;
     $netPay = max(0, $grossPay - $totalDeductions);
-    $savedPayslip = $employee ? payslipFind($conn, $employeeId, $cutoffStart, $cutoffEnd) : null;
+    if(max($grossPay,$totalDeductions,$netPay)>99999999.99)$error='Payroll totals exceed the supported amount. Reduce the allowance or deductions.';
+    $savedPayslip = $selectedSaved ?? ($employee ? payslipFind($conn, $employeeId, $cutoffStart, $cutoffEnd) : null);
 
-    if ($canGenerate && $_SERVER['REQUEST_METHOD'] === 'POST' && $employee) {
+    if ($canGenerate && $_SERVER['REQUEST_METHOD'] === 'POST' && $employee && !$error && ($_POST['action']??'generate')==='generate') {
+        $conn->begin_transaction();
+        try {
+            $lock=$conn->prepare('SELECT id FROM users WHERE id=? FOR UPDATE');$lock->bind_param('i',$employeeId);$lock->execute();$lock->get_result();
+            $isNewPayslip=payslipFind($conn,$employeeId,$cutoffStart,$cutoffEnd)===null;
         payslipSave($conn, [
             'user_id' => $employeeId,
             'cutoff_start' => $cutoffStart,
@@ -306,10 +301,13 @@ function renderPayslipPage(mysqli $conn, string $role): void
             'generated_by' => $currentUserId,
         ]);
         $savedPayslip = payslipFind($conn, $employeeId, $cutoffStart, $cutoffEnd);
+            if($isNewPayslip){$message='A payslip is ready for '.$cutoffStart.' to '.$cutoffEnd.'.';$notify=$conn->prepare("INSERT INTO notifications(user_id,message,activity_type) VALUES(?,?,'payroll')");$notify->bind_param('is',$employeeId,$message);$notify->execute();}
+            $conn->commit();
+        } catch(Throwable $exception){$conn->rollback();throw $exception;}
         $notice = 'Payslip generated and saved.';
     }
 
-    if ($savedPayslip && (!$canGenerate || $_SERVER['REQUEST_METHOD'] !== 'POST')) {
+    if ($savedPayslip && (!$canGenerate || $_SERVER['REQUEST_METHOD'] !== 'POST' || ($_POST['action']??'')==='save_allowance')) {
         payslipApplySavedValues(
             $savedPayslip,
             $payoutDate,
@@ -335,6 +333,7 @@ function renderPayslipPage(mysqli $conn, string $role): void
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Payslip Generator</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="<?= htmlspecialchars(app_url('hr/payroll_tools.css').'?v='.filemtime(__DIR__.'/../hr/payroll_tools.css')) ?>">
 <style>
 :root {
     --payroll-bg:#f3f4f6;
@@ -648,7 +647,7 @@ body {
 @media print {
     /* Print only the payroll slip, regardless of shared navigation styles. */
     html body > :not(.main),
-    html body .main > :not(.generator),
+    html body .main > :not(.generator):not(#payroll-preview),
     html body .generator > :not(.payslip) {
         display:none !important;
     }
@@ -698,44 +697,32 @@ body {
             <h1><?= $canGenerate ? 'Payslip Generator' : 'My Payroll'; ?></h1>
             <p><?= $canGenerate ? 'Generate and save cut-off payslips using a fixed daily salary of ' . money($dailyRate) . '.' : 'View payroll slips generated by HR for your account.'; ?></p>
         </div>
-        <?php if ($employee && ($canGenerate || $savedPayslip)): ?>
+        <?php if (!$canGenerate && $employee && $savedPayslip): ?>
             <button class="btn secondary" type="button" onclick="window.print()">
                 <i class="fa-solid fa-file-pdf"></i> PDF
             </button>
         <?php endif; ?>
     </div>
 
-    <?php if ($notice !== ''): ?>
-        <div class="form-panel" style="margin-bottom:16px;color:#86efac;background:#14532d;border-color:#166534;">
-            <?= htmlspecialchars($notice); ?>
-        </div>
-    <?php endif; ?>
-
+    <?php if(!$canGenerate || !$employee): ?>
+        <?php if($notice): ?><div class="payroll-feedback" role="status"><?= htmlspecialchars($notice) ?></div><?php endif ?>
+        <?php if($error): ?><p class="payroll-error" role="alert"><?= htmlspecialchars($error) ?></p><?php endif ?>
+    <?php endif ?>
+    <?php if($canGenerate): require __DIR__.'/payroll_directory.php'; else: require __DIR__.'/payroll_history.php'; endif; ?>
+    <?php if($canGenerate && $employee): ?>
+    <dialog id="payroll-preview" aria-labelledby="payroll-preview-title" data-employee="<?= $employeeId ?>">
+      <header class="payroll-preview-header"><div><h2 id="payroll-preview-title">Payroll preview</h2><p><?= htmlspecialchars($employee['full_name']) ?> · <?= htmlspecialchars($employee['employee_id']??'') ?></p></div><div class="payroll-preview-actions"><button type="button" class="btn secondary" onclick="window.print()"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Print / Save PDF</button><button type="button" data-payroll-close aria-label="Close payroll preview" autofocus><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div></header>
+      <div class="payroll-preview-body">
+        <?php if($notice): ?><p class="payroll-feedback" role="status"><?= htmlspecialchars($notice) ?></p><?php endif ?>
+        <?php if($error): ?><p class="payroll-error" role="alert"><?= htmlspecialchars($error) ?></p><?php endif ?>
+        <details class="payroll-allowance"><summary><i class="fa-solid fa-sliders" aria-hidden="true"></i> Allowance settings</summary><?php require __DIR__.'/payroll_allowance_settings.php'; ?></details>
+    <?php endif ?>
+    <?php if(!$canGenerate || $employee): ?>
     <div class="generator">
         <section class="form-panel">
             <h2><?= $canGenerate ? 'Generate Payslip' : 'Payroll Cut-off'; ?></h2>
             <form method="<?= $canGenerate ? 'POST' : 'GET'; ?>">
-                <?php if ($canGenerate): ?>
-                    <div class="field">
-                        <div class="payee-search">
-                            <label for="payee-search">Search staff</label>
-                            <div class="payee-search-control"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="payee-search" type="search" maxlength="160" placeholder="Name, ID, department or role" autocomplete="off" aria-controls="employee_id" aria-describedby="payee-search-result"><button type="button" id="payee-search-clear" aria-label="Clear staff search" hidden><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div>
-                            <p id="payee-search-result" class="payee-search-help" role="status">Search filters the payee list. Choose a payee, then Generate &amp; Save.</p>
-                        </div>
-                        <label for="employee_id">Payee</label>
-                        <select id="employee_id" name="employee_id" required>
-                            <?php if (!$employees || $employees->num_rows === 0): ?>
-                                <option value="">No active users</option>
-                            <?php else: ?>
-                                <?php while ($row = $employees->fetch_assoc()): ?>
-                                    <option value="<?= (int) $row['id']; ?>" data-search="<?= htmlspecialchars(implode(' ', [$row['full_name'], $row['employee_id'] ?? '', $row['department_name'] ?? 'Unassigned', $row['role'], $row['role'] === 'hr' ? 'Human Resource' : '']), ENT_QUOTES, 'UTF-8'); ?>" <?= (int) $row['id'] === $employeeId ? 'selected' : ''; ?>>
-                                        <?= htmlspecialchars($row['full_name']); ?> - <?= strtoupper(htmlspecialchars($row['role'])); ?> (<?= htmlspecialchars($row['employee_id'] ?? 'No ID'); ?>)
-                                    </option>
-                                <?php endwhile; ?>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-                <?php endif; ?>
+                <?php if($canGenerate): ?><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['payroll_csrf']) ?>"><input type="hidden" name="action" value="generate"><input type="hidden" name="employee_id" value="<?= $employeeId ?>"><input type="hidden" name="cutoff_anchor" id="cutoff-anchor" value="start"><p class="payroll-person"><?= $employee?htmlspecialchars($employee['full_name']).' · '.htmlspecialchars($employee['employee_id']??''):'Open a staff payroll from the list above.' ?></p><p class="payee-search-help">Changing either date calculates an exact 15-calendar-day cutoff.</p><?php endif ?>
                 <div class="field">
                     <label for="cutoff_start">Cut-off Start</label>
                     <input id="cutoff_start" type="date" name="cutoff_start" value="<?= htmlspecialchars($cutoffStart); ?>" required>
@@ -751,7 +738,7 @@ body {
                     </div>
                     <div class="field">
                         <label for="allowance">Allowances</label>
-                        <input id="allowance" type="number" name="allowance" min="0" step="0.01" value="<?= htmlspecialchars((string) $allowance); ?>">
+                        <input id="allowance" value="<?= htmlspecialchars(money($allowance)); ?>" readonly><small>Automatically applied from HR allowance settings for this cutoff.</small>
                     </div>
                     <div class="field">
                         <label for="deduction">Other Deductions</label>
@@ -770,7 +757,7 @@ body {
                     </div>
                 <?php endif; ?>
                 <div class="actions">
-                    <button class="btn" type="submit"><i class="fa-solid <?= $canGenerate ? 'fa-wand-magic-sparkles' : 'fa-magnifying-glass'; ?>"></i> <?= $canGenerate ? 'Generate & Save' : 'View'; ?></button>
+                    <button class="btn" type="submit" <?= $canGenerate&&!$employee?'disabled':'' ?>><i class="fa-solid <?= $canGenerate ? 'fa-wand-magic-sparkles' : 'fa-magnifying-glass'; ?>"></i> <?= $canGenerate ? 'Generate & Save' : 'View'; ?></button>
                     <a class="btn secondary" href="<?= htmlspecialchars(route($activeRoute)); ?>">Reset</a>
                 </div>
             </form>
@@ -787,7 +774,7 @@ body {
                         <div>
                             <div class="eyebrow">
                                 <span>Official Salary Breakdown</span>
-                                <span class="paid-badge"><i class="fa-solid fa-circle-check"></i> Generated</span>
+                                <span class="paid-badge"><i class="fa-solid fa-circle-check"></i> <?= $savedPayslip?'Generated':'Preview' ?></span>
                             </div>
                             <h2 class="employee-name"><?= htmlspecialchars($employee['full_name']); ?></h2>
                             <p class="subtitle">
@@ -935,8 +922,11 @@ body {
             <?php endif; ?>
         </section>
     </div>
+    <?php endif ?>
+    <?php if($canGenerate && $employee): ?></div></dialog><?php endif ?>
 </main>
-<?php if ($canGenerate): ?><script src="<?= htmlspecialchars(app_url('hr/payslip_search.js') . '?v=' . filemtime(__DIR__ . '/../hr/payslip_search.js'), ENT_QUOTES, 'UTF-8'); ?>" defer></script><?php endif; ?>
+<?php if ($canGenerate): ?><script src="<?= htmlspecialchars(app_url('hr/payroll_cutoff.js') . '?v=' . filemtime(__DIR__ . '/../hr/payroll_cutoff.js'), ENT_QUOTES, 'UTF-8'); ?>" defer></script><?php endif; ?>
+<?php if($canGenerate && $employee): ?><script src="<?= htmlspecialchars(app_url('hr/payroll_modal.js').'?v='.filemtime(__DIR__.'/../hr/payroll_modal.js'),ENT_QUOTES,'UTF-8') ?>" defer></script><?php endif ?>
 </body>
 </html>
 <?php

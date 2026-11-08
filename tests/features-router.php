@@ -3,6 +3,7 @@
 if (PHP_SAPI !== 'cli-server' || !str_starts_with((string) getenv('HRMS_DB_NAME'), 'hrms_feature_test_')) {
     http_response_code(403); exit;
 }
+ini_set('session.save_path', getenv('HRMS_TEST_SESSION_PATH'));
 $root = dirname(__DIR__);
 $path = preg_replace('#^/HRMS#', '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 $file = realpath($root . $path);

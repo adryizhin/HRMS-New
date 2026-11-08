@@ -29,7 +29,7 @@ if (!in_array($filter,['all','pending','approved','rejected'],true)) $filter='al
 $filterSql = $filter === 'all' ? '' : " AND lr.status = '" . $filter . "'";
 $notice = (string)($_SESSION['leave_review_notice'] ?? ''); unset($_SESSION['leave_review_notice']);
 $h=static fn($value)=>htmlspecialchars((string)$value,ENT_QUOTES,'UTF-8');
-// FETCH REQUESTS FOR THIS HR
+// Shared leave queue visible to every Human Resource reviewer
 $query = "
 SELECT lr.*, u.full_name, u.employee_id AS staff_number, u.email, d.name AS department_name,
  reviewer.full_name AS reviewer_name,
@@ -38,17 +38,17 @@ FROM leave_requests lr
 JOIN users u ON lr.employee_id = u.id
 LEFT JOIN departments d ON d.id=u.department_id
 LEFT JOIN users reviewer ON reviewer.id=lr.reviewed_by
-WHERE lr.hr_id = $hr_id $filterSql
+WHERE 1=1 $filterSql
 ORDER BY lr.id DESC
 ";
 
 $result = $conn->query($query);
 
 // COUNT CARDS
-$total = $conn->query("SELECT COUNT(*) as total FROM leave_requests WHERE hr_id=$hr_id")->fetch_assoc()['total'];
-$pending = $conn->query("SELECT COUNT(*) as total FROM leave_requests WHERE hr_id=$hr_id AND status='pending'")->fetch_assoc()['total'];
-$approved = $conn->query("SELECT COUNT(*) as total FROM leave_requests WHERE hr_id=$hr_id AND status='approved'")->fetch_assoc()['total'];
-$rejected = $conn->query("SELECT COUNT(*) as total FROM leave_requests WHERE hr_id=$hr_id AND status='rejected'")->fetch_assoc()['total'];
+$total = $conn->query("SELECT COUNT(*) as total FROM leave_requests WHERE 1=1")->fetch_assoc()['total'];
+$pending = $conn->query("SELECT COUNT(*) as total FROM leave_requests WHERE 1=1 AND status='pending'")->fetch_assoc()['total'];
+$approved = $conn->query("SELECT COUNT(*) as total FROM leave_requests WHERE 1=1 AND status='approved'")->fetch_assoc()['total'];
+$rejected = $conn->query("SELECT COUNT(*) as total FROM leave_requests WHERE 1=1 AND status='rejected'")->fetch_assoc()['total'];
 ?>
 
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Leave Requests | Human Resource</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"><link rel="stylesheet" href="hr_leave_requests.css?v=20261029"></head><body>
@@ -59,7 +59,7 @@ $rejected = $conn->query("SELECT COUNT(*) as total FROM leave_requests WHERE hr_
 <div class="leave-stats">
 <?php foreach([['Total requests',$total,'total'],['Pending review',$pending,'pending'],['Approved',$approved,'approved'],['Rejected',$rejected,'rejected']] as [$label,$count,$type]): ?><section class="leave-stat"><span class="leave-stat-label"><?= $label ?></span><strong><?= (int)$count ?></strong><span class="leave-stat-marker <?= $type ?>"><i class="fa-solid <?= ['total'=>'fa-folder-open','pending'=>'fa-clock','approved'=>'fa-circle-check','rejected'=>'fa-circle-xmark'][$type] ?>" aria-hidden="true"></i></span></section><?php endforeach ?>
 </div>
-<section class="leave-panel" aria-labelledby="leave-list-heading"><div class="leave-panel-header"><div><h2 id="leave-list-heading">Staff leave requests</h2><p>Only requests assigned to you appear here.</p></div><form method="get" class="leave-filter"><label for="leave-status">Status</label><select name="status" id="leave-status"><?php foreach(['all'=>'All requests','pending'=>'Pending','approved'=>'Approved','rejected'=>'Rejected'] as $key=>$label): ?><option value="<?= $key ?>" <?= $key===$filter?'selected':'' ?>><?= $label ?></option><?php endforeach ?></select><button type="submit">Filter</button></form></div>
+<section class="leave-panel" aria-labelledby="leave-list-heading"><div class="leave-panel-header"><div><h2 id="leave-list-heading">Staff leave requests</h2><p>All staff leave requests appear here. The first completed HR decision is final.</p></div><form method="get" class="leave-filter"><label for="leave-status">Status</label><select name="status" id="leave-status"><?php foreach(['all'=>'All requests','pending'=>'Pending','approved'=>'Approved','rejected'=>'Rejected'] as $key=>$label): ?><option value="<?= $key ?>" <?= $key===$filter?'selected':'' ?>><?= $label ?></option><?php endforeach ?></select><button type="submit">Filter</button></form></div>
 <div class="leave-table-wrap"><table class="leave-table"><thead><tr><th>Staff member</th><th>Leave type</th><th>Dates</th><th>Reason</th><th>Status</th><th>Review</th></tr></thead><tbody>
 <?php if(!$result->num_rows): ?><tr class="leave-empty"><td colspan="6"><strong>No leave requests</strong><p>No requests match this status.</p></td></tr><?php endif ?>
 <?php while($row=$result->fetch_assoc()): ?><tr>

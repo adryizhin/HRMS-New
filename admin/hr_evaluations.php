@@ -5,8 +5,10 @@ if (!isSystemAdministrator($conn,(int)$_SESSION['user_id'])) {http_response_code
 require_once __DIR__.'/../includes/task_schema.php';ensureTaskSchema($conn);
 $tab=($_GET['tab']??'assign')==='review'?'review':'assign';
 $hr_id=(int)$_SESSION['user_id'];
-$reviewStmt=$conn->prepare("SELECT t.*,u.full_name AS employee_name,u.employee_id AS emp_id FROM tasks t JOIN users u ON u.id=t.employee_id WHERE t.hr_id=? AND u.role='hr' AND t.submission_file IS NOT NULL AND t.submission_file<>'' ORDER BY t.submitted_at DESC,t.id DESC");
-$reviewStmt->bind_param('i',$hr_id);$reviewStmt->execute();$submissions=$reviewStmt->get_result();
+$reviewSearch=is_string($_GET['q']??null)?mb_substr(trim($_GET['q']),0,160):'';
+$reviewPattern='%'.str_replace(['!','%','_'],['!!','!%','!_'],$reviewSearch).'%';
+$reviewStmt=$conn->prepare("SELECT t.*,u.full_name AS employee_name,u.employee_id AS emp_id FROM tasks t JOIN users u ON u.id=t.employee_id WHERE t.hr_id=? AND u.role='hr' AND t.submission_file IS NOT NULL AND t.submission_file<>'' AND CONCAT_WS(' ',u.full_name,u.employee_id,t.title,t.description) LIKE ? ESCAPE '!' ORDER BY t.submitted_at DESC,t.id DESC");
+$reviewStmt->bind_param('is',$hr_id,$reviewPattern);$reviewStmt->execute();$submissions=$reviewStmt->get_result();
 $_SESSION['evaluation_assignment_csrf'] ??= bin2hex(random_bytes(32));
 $staff=$conn->query("SELECT id,full_name FROM users WHERE role='hr' AND status='active' ORDER BY full_name")->fetch_all(MYSQLI_ASSOC);
 $h=static fn($v)=>htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');

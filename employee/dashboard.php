@@ -6,11 +6,17 @@ require_once __DIR__ . '/../includes/sidebar.php';
 require_once __DIR__ . '/../includes/task_schema.php';
 
 ensureTaskSchema($conn);
+require_once __DIR__.'/../includes/appraisal.php';
+ensureAppraisalSchema($conn);
 
 $user_id = (int) $_SESSION['user_id'];
 $today = new DateTimeImmutable('today', new DateTimeZone('Asia/Manila'));
 $todayDate = $today->format('Y-m-d');
 
+$evaluationSearch=is_string($_GET['q']??null)?mb_substr(trim($_GET['q']),0,160):'';
+$evaluationFilter=in_array($_GET['evaluation_status']??'all',['all','not_submitted','submitted','reviewed'],true)?($_GET['evaluation_status']??'all'):'all';
+$evaluationPattern='%'.str_replace(['!','%','_'],['!!','!%','!_'],$evaluationSearch).'%';
+$evaluationWhere=match($evaluationFilter){'not_submitted'=>" AND COALESCE(submission_file,'')=''",'submitted'=>" AND COALESCE(submission_file,'')<>''",'reviewed'=>" AND status='reviewed'",default=>''};
 /* ASSIGNMENTS */
 $assignments = $conn->prepare("
     SELECT 
@@ -29,12 +35,13 @@ $assignments = $conn->prepare("
         status,
         hr_score,
         hr_feedback,
-        created_at
+        created_at,
+        EXISTS(SELECT 1 FROM task_appraisals WHERE task_id=tasks.id) AS has_appraisal
     FROM tasks
-    WHERE employee_id = ?
+    WHERE employee_id = ? AND CONCAT_WS(' ',title,description) LIKE ? ESCAPE '!' $evaluationWhere
     ORDER BY id DESC
 ");
-$assignments->bind_param("i", $user_id);
+$assignments->bind_param("is", $user_id, $evaluationPattern);
 $assignments->execute();
 $assignments = $assignments->get_result();
 ?>
@@ -57,7 +64,7 @@ $assignments = $assignments->get_result();
 <div class="main">
 
 <div class="topbar">
-    <h2>Welcome, <?= $_SESSION['name']; ?></h2>
+    <h2>Welcome, <?= htmlspecialchars($_SESSION['name'],ENT_QUOTES,'UTF-8'); ?></h2>
   <div class="activity-header-slot"></div>
 </div>
 
@@ -82,6 +89,8 @@ $assignments = $assignments->get_result();
   <span class="task-count"><?= $assignments ? (int) $assignments->num_rows : 0; ?> active</span>
 </div>
 
+<link rel="stylesheet" href="<?= htmlspecialchars(app_url('includes/evaluation_search.css')) ?>">
+<form method="get" class="evaluation-search" role="search"><label for="evaluation-search">Search my evaluations<input id="evaluation-search" type="search" name="q" value="<?= htmlspecialchars($evaluationSearch,ENT_QUOTES,'UTF-8') ?>" placeholder="Evaluation title or instructions"></label><label for="evaluation-status">Show<select id="evaluation-status" name="evaluation_status"><?php foreach(['all'=>'All evaluations','not_submitted'=>'Not submitted','submitted'=>'Submitted (including reviewed)','reviewed'=>'Reviewed'] as $key=>$label): ?><option value="<?= $key ?>" <?= $evaluationFilter===$key?'selected':'' ?>><?= $label ?></option><?php endforeach ?></select></label><button type="submit"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Search</button><a href="<?= htmlspecialchars(route($_SESSION['role'].'.'.($_SESSION['role']==='employee'?'tasks':'evaluations'))) ?>">Clear</a></form>
 <div class="task-grid">
 
 <?php if ($assignments && $assignments->num_rows > 0): ?>
@@ -123,6 +132,7 @@ $assignments = $assignments->get_result();
     </div>
 
     <div class="task-actions">
+        <?php if($a['has_appraisal']): ?><a class="task-link" href="<?= htmlspecialchars(app_url('employee/view_appraisal.php?id='.(int)$a['id'])); ?>"><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i> View Appraisal</a><?php endif; ?>
         <?php if (!empty($a['file_attachment'])): ?>
             <a class="task-link" href="../uploads/tasks/<?= htmlspecialchars($a['file_attachment']); ?>" target="_blank">
                 <i class="fa-solid fa-paperclip"></i> View Attachment
@@ -145,7 +155,7 @@ $assignments = $assignments->get_result();
     <?php if ($a['hr_score'] !== null): ?>
         <div class="score-panel">
             <div>
-                <span class="score-value"><?= (int) $a['hr_score']; ?>%</span>
+                <span class="score-value"><?= rtrim(rtrim(number_format((float)$a['hr_score'],2,'.',''),'0'),'.'); ?>%</span>
                 <span class="score-label">HR Score</span>
             </div>
             <?php if (!empty($a['hr_feedback'])): ?>
@@ -183,7 +193,7 @@ $assignments = $assignments->get_result();
   <div class="empty-tasks">
     <i class="fa-solid fa-clipboard-list"></i>
     <h3>No assigned tasks</h3>
-    <p>New evaluation assignments will appear here.</p>
+    <p>No evaluations match the current search and status. Clear the filters to see all assignments.</p>
   </div>
 <?php endif; ?>
 

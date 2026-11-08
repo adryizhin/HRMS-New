@@ -5,7 +5,7 @@ const {chromium}=require('playwright'),path=require('path');
  const dates={cutoff_start:'2026-10-01',cutoff_end:'2026-10-15',payout_date:'2026-10-16'};
  async function login(role){const c=await browser.newContext();await c.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.abort());await c.request.post(base+'login/login_process.php',{form:{email:role+'@feature.example',password:'TemporaryFeaturePassword!'}});return c;}
  try {
-  const hr=await login('hr');for(const id of [1,2,3])await hr.request.post(base+'hr/payroll.php',{form:{...dates,employee_id:String(id),allowance:'1200'}});await hr.close();
+  const hr=await login('hr');const html=await(await hr.request.get(base+'hr/payroll.php?employee_id=1')).text();const token=html.match(/name="csrf_token" value="([a-f0-9]+)"/)[1];for(const id of [1,2,3])await hr.request.post(base+'hr/payroll.php',{form:{...dates,employee_id:String(id),csrf_token:token}});await hr.close();
   for(const role of ['admin','hr','employee']) {
    const context=await login(role),page=await context.newPage();
    await page.goto(base+role+'/payroll.php?'+new URLSearchParams({...dates,...(role==='hr'?{employee_id:'2'}:{})}));

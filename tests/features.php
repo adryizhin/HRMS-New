@@ -10,6 +10,8 @@ $conn->set_charset('utf8mb4');
 $server = null;
 $cookies = [];
 $checks = 0;
+$sessionDirectory = str_replace('\\', '/', sys_get_temp_dir()) . '/hrms-feature-sessions-' . bin2hex(random_bytes(8));
+if (!mkdir($sessionDirectory, 0700)) throw new RuntimeException('Unable to create test session directory');
 function verify(bool $condition, string $message): void {
     global $checks;
     if (!$condition) throw new RuntimeException($message);
@@ -74,8 +76,8 @@ try {
     $employeeKpi = calculateEmployeeKpi($conn,3,'2026-10-01','2026-10-31');
     verify($employeeKpi['stats']['assigned'] === 0 && $employeeKpi['stats']['absent'] === 0, 'KPI excludes out-of-period assignments and attendance');
     $environment = getenv();
-    $environment['HRMS_DB_NAME'] = $database; $environment['HRMS_BASE_URL'] = '/HRMS';
-    $server = proc_open([PHP_BINARY,'-S','127.0.0.1:8091',dirname(__DIR__) . '/tests/features-router.php'], [0=>['pipe','r'],1=>['file',__DIR__.'/features-server.log','w'],2=>['file',__DIR__.'/features-server.log','a']], $pipes, dirname(__DIR__), $environment);
+    $environment['HRMS_TEST_SESSION_PATH'] = $sessionDirectory; $environment['HRMS_DB_NAME'] = $database; $environment['HRMS_BASE_URL'] = '/HRMS';
+    $server = proc_open([PHP_BINARY,'-d','session.save_path=' . $sessionDirectory,'-S','127.0.0.1:8091',dirname(__DIR__) . '/tests/features-router.php'], [0=>['pipe','r'],1=>['file',__DIR__.'/features-server.log','w'],2=>['file',__DIR__.'/features-server.log','a']], $pipes, dirname(__DIR__), $environment);
     if (!is_resource($server)) throw new RuntimeException('Unable to start local test server');
     usleep(500000);
     foreach ($ids as $role => $id) {
@@ -146,13 +148,13 @@ try {
     verify(str_contains($body,'Select valid dates in order') && str_contains($body,'Detailed request &lt;example&gt;') && str_contains($body,'value="2027-02-01"'),'Date validation preserves safely escaped form entries');
     [$code,$body]=requestFeature('employee','employee/request_leave.php',array_replace($form,['reason'=>str_repeat('x',2001)]));
     verify(str_contains($body,'2,000 characters') && remainingLeaveDays($conn,3,2027)===$balanceBefore,'Overlong reason is rejected without balance change');
-    [$code,$body]=requestFeature('employee','employee/request_leave.php',array_replace($form,['hr_id'=>99999]));
-    verify(str_contains($body,'Select an active HR reviewer.') && remainingLeaveDays($conn,3,2027)===$balanceBefore,'Unavailable reviewer cannot receive a leave request');
+    [$code,$body]=requestFeature('employee','employee/request_leave.php',array_replace($form,['hr_id'=>99999,'action'=>'preview']));
+    verify(!str_contains($body,'name="hr_id"') && str_contains($body,'shared Human Resource queue') && remainingLeaveDays($conn,3,2027)===$balanceBefore,'Employee form routes to the shared HR queue without a reviewer selector');
     [$code,$body]=requestFeature('employee','employee/request_leave.php',$form);
     verify(str_contains($body,'Leave request sent successfully') && str_contains($body,'Detailed request &lt;example&gt;') && remainingLeaveDays($conn,3,2027)===$balanceBefore-3,'Submitted request appears in history and reserves correct working days');
     $latest=(int)$conn->query("SELECT id FROM leave_requests WHERE request_key='".$requestKey[1]."'")->fetch_row()[0];
     $blocked=false;try{reviewLeaveRequest($conn,9999,$latest,'approved');}catch(InvalidArgumentException $e){$blocked=true;}
-    verify($blocked && $conn->query('SELECT status FROM leave_requests WHERE id='.$latest)->fetch_row()[0]==='pending','Another HR reviewer cannot finalize the request');
+    verify($blocked && $conn->query('SELECT status FROM leave_requests WHERE id='.$latest)->fetch_row()[0]==='pending','An invalid reviewer account cannot finalize the request');
     verify(reviewLeaveRequest($conn,2,$latest,'approved','Enjoy your leave.') && !reviewLeaveRequest($conn,2,$latest,'rejected','Overwrite attempt'),'Final decision cannot be changed or notify twice');
     verify(remainingLeaveDays($conn,3,2027)===$balanceBefore-3,'Approval keeps previously reserved days without double deduction');
     [$code,$body]=requestFeature('hr','hr/hr_leave_requests.php?status=approved');
@@ -203,6 +205,8 @@ try {
     $conn->query("INSERT INTO tasks (employee_id,hr_id,title,deadline,submission_file,submitted_at,status,hr_score,created_at) VALUES (1003,2,'Quality and completion only',NULL,'fixture.txt','2026-09-10 12:00:00','reviewed',100,'2026-09-01')");
     $qualityOnly=calculateEmployeeKpi($conn,1003,'2026-09-01','2026-09-30');
     verify($qualityOnly['overall']===65.0 && $qualityOnly['available_weight']===65 && $qualityOnly['label']==='Needs Support','Perfect quality plus completion earns 65 fixed points without attendance or deadline data');
+    require __DIR__.'/appraisal_checks.php';
+    require __DIR__.'/workflow_checks.php';
     if(getenv('HRMS_LEAVE_BROWSER')==='1') {
         $browser=proc_open(['node',__DIR__.'/leave-browser.cjs'],[0=>['pipe','r'],1=>STDOUT,2=>STDERR],$bp,dirname(__DIR__),$environment);
         if(!is_resource($browser)||proc_close($browser)!==0)throw new RuntimeException('Leave browser checks failed');
@@ -216,6 +220,8 @@ try {
 } finally {
     if (is_resource($server)) { proc_terminate($server); proc_close($server); }
     foreach ($cookies as $file) if (is_file($file)) unlink($file);
+    foreach (glob($sessionDirectory . '/sess_*') ?: [] as $file) unlink($file);
+    rmdir($sessionDirectory);
     $conn->close();
     if (preg_match('/\Ahrms_feature_test_[a-f0-9]{10}\z/', $database)) $source->query("DROP DATABASE `$database`");
 }

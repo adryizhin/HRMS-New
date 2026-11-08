@@ -28,7 +28,10 @@ const paths={admin:['dashboard.php','create_user_account.php','departments.php',
     const response=await ctx.get('hr/'+file+'?id='+id);
     results.push({role,path:file,status:response.status(),ok:response.status()===200});
    }
-   const saved=await ctx.post('hr/score_submission.php?id='+id,{form:{hr_score:'85',hr_feedback:'Isolated test score'}});
+   const formResponse=await ctx.get('hr/score_submission.php?id='+id);const csrf=(await formResponse.text()).match(/name="csrf_token" value="([a-f0-9]+)"/)[1];
+   const form={csrf_token:csrf,position:'Employee',department:'Operations',period_start:'2026-01-01',period_end:'2026-01-31',accomplished_date:'2026-02-01',recommendations:'Isolated test score'};
+   for(const key of ['job_knowledge','performance','customer_relation','loyalty','work_attitude','attendance'])form['ratings['+key+']']='3';
+   const saved=await ctx.post('hr/score_submission.php?id='+id,{form});
    results.push({role,path:'save score',status:saved.status(),ok:saved.status()===200&&(await saved.text()).includes('Score saved successfully')});
   }
   const logout=await ctx.get('logout.php');

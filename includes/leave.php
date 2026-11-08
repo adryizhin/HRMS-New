@@ -36,6 +36,8 @@ function ensureLeaveSchema(mysqli $conn): void
     foreach (['review_notes'=>'TEXT NULL', 'reviewed_at'=>'DATETIME NULL', 'reviewed_by'=>'INT NULL'] as $name=>$type) {
         if (!in_array($name, $columns, true)) $conn->query("ALTER TABLE leave_requests ADD COLUMN $name $type");
     }
+    $hrColumn=$conn->query("SHOW COLUMNS FROM leave_requests LIKE 'hr_id'")->fetch_assoc();
+    if($hrColumn['Null']==='NO')$conn->query('ALTER TABLE leave_requests MODIFY hr_id INT NULL');
     // Preserve historical requests and initialize their working-day charges once.
     $legacy = $conn->query('SELECT id, start_date, end_date FROM leave_requests WHERE days_initialized = 0');
     $insert = $conn->prepare('INSERT IGNORE INTO leave_request_days (request_id, leave_date) VALUES (?, ?)');
@@ -62,7 +64,7 @@ function remainingLeaveDays(mysqli $conn, int $userId, int $year): int
 function submitLeaveRequest(mysqli $conn, int $userId, int $hrId, string $type, string $start, string $end, string $reason, string $key): void
 {
     ensureLeaveSchema($conn);
-    if (!in_array($type, ['Sick Leave', 'Vacation Leave'], true) || trim($reason) === '' || !preg_match('/\A[a-f0-9]{64}\z/', $key)) {
+    if (!in_array($type, ['Sick Leave', 'Vacation Leave', 'Mandatory Leave'], true) || trim($reason) === '' || !preg_match('/\A[a-f0-9]{64}\z/', $key)) {
         throw new InvalidArgumentException('Complete the leave form and reload if the request has expired.');
     }
     $reason = trim($reason);
@@ -79,10 +81,8 @@ function submitLeaveRequest(mysqli $conn, int $userId, int $hrId, string $type, 
         $existing->bind_param('si', $key, $userId);
         $existing->execute();
         if ($existing->get_result()->num_rows) { $conn->commit(); return; }
-        $hr = $conn->prepare("SELECT id FROM users WHERE id = ? AND role = 'hr' AND status = 'active'");
-        $hr->bind_param('i', $hrId);
-        $hr->execute();
-        if (!$hr->get_result()->num_rows) throw new InvalidArgumentException('Select an active HR reviewer.');
+        if(!$conn->query("SELECT id FROM users WHERE role='hr' AND status='active' LIMIT 1")->num_rows)throw new InvalidArgumentException('No active Human Resource reviewer is available.');
+        $queueReviewer=null;
         $years = [];
         foreach ($dates as $date) { $year = (int) substr($date, 0, 4); $years[$year] = ($years[$year] ?? 0) + 1; }
         foreach ($years as $year => $count) {
@@ -93,7 +93,7 @@ function submitLeaveRequest(mysqli $conn, int $userId, int $hrId, string $type, 
         $overlap->execute();
         if ($overlap->get_result()->num_rows) throw new InvalidArgumentException('These dates overlap an existing leave request.');
         $stmt = $conn->prepare('INSERT INTO leave_requests (employee_id, hr_id, leave_type, start_date, end_date, reason, request_key, days_initialized) VALUES (?, ?, ?, ?, ?, ?, ?, 1)');
-        $stmt->bind_param('iisssss', $userId, $hrId, $type, $start, $end, $reason, $key);
+        $stmt->bind_param('iisssss', $userId, $queueReviewer, $type, $start, $end, $reason, $key);
         $stmt->execute();
         $id = $conn->insert_id;
         $insert = $conn->prepare('INSERT INTO leave_request_days (request_id, leave_date) VALUES (?, ?)');
@@ -109,21 +109,22 @@ function reviewLeaveRequest(mysqli $conn, int $hrId, int $id, string $status, st
     if (!in_array($status, ['approved', 'rejected'], true)) throw new InvalidArgumentException('Choose Approve or Reject.');
     $notes = trim($notes);
     if (mb_strlen($notes) > 2000) throw new InvalidArgumentException('Keep review notes within 2,000 characters.');
-    $find = $conn->prepare('SELECT employee_id FROM leave_requests WHERE id=? AND hr_id=?');
-    $find->bind_param('ii', $id, $hrId); $find->execute();
+    $hr=$conn->prepare("SELECT id FROM users WHERE id=? AND role='hr' AND status='active'");$hr->bind_param('i',$hrId);$hr->execute();if(!$hr->get_result()->num_rows)throw new InvalidArgumentException('Only active Human Resource staff can review leave.');
+    $find = $conn->prepare('SELECT employee_id FROM leave_requests WHERE id=?');
+    $find->bind_param('i', $id); $find->execute();
     $owner = $find->get_result()->fetch_assoc();
-    if (!$owner) throw new InvalidArgumentException('This request is unavailable or assigned to another Human Resource reviewer.');
+    if (!$owner) throw new InvalidArgumentException('This leave request is unavailable.');
     $userId = (int)$owner['employee_id'];
     $conn->begin_transaction();
     try {
         // Match submission lock order so reviews cannot race balance checks.
         $lock = $conn->prepare('SELECT id FROM users WHERE id=? FOR UPDATE');
         $lock->bind_param('i', $userId); $lock->execute(); $lock->get_result();
-        $get = $conn->prepare('SELECT * FROM leave_requests WHERE id=? AND hr_id=? FOR UPDATE');
-        $get->bind_param('ii', $id, $hrId); $get->execute(); $request=$get->get_result()->fetch_assoc();
+        $get = $conn->prepare('SELECT * FROM leave_requests WHERE id=? FOR UPDATE');
+        $get->bind_param('i', $id); $get->execute(); $request=$get->get_result()->fetch_assoc();
         if (!$request || $request['status'] !== 'pending') { $conn->commit(); return false; }
-        $update=$conn->prepare("UPDATE leave_requests SET status=?,review_notes=?,reviewed_by=?,reviewed_at=NOW() WHERE id=? AND hr_id=? AND status='pending'");
-        $update->bind_param('ssiii', $status, $notes, $hrId, $id, $hrId); $update->execute();
+        $update=$conn->prepare("UPDATE leave_requests SET status=?,review_notes=?,reviewed_by=?,reviewed_at=NOW(),hr_id=? WHERE id=? AND status='pending'");
+        $update->bind_param('ssiii', $status, $notes, $hrId, $hrId, $id); $update->execute();
         $message='Your '.$request['leave_type'].' request ('.$request['start_date'].' to '.$request['end_date'].') has been '.strtoupper($status).'.';
         if ($status==='rejected') $message.=' Reserved leave days have been restored.';
         if ($notes!=='') $message.=' HR note: '.$notes;
