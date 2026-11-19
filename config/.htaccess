@@ -1,4 +1,4 @@
 
-<Files "mail.local.php">
+<FilesMatch "^(mail|hosting)\.local\.php$">
 Require all denied
-</Files>
+</FilesMatch>

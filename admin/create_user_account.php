@@ -7,52 +7,6 @@ checkRole(['admin']);
 $_SESSION['employee_department_csrf'] ??= bin2hex(random_bytes(32));
 
 /* =========================
-   ADD USER
-========================= */
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $name        = trim($_POST['full_name'] ?? '');
-    $email       = trim($_POST['email'] ?? '');
-    $password    = $_POST['password'] ?? '';
-    $role        = $_POST['role'] ?? '';
-    $department_id = !empty($_POST['department_id']) ? (int) $_POST['department_id'] : null;
-    $work_shift = 'morning';
-
-    if ($name === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 191
-        || $password === '' || !in_array($role, ['admin', 'hr', 'employee'], true)) {
-        $error = 'Enter a name, valid email (up to 191 characters), password, and role.';
-    } else {
-
-    // Auto-generate employee_id
-    $last = $conn->query("SELECT MAX(id) AS max_id FROM users")->fetch_assoc();
-    $employee_id = 'EMP-' . str_pad(($last['max_id'] ?? 0) + 1, 5, '0', STR_PAD_LEFT);
-
-    $hashed = password_hash($password, PASSWORD_DEFAULT);
-
-    $stmt = $conn->prepare("
-        INSERT INTO users (employee_id, full_name, email, password, role, department_id, work_shift)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ");
-
-    $stmt->bind_param("sssssis", $employee_id, $name, $email, $hashed, $role, $department_id, $work_shift);
-
-    try {
-      if ($stmt->execute()) {
-        header("Location: create_user_account.php");
-        exit();
-      } else {
-        $error = $stmt->error;
-      }
-    } catch (mysqli_sql_exception $exception) {
-        if ($exception->getCode() !== 1062) {
-            throw $exception;
-        }
-        $error = 'An account with this email or employee ID already exists.';
-    }
-    }
-}
-
-/* =========================
    DELETE USER
 ========================= */
 if (isset($_GET['delete'])) {
@@ -109,54 +63,7 @@ $departments = $conn->query("
 <div class="main">
 <div class="container">
 
-<!-- FORM -->
-<div class="form-card">
-  <h2>Create User Account</h2>
-
-  <?php if (!empty($error)): ?>
-    <div style="background:#fee2e2;color:#991b1b;padding:10px;border-radius:8px;margin-bottom:10px;">
-      <?= $error; ?>
-    </div>
-  <?php endif; ?>
-
-  <form method="POST">
-
-    
-    <div class="form-group">
-      <input type="text" name="full_name" placeholder="Full Name" required>
-    </div>
-
-    <div class="form-group">
-      <input type="email" name="email" placeholder="Email" required>
-    </div>
-
-    <div class="form-group">
-      <input type="password" name="password" placeholder="Password" required>
-    </div>
-
-    <div class="form-group">
-      <select name="role" required>
-        <option value="">Select Role</option>
-        <option value="admin">Admin</option>
-        <option value="hr">HR</option>
-        <option value="employee">Employee</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <select name="department_id">
-        <option value="">Select Department</option>
-        <?php foreach ($departments as $department): ?>
-          <option value="<?= $department['id']; ?>">
-            <?= htmlspecialchars($department['name']); ?>
-          </option>
-        <?php endforeach; ?>
-      </select>
-    </div>
-
-    <button type="submit">Create Account</button>
-  </form>
-</div>
+<div class="form-card"><h2>Employee Account Management</h2><p>HR submits employee account requests. Review new requests in <a href="<?= htmlspecialchars(route('admin.account_requests')); ?>">Account Requests</a> before they become active accounts.</p><?php if (!empty($error)): ?><div><?= htmlspecialchars($error); ?></div><?php endif; ?></div>
 
 <!-- TABLE -->
 <div class="table-card">

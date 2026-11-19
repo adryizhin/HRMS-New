@@ -9,7 +9,9 @@ function payrollDate(string $value): string {
  if(!$d||$d->format('Y-m-d')!==$value)throw new InvalidArgumentException('Select a valid payroll date.');return $value;
 }
 function payrollCutoff(string $selected,string $anchor='start'): array {
- $date=new DateTimeImmutable(payrollDate($selected));$start=$anchor==='end'?$date->modify('-14 days'):$date;$end=$start->modify('+14 days');
+ $date=new DateTimeImmutable(payrollDate($selected));$last=(int)$date->format('t');$day=(int)$date->format('j');
+ if($anchor==='end')$day=$day<=15?1:16;
+ $firstHalf=$day<=15;$start=$date->setDate((int)$date->format('Y'),(int)$date->format('n'),$firstHalf?1:16);$end=$date->setDate((int)$date->format('Y'),(int)$date->format('n'),$firstHalf?15:min(30,$last));
  return [payrollDate($start->format('Y-m-d')),payrollDate($end->format('Y-m-d'))];
 }
 function payrollProfile(mysqli $conn,int $userId): array {

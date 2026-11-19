@@ -14,7 +14,8 @@ function renderSidebar(string $role, string $active = ''): void
     $menus = [
         'admin' => [
             ['admin.dashboard', 'fa-chart-line', 'Dashboard'],
-            ['admin.users', 'fa-user', 'Create Employees'],
+            ['admin.users', 'fa-user', 'Employee Accounts'],
+            ['admin.account_requests', 'fa-user-check', 'Account Requests'],
             ['admin.departments', 'fa-building', 'Departments'],
             ['admin.attendance', 'fa-clock', 'Attendance'],
             ['admin.holidays', 'fa-calendar-days', 'Holiday Calendar'],
@@ -30,6 +31,7 @@ function renderSidebar(string $role, string $active = ''): void
         ],
         'hr' => [
             ['hr.dashboard', 'fa-chart-line', 'Dashboard'],
+            ['hr.accounts', 'fa-user-plus', 'Create Employee Accounts'],
             ['hr.task_submissions', 'fa-clipboard-check', 'Review Evaluations'],
             ['hr.201_files', 'fa-folder-open', '201 Files'],
             ['hr.documents', 'fa-folder-open', 'My Documents'],

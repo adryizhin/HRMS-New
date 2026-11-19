@@ -7,10 +7,10 @@ if (isset($conn) && $conn instanceof mysqli) {
     return;
 }
 
-define('DB_HOST', getenv('HRMS_DB_HOST') ?: 'localhost');
-define('DB_USER', getenv('HRMS_DB_USER') ?: 'root');
-define('DB_PASS', getenv('HRMS_DB_PASS') !== false ? getenv('HRMS_DB_PASS') : '');
-define('DB_NAME', getenv('HRMS_DB_NAME') ?: 'hris');
+define('DB_HOST', hrmsHostingSetting('HRMS_DB_HOST', 'localhost') ?: 'localhost');
+define('DB_USER', hrmsHostingSetting('HRMS_DB_USER', 'root') ?: 'root');
+define('DB_PASS', hrmsHostingSetting('HRMS_DB_PASS', ''));
+define('DB_NAME', hrmsHostingSetting('HRMS_DB_NAME', 'hris') ?: 'hris');
 
 $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 

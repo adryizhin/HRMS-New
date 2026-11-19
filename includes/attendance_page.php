@@ -40,6 +40,16 @@ function renderAttendancePage(mysqli $conn, string $role): void
         $stmt->execute();
         $records = $stmt->get_result();
     }
+    $recordRows=$records->fetch_all(MYSQLI_ASSOC);
+    $monthValue=(string)($_GET['month']??date('Y-m'));
+    if(!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/',$monthValue))$monthValue=date('Y-m');
+    $calendarMonth=DateTimeImmutable::createFromFormat('!Y-m-d',$monthValue.'-01')?:new DateTimeImmutable('first day of this month');
+    $calendarDays=(int)$calendarMonth->format('t');$calendarOffset=(int)$calendarMonth->format('N')-1;$calendarRecords=[];
+    if(!$canViewAll)foreach($recordRows as $attendanceRow)$calendarRecords[$attendanceRow['attendance_date']][]=$attendanceRow;
+    $holidayNames=[];
+    if(!$canViewAll){$holidayStart=$calendarMonth->format('Y-m-01');$holidayEnd=$calendarMonth->format('Y-m-t');$holidayStmt=$conn->prepare('SELECT holiday_date,name FROM holidays WHERE holiday_date BETWEEN ? AND ?');$holidayStmt->bind_param('ss',$holidayStart,$holidayEnd);$holidayStmt->execute();foreach($holidayStmt->get_result() as $holiday)$holidayNames[$holiday['holiday_date']]=$holiday['name'];}
+    $chartMonth=(string)($_GET['month']??date('Y-m'));if(!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/',$chartMonth))$chartMonth=date('Y-m');$chartStart=$chartMonth.'-01';$chartEnd=(new DateTimeImmutable($chartStart))->modify('last day of this month')->format('Y-m-d');$staffAttendance=[];
+    if($role==='hr'){$chartStmt=$conn->prepare("SELECT u.full_name,SUM(a.status='present') present_count,SUM(a.status='late') late_count,SUM(a.status='absent') absent_count FROM users u LEFT JOIN attendance a ON a.user_id=u.id AND a.attendance_date BETWEEN ? AND ? WHERE u.status='active' AND u.role IN ('employee','hr','admin') AND (u.full_name LIKE ? ESCAPE '!' OR u.employee_id LIKE ? ESCAPE '!' OR u.role LIKE ? ESCAPE '!') GROUP BY u.id,u.full_name ORDER BY u.full_name");$chartStmt->bind_param('sssss',$chartStart,$chartEnd,$namePattern,$namePattern,$namePattern);$chartStmt->execute();$staffAttendance=$chartStmt->get_result()->fetch_all(MYSQLI_ASSOC);}
 
     $activeRoute = $role . '.attendance';
     ?>
@@ -70,6 +80,30 @@ function renderAttendancePage(mysqli $conn, string $role): void
     --attendance-muted: #cbd5e1;
     --attendance-border: #1f2937;
     --attendance-accent: #60a5fa;
+    --attendance-present-bg:#123324;
+    --attendance-present-text:#86efac;
+    --attendance-late-bg:#3a2d0b;
+    --attendance-late-text:#fde047;
+    --attendance-late-border:#a16207;
+    --attendance-absent-bg:#3b1720;
+    --attendance-absent-text:#fda4af;
+    --attendance-absent-border:#be123c;
+    --attendance-holiday-bg:#312e81;
+    --attendance-holiday-text:#c4b5fd;
+    --attendance-holiday-border:#7c3aed;
+}
+:root {
+    --attendance-present-bg:#dcfce7;
+    --attendance-present-text:#166534;
+    --attendance-late-bg:#fef3c7;
+    --attendance-late-text:#92400e;
+    --attendance-late-border:#facc15;
+    --attendance-absent-bg:#fee2e2;
+    --attendance-absent-text:#991b1b;
+    --attendance-absent-border:#fca5a5;
+    --attendance-holiday-bg:#ede9fe;
+    --attendance-holiday-text:#5b21b6;
+    --attendance-holiday-border:#c4b5fd;
 }
 
 body {
@@ -143,6 +177,17 @@ th {
 .present { background:#dcfce7; color:#166534; }
 .late { background:#fef3c7; color:#92400e; }
 .absent { background:#fee2e2; color:#991b1b; }
+.attendance-calendar{background:var(--attendance-card);border:1px solid var(--attendance-border);border-radius:14px;padding:20px;box-shadow:0 10px 22px rgba(15,23,42,.05)}
+.calendar-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.calendar-heading h2{margin:0;font-size:20px}.calendar-nav{display:flex;gap:8px}.calendar-nav a{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:38px;padding:0 12px;border:1px solid var(--attendance-border);border-radius:8px;background:var(--attendance-card-soft);color:var(--attendance-text);text-decoration:none;font-weight:700}.calendar-nav a:hover{border-color:var(--attendance-accent)}
+.calendar-weekdays,.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}.calendar-weekdays{margin-bottom:7px;text-align:center;color:var(--attendance-muted);font-size:12px;font-weight:700}.calendar-day,.calendar-blank{min-height:92px;border-radius:9px}.calendar-day{padding:8px;border:1px solid var(--attendance-border);background:var(--attendance-card-soft)}.calendar-day .day-number{font-weight:700;font-size:14px}.calendar-day .day-status{display:block;margin-top:8px;padding:5px 6px;border-radius:6px;font-size:11px;font-weight:700;line-height:1.25}.calendar-day.present-day .day-status{background:#dcfce7;color:#166534}.calendar-day.late-day{background:#fffbeb;border-color:#facc15}.calendar-day.late-day .day-status{background:#fef3c7;color:#92400e}.calendar-day.absent-day{background:#fff1f2;border-color:#fca5a5}.calendar-day.absent-day .day-status{background:#fee2e2;color:#991b1b}.calendar-legend{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:16px;color:var(--attendance-muted);font-size:12px}.calendar-legend span{display:inline-flex;align-items:center;gap:7px}.calendar-legend i{width:11px;height:11px;border-radius:3px}.calendar-legend .legend-absent{background:#ef4444}.calendar-legend .legend-late{background:#eab308}.calendar-legend .legend-present{background:#22c55e}
+.calendar-day.present-day .day-status{background:var(--attendance-present-bg);color:var(--attendance-present-text)}
+.calendar-day.late-day{background:color-mix(in srgb,var(--attendance-late-bg) 60%,var(--attendance-card));border-color:var(--attendance-late-border)}
+.calendar-day.late-day .day-status{background:var(--attendance-late-bg);color:var(--attendance-late-text)}
+.calendar-day.absent-day{background:color-mix(in srgb,var(--attendance-absent-bg) 60%,var(--attendance-card));border-color:var(--attendance-absent-border)}
+.calendar-day.absent-day .day-status{background:var(--attendance-absent-bg);color:var(--attendance-absent-text)}
+.calendar-day.holiday-day{background:color-mix(in srgb,var(--attendance-holiday-bg) 65%,var(--attendance-card));border-color:var(--attendance-holiday-border)}.calendar-day .holiday-name{display:block;width:100%;margin-top:6px;color:var(--attendance-holiday-text);font-size:10px;font-weight:700;line-height:1.2;overflow-wrap:anywhere}.calendar-legend .legend-holiday{background:#8b5cf6}
+.attendance-chart{background:var(--attendance-card);border:1px solid var(--attendance-border);border-radius:14px;padding:18px;margin:20px 0;box-shadow:0 10px 22px rgba(15,23,42,.05)}.attendance-chart-header{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:14px}.attendance-chart-header h2{margin:0 0 5px}.attendance-chart-header p{margin:0;color:var(--attendance-muted);font-size:13px}.attendance-chart-header form{display:flex;align-items:center;gap:8px}.attendance-chart-header input,.attendance-chart-header button{padding:8px 10px;border:1px solid var(--attendance-border);border-radius:7px;background:var(--attendance-card-soft);color:var(--attendance-text)}.attendance-chart-scroll{overflow-x:auto;padding-bottom:8px}.attendance-bars{--bar-height:250px;display:flex;align-items:stretch;gap:14px;min-width:max-content;padding:12px 8px 0 44px;background:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--bar-height)/4 - 1px),var(--attendance-border) calc(var(--bar-height)/4 - 1px),var(--attendance-border) calc(var(--bar-height)/4));border-bottom:1px solid var(--attendance-border)}.attendance-bar-group{width:74px;height:calc(var(--bar-height) + 54px);display:flex;flex-direction:column;justify-content:flex-end;align-items:center;flex-shrink:0}.attendance-bar-values{height:var(--bar-height);width:100%;display:flex;align-items:flex-end;justify-content:center;gap:4px}.attendance-bar{position:relative;width:16px;min-height:2px;border-radius:4px 4px 0 0}.attendance-bar.present{background:#22c55e}.attendance-bar.late{background:#eab308}.attendance-bar.absent{background:#ef4444}.attendance-bar span{position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--attendance-text)}.attendance-bar-name{height:42px;padding-top:8px;text-align:center;font-size:11px;font-weight:700;color:var(--attendance-text);white-space:nowrap}.attendance-chart-legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:14px;font-size:12px;color:var(--attendance-muted)}.attendance-chart-legend span{display:inline-flex;align-items:center;gap:7px}.attendance-chart-legend i{width:10px;height:10px;border-radius:3px}.attendance-chart-legend .present-key{background:#22c55e}.attendance-chart-legend .late-key{background:#eab308}.attendance-chart-legend .absent-key{background:#ef4444}
+@media(max-width:600px){.attendance-calendar{padding:12px}.calendar-weekdays,.calendar-grid{gap:3px}.calendar-day,.calendar-blank{min-height:66px}.calendar-day{padding:5px 3px}.calendar-day .day-status{font-size:9px;padding:4px 2px;margin-top:5px}.calendar-heading h2{font-size:17px}}
 </style>
 </head>
 <body>
@@ -179,13 +224,15 @@ th {
         <?php endif; ?>
     </div>
 
-    <form method="get" style="margin:18px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+    <?php if($role==='hr'): ?><section class="attendance-chart"><header class="attendance-chart-header"><div><h2>Monthly attendance by staff</h2><p>Present, late, and absent record counts for each staff member.</p></div><form method="get"><input type="hidden" name="search" value="<?= htmlspecialchars($search,ENT_QUOTES,'UTF-8') ?>"><label for="attendance-chart-month">Month</label><input id="attendance-chart-month" type="month" name="month" value="<?= htmlspecialchars($chartMonth,ENT_QUOTES,'UTF-8') ?>"><button type="submit">View</button></form></header><?php $chartMax=1;foreach($staffAttendance as $person)$chartMax=max($chartMax,(int)$person['present_count'],(int)$person['late_count'],(int)$person['absent_count']); ?><div class="attendance-chart-scroll"><div class="attendance-bars" style="--bar-height:250px"><?php foreach($staffAttendance as $person):$parts=preg_split('/\s+/',trim($person['full_name']));$shortName=mb_substr($parts[0]??'',0,1).'. '.($parts[count($parts)-1]??''); ?><div class="attendance-bar-group" title="<?= htmlspecialchars($person['full_name'],ENT_QUOTES,'UTF-8') ?>"><div class="attendance-bar-values"><?php foreach(['present'=>'present_count','late'=>'late_count','absent'=>'absent_count'] as $status=>$field):$count=(int)$person[$field];$height=$count?max(4,round($count/$chartMax*230)):0; ?><div class="attendance-bar <?= $status ?>" style="height:<?= $height ?>px" aria-label="<?= ucfirst($status) ?> <?= $count ?>"><span><?= $count ?></span></div><?php endforeach ?></div><div class="attendance-bar-name"><?= htmlspecialchars($shortName,ENT_QUOTES,'UTF-8') ?></div></div><?php endforeach ?><?php if(!$staffAttendance): ?><p>No staff attendance matches the search for this month.</p><?php endif ?></div></div><div class="attendance-chart-legend"><span><i class="present-key"></i>Present</span><span><i class="late-key"></i>Late</span><span><i class="absent-key"></i>Absent</span></div></section><?php endif ?>
+    <?php if($canViewAll): ?><form method="get" style="margin:18px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <?php if($role==='hr'): ?><input type="hidden" name="month" value="<?= htmlspecialchars($chartMonth,ENT_QUOTES,'UTF-8') ?>"><?php endif ?>
         <label for="attendance-search"></label>
         <input id="attendance-search" type="search" name="search" placeholder="Name, employee ID or role" value="<?= htmlspecialchars($search); ?>" style="padding:10px;background:var(--attendance-card);color:var(--attendance-text);border:1px solid var(--attendance-border);border-radius:8px;">
         <button type="submit">Search</button>
-        <a class="app-button secondary" href="<?= htmlspecialchars(route($activeRoute)); ?>">Clear</a>
+        <a class="app-button secondary" href="<?= htmlspecialchars(route($activeRoute).($role==='hr'?'?month='.rawurlencode($chartMonth):'')); ?>">Clear</a>
     </form>
-    <p class="attendance-note"><?= $canViewAll ? 'Search includes employees, admins and HR. Summary cards show all records.' : 'Search is limited to your own attendance records.'; ?></p>
+    <p class="attendance-note">Search includes employees, admins and HR. Summary cards show all records.</p>
     <div class="table-wrap">
         <table>
             <thead>
@@ -199,8 +246,8 @@ th {
                 </tr>
             </thead>
             <tbody>
-                <?php if ($records && $records->num_rows > 0): ?>
-                    <?php while ($row = $records->fetch_assoc()): ?>
+                <?php if ($recordRows): ?>
+                    <?php foreach ($recordRows as $row): ?>
                         <?php
                         $lateMinutes = (int) ($row['late_minutes'] ?? 0);
                         if (($row['status'] ?? '') === 'late' && $lateMinutes === 0) {
@@ -224,7 +271,7 @@ th {
                                 <?php endif; ?>
                             </td>
                         </tr>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
                         <td colspan="6" style="text-align:center;color:var(--muted);">No attendance records match your search.</td>
@@ -233,6 +280,14 @@ th {
             </tbody>
         </table>
     </div>
+    <?php else: ?>
+    <section class="attendance-calendar" aria-label="My attendance calendar">
+        <header class="calendar-heading"><h2><?= htmlspecialchars($calendarMonth->format('F Y')) ?></h2><nav class="calendar-nav" aria-label="Calendar month navigation"><a href="?month=<?= htmlspecialchars($calendarMonth->modify('-1 month')->format('Y-m')) ?>" aria-label="Previous month">‹</a><a href="?month=<?= htmlspecialchars(date('Y-m')) ?>" aria-label="Current month">Today</a><a href="?month=<?= htmlspecialchars($calendarMonth->modify('+1 month')->format('Y-m')) ?>" aria-label="Next month">›</a></nav></header>
+        <div class="calendar-weekdays" aria-hidden="true"><?php foreach(['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] as $weekday): ?><span><?= $weekday ?></span><?php endforeach ?></div>
+        <div class="calendar-grid"><?php for($blank=0;$blank<$calendarOffset;$blank++): ?><span class="calendar-blank" aria-hidden="true"></span><?php endfor;for($dayNumber=1;$dayNumber<=$calendarDays;$dayNumber++):$dateKey=$calendarMonth->format('Y-m-').str_pad((string)$dayNumber,2,'0',STR_PAD_LEFT);$dayRows=$calendarRecords[$dateKey]??[];$statuses=array_column($dayRows,'status');$isHoliday=isset($holidayNames[$dateKey]);$dayClass=$isHoliday?'holiday-day':(in_array('absent',$statuses,true)?'absent-day':(in_array('late',$statuses,true)?'late-day':(in_array('present',$statuses,true)?'present-day':''))); ?><div class="calendar-day <?= $dayClass ?>" aria-label="<?= htmlspecialchars($calendarMonth->format('F ').$dayNumber.($isHoliday?' · Holiday: '.$holidayNames[$dateKey]:($statuses?' · '.implode(', ',$statuses):' · No attendance record'))) ?>"><span class="day-number"><?= $dayNumber ?></span><?php if($isHoliday): ?><span class="holiday-name"><?= htmlspecialchars($holidayNames[$dateKey]) ?></span><?php endif ?><?php if(in_array('absent',$statuses,true)): ?><span class="day-status absent">Absent</span><?php elseif(in_array('late',$statuses,true)): ?><span class="day-status late">Late<?= count(array_filter($dayRows,static fn($r)=>$r['status']==='late'))>1?' · '.count(array_filter($dayRows,static fn($r)=>$r['status']==='late')):'' ?></span><?php elseif(in_array('present',$statuses,true)): ?><span class="day-status present">Present</span><?php endif ?></div><?php endfor ?></div>
+        <div class="calendar-legend"><span><i class="legend-absent"></i>Absent</span><span><i class="legend-late"></i>Late</span><span><i class="legend-present"></i>Present</span><span><i class="legend-holiday"></i>Holiday</span></div>
+    </section>
+    <?php endif ?>
 </div>
 </body>
 </html>

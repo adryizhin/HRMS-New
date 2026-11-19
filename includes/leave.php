@@ -55,7 +55,7 @@ function ensureLeaveSchema(mysqli $conn): void
 function remainingLeaveDays(mysqli $conn, int $userId, int $year): int
 {
     ensureLeaveSchema($conn);
-    $stmt = $conn->prepare("SELECT COUNT(*) AS used FROM leave_request_days d JOIN leave_requests r ON d.request_id = r.id WHERE r.employee_id = ? AND r.status IN ('pending','approved') AND YEAR(d.leave_date) = ?");
+    $stmt = $conn->prepare("SELECT COUNT(*) AS used FROM leave_request_days d JOIN leave_requests r ON d.request_id = r.id WHERE r.employee_id = ? AND r.status IN ('pending','approved') AND r.leave_type <> 'Maternity Leave' AND YEAR(d.leave_date) = ?");
     $stmt->bind_param('ii', $userId, $year);
     $stmt->execute();
     return max(0, 15 - (int) $stmt->get_result()->fetch_assoc()['used']);
@@ -64,7 +64,7 @@ function remainingLeaveDays(mysqli $conn, int $userId, int $year): int
 function submitLeaveRequest(mysqli $conn, int $userId, int $hrId, string $type, string $start, string $end, string $reason, string $key): void
 {
     ensureLeaveSchema($conn);
-    if (!in_array($type, ['Sick Leave', 'Vacation Leave', 'Mandatory Leave'], true) || trim($reason) === '' || !preg_match('/\A[a-f0-9]{64}\z/', $key)) {
+    if (!in_array($type, ['Sick Leave', 'Vacation Leave', 'Mandatory Leave', 'Maternity Leave'], true) || trim($reason) === '' || !preg_match('/\A[a-f0-9]{64}\z/', $key)) {
         throw new InvalidArgumentException('Complete the leave form and reload if the request has expired.');
     }
     $reason = trim($reason);
@@ -85,7 +85,7 @@ function submitLeaveRequest(mysqli $conn, int $userId, int $hrId, string $type, 
         $queueReviewer=null;
         $years = [];
         foreach ($dates as $date) { $year = (int) substr($date, 0, 4); $years[$year] = ($years[$year] ?? 0) + 1; }
-        foreach ($years as $year => $count) {
+        if ($type !== 'Maternity Leave') foreach ($years as $year => $count) {
             if ($count > remainingLeaveDays($conn, $userId, $year)) throw new InvalidArgumentException("Insufficient leave balance for $year: $count working days requested.");
         }
         $overlap = $conn->prepare("SELECT id FROM leave_requests WHERE employee_id = ? AND status IN ('pending','approved') AND start_date <= ? AND end_date >= ?");

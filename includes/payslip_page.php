@@ -224,9 +224,8 @@ function renderPayslipPage(mysqli $conn, string $role): void
     $_SESSION['payroll_csrf']??=bin2hex(random_bytes(32));$error='';$notice='';$dailyRate=695.00;
     $employeeId=$canGenerate?(int)($input['employee_id']??0):$currentUserId;
     $cutoffStart=$defaultStart;$cutoffEnd=$defaultEnd;
-    try {$anchor=($input['cutoff_anchor']??'start')==='end'?'end':'start';$selectedDate=$input[$anchor==='end'?'cutoff_end':'cutoff_start']??$defaultStart;if(!is_string($selectedDate))throw new InvalidArgumentException('Select a valid payroll date.');[$cutoffStart,$cutoffEnd]=payrollCutoff($selectedDate,$anchor);}catch(InvalidArgumentException $e){$error=$e->getMessage();}
-    $payoutDate=is_string($input['payout_date']??$cutoffEnd)?($input['payout_date']??$cutoffEnd):'';
-    try{$payoutDate=payrollDate($payoutDate);}catch(InvalidArgumentException $e){$error=$e->getMessage();$payoutDate=$cutoffEnd;}
+    try {$anchor=($input['cutoff_anchor']??'start')==='end'?'end':'start';$selectedDate=$input[$anchor==='end'?'cutoff_end':'cutoff_start']??$defaultStart;if(!is_string($selectedDate))throw new InvalidArgumentException('Select a valid payroll period.');$selectedDate=payrollDate($selectedDate);if($canGenerate&&!in_array((int)substr($selectedDate,8,2),$anchor==='end'?[15,30]:[1,16],true))throw new InvalidArgumentException('Choose the fixed 1–15 or 16–30 payroll period.');[$cutoffStart,$cutoffEnd]=payrollCutoff($selectedDate,$anchor);}catch(InvalidArgumentException $e){$error=$e->getMessage();$cutoffStart=$defaultStart;$cutoffEnd=$defaultEnd;}
+    $payoutDate=$cutoffEnd;
     $deduction=0.0;$tax=0.0;
     foreach(['deduction','tax'] as $key){$raw=$input[$key]??'0';if(!is_scalar($raw)||!preg_match('/\A\d{1,8}(?:\.\d{1,2})?\z/',(string)$raw))$error='Enter valid non-negative deductions and tax amounts.';else $$key=$canGenerate?(float)$raw:0.0;}
     if($_SERVER['REQUEST_METHOD']==='POST'&&$canGenerate){
@@ -276,6 +275,9 @@ function renderPayslipPage(mysqli $conn, string $role): void
     if(max($grossPay,$totalDeductions,$netPay)>99999999.99)$error='Payroll totals exceed the supported amount. Reduce the allowance or deductions.';
     $savedPayslip = $selectedSaved ?? ($employee ? payslipFind($conn, $employeeId, $cutoffStart, $cutoffEnd) : null);
 
+    $manilaToday=new DateTimeImmutable('today',new DateTimeZone('Asia/Manila'));
+    $periodClosed=new DateTimeImmutable($cutoffEnd,new DateTimeZone('Asia/Manila'))<=$manilaToday;
+    if($canGenerate&&$_SERVER['REQUEST_METHOD']==='POST'&&($_POST['action']??'generate')==='generate'&&!$periodClosed)$error='This payroll period is still open. Payslips can be generated after the cut-off ends.';
     if ($canGenerate && $_SERVER['REQUEST_METHOD'] === 'POST' && $employee && !$error && ($_POST['action']??'generate')==='generate') {
         $conn->begin_transaction();
         try {
@@ -343,6 +345,8 @@ function renderPayslipPage(mysqli $conn, string $role): void
     --payroll-text:#0f172a;
     --payroll-muted:#475569;
     --payroll-accent:#2563eb;
+    --on-accent:#ffffff;
+    --status-success:#15803d;
     --payroll-green:#15803d;
     --payroll-red:#be123c;
     --payroll-yellow:#b45309;
@@ -359,6 +363,8 @@ function renderPayslipPage(mysqli $conn, string $role): void
     --payroll-text:#e5e7eb;
     --payroll-muted:#9ca3af;
     --payroll-accent:#60a5fa;
+    --on-accent:#0b1220;
+    --status-success:#22c55e;
     --payroll-green:#22c55e;
     --payroll-red:#fb7185;
     --payroll-yellow:#facc15;
@@ -644,6 +650,44 @@ body {
 .payee-search-control button { position:absolute; right:3px; top:50%; transform:translateY(-50%); width:34px; min-height:34px; padding:0; background:transparent; color:var(--payroll-muted); border:0; }
 .payee-search-control button[hidden] { display:none; }
 .payee-search-help { color:var(--payroll-muted); font-size:12px; line-height:1.5; margin:8px 0 0; }
+.main { max-width:1800px; margin-right:auto; }
+.topbar { align-items:center; padding:4px 2px 12px; border-bottom:1px solid var(--payroll-line); }
+.topbar h1 { font-size:clamp(24px,3vw,32px); letter-spacing:-.025em; }
+.generator { gap:22px; }
+.form-panel,.payslip { border-radius:12px; box-shadow:0 4px 18px rgba(15,23,42,.045); }
+.form-panel { padding:22px; }
+.form-panel h2 { font-size:18px; padding-bottom:12px; border-bottom:1px solid var(--payroll-line); }
+.field input,.field select { min-height:44px; }
+.actions { flex-wrap:wrap; }
+.actions .btn { min-height:44px; }
+.btn:focus-visible,.period-selector a:focus-visible { outline:3px solid color-mix(in srgb,var(--payroll-accent) 45%,transparent); outline-offset:2px; }
+.btn:disabled { opacity:.58; cursor:not-allowed; filter:saturate(.55); }
+.period-selector { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:12px; border:1px solid var(--payroll-line); border-radius:10px; background:var(--payroll-panel-soft); }
+.period-selector .btn { min-height:38px; padding:8px 12px; }
+.period-selector strong { flex:1 1 180px; text-align:center; font-size:13px; }
+.payslip { overflow:hidden; }
+.payslip-header { padding:26px; }
+.paid-badge { display:inline-flex; align-items:center; gap:6px; font-size:11px; }
+.summary-grid { gap:12px; }
+.metric { display:flex; flex-direction:column; justify-content:center; }
+.metric strong { font-size:clamp(18px,2vw,23px); overflow-wrap:anywhere; }
+.payslip-body { padding:22px; }
+.payslip-footer { flex-wrap:wrap; }
+@media(max-width:760px) {
+    .main { padding:16px !important; }
+    .form-panel { padding:16px; }
+    .payslip-header,.payslip-body { padding:16px; }
+    .payslip-meta { align-items:flex-start; }
+    .month-pill { min-width:72px; }
+    .summary-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .payslip-body { grid-template-columns:1fr; }
+}
+@media(max-width:440px) {
+    .summary-grid { grid-template-columns:1fr; }
+    .actions .btn { flex:1 1 100%; }
+    .period-selector strong { order:-1; flex-basis:100%; }
+    .employee-name { overflow-wrap:anywhere; }
+}
 @media print {
     /* Print only the payroll slip, regardless of shared navigation styles. */
     html body > :not(.main),
@@ -722,20 +766,9 @@ body {
         <section class="form-panel">
             <h2><?= $canGenerate ? 'Generate Payslip' : 'Payroll Cut-off'; ?></h2>
             <form method="<?= $canGenerate ? 'POST' : 'GET'; ?>">
-                <?php if($canGenerate): ?><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['payroll_csrf']) ?>"><input type="hidden" name="action" value="generate"><input type="hidden" name="employee_id" value="<?= $employeeId ?>"><input type="hidden" name="cutoff_anchor" id="cutoff-anchor" value="start"><p class="payroll-person"><?= $employee?htmlspecialchars($employee['full_name']).' · '.htmlspecialchars($employee['employee_id']??''):'Open a staff payroll from the list above.' ?></p><p class="payee-search-help">Changing either date calculates an exact 15-calendar-day cutoff.</p><?php endif ?>
-                <div class="field">
-                    <label for="cutoff_start">Cut-off Start</label>
-                    <input id="cutoff_start" type="date" name="cutoff_start" value="<?= htmlspecialchars($cutoffStart); ?>" required>
-                </div>
-                <div class="field">
-                    <label for="cutoff_end">Cut-off End</label>
-                    <input id="cutoff_end" type="date" name="cutoff_end" value="<?= htmlspecialchars($cutoffEnd); ?>" required>
-                </div>
+                <?php if($canGenerate): ?><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['payroll_csrf']) ?>"><input type="hidden" name="action" value="generate"><input type="hidden" name="employee_id" value="<?= $employeeId ?>"><input type="hidden" name="cutoff_start" value="<?= htmlspecialchars($cutoffStart) ?>"><input type="hidden" name="cutoff_end" value="<?= htmlspecialchars($cutoffEnd) ?>"><input type="hidden" name="cutoff_anchor" value="start"><p class="payroll-person"><?= $employee?htmlspecialchars($employee['full_name']).' · '.htmlspecialchars($employee['employee_id']??''):'Open a staff payroll from the list above.' ?></p><?php endif ?>
+                <div class="field"><label>Fixed payroll period</label><div class="period-selector"><a class="btn secondary" href="<?= htmlspecialchars(route($activeRoute).'?employee_id='.$employeeId.'&cutoff_start='.date('Y-m-01',strtotime($cutoffStart))) ?>">1–15</a><a class="btn secondary" href="<?= htmlspecialchars(route($activeRoute).'?employee_id='.$employeeId.'&cutoff_start='.date('Y-m-16',strtotime($cutoffStart))) ?>">16–30</a><strong><?= date('M Y',strtotime($cutoffStart)) ?> · <?= date('M d',strtotime($cutoffStart)) ?>–<?= date('d, Y',strtotime($cutoffEnd)) ?></strong><a class="btn secondary" aria-label="Previous month" href="<?= htmlspecialchars(route($activeRoute).'?employee_id='.$employeeId.'&cutoff_start='.date('Y-m-01',strtotime($cutoffStart.' -1 month'))) ?>">‹</a><a class="btn secondary" aria-label="Next month" href="<?= htmlspecialchars(route($activeRoute).'?employee_id='.$employeeId.'&cutoff_start='.date('Y-m-01',strtotime($cutoffStart.' +1 month'))) ?>">›</a></div></div>
                 <?php if ($canGenerate): ?>
-                    <div class="field">
-                        <label for="payout_date">Payout Date</label>
-                        <input id="payout_date" type="date" name="payout_date" value="<?= htmlspecialchars($payoutDate); ?>" required>
-                    </div>
                     <div class="field">
                         <label for="allowance">Allowances</label>
                         <input id="allowance" value="<?= htmlspecialchars(money($allowance)); ?>" readonly><small>Automatically applied from HR allowance settings for this cutoff.</small>
@@ -757,7 +790,7 @@ body {
                     </div>
                 <?php endif; ?>
                 <div class="actions">
-                    <button class="btn" type="submit" <?= $canGenerate&&!$employee?'disabled':'' ?>><i class="fa-solid <?= $canGenerate ? 'fa-wand-magic-sparkles' : 'fa-magnifying-glass'; ?>"></i> <?= $canGenerate ? 'Generate & Save' : 'View'; ?></button>
+                    <button class="btn" type="submit" <?= $canGenerate&&(!$employee||!$periodClosed)?'disabled':'' ?>><i class="fa-solid <?= $canGenerate ? 'fa-wand-magic-sparkles' : 'fa-magnifying-glass'; ?>"></i> <?= $canGenerate?($periodClosed?'Generate & Save':'Available after cut-off'):'View'; ?></button>
                     <a class="btn secondary" href="<?= htmlspecialchars(route($activeRoute)); ?>">Reset</a>
                 </div>
             </form>
@@ -782,7 +815,6 @@ body {
                                 &nbsp;•&nbsp; <?= htmlspecialchars($employee['department_name'] ?? 'Unassigned Department'); ?>
                                 &nbsp;•&nbsp; Cut-off:
                                 <?= date('M d', strtotime($cutoffStart)); ?> - <?= date('M d, Y', strtotime($cutoffEnd)); ?>
-                                &nbsp;•&nbsp; Payout: <?= date('Y-m-d', strtotime($payoutDate)); ?>
                             </p>
                         </div>
                         <div class="month-pill">

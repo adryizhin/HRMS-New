@@ -13,9 +13,10 @@ function appraisalCriteria(): array {
 function ensureAppraisalSchema(mysqli $conn): void {
  static $done=false;if($done)return;
  $conn->query("CREATE TABLE IF NOT EXISTS task_appraisals (
- task_id INT NOT NULL PRIMARY KEY,employee_id INT NOT NULL,evaluator_id INT NOT NULL,
+ task_id INT NOT NULL UNIQUE,employee_id INT NOT NULL,evaluator_id INT NOT NULL,
  payload MEDIUMTEXT NOT NULL,total_score DECIMAL(5,2) NOT NULL,
  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ PRIMARY KEY(employee_id,task_id),
  FOREIGN KEY(task_id) REFERENCES tasks(id) ON DELETE CASCADE,
  FOREIGN KEY(employee_id) REFERENCES users(id) ON DELETE CASCADE,
  FOREIGN KEY(evaluator_id) REFERENCES users(id) ON DELETE CASCADE
@@ -69,7 +70,7 @@ function saveTaskAppraisal(mysqli $conn,int $taskId,int $evaluator,array $input)
   $save=$conn->prepare('INSERT INTO task_appraisals (task_id,employee_id,evaluator_id,payload,total_score) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE employee_id=VALUES(employee_id),evaluator_id=VALUES(evaluator_id),payload=VALUES(payload),total_score=VALUES(total_score)');
   $save->bind_param('iiisd',$taskId,$task['employee_id'],$evaluator,$payload,$score);$save->execute();
   $update=$conn->prepare("UPDATE tasks SET hr_score=?,hr_feedback=?,status='reviewed' WHERE id=? AND hr_id=?");$update->bind_param('dsii',$score,$feedback,$taskId,$evaluator);$update->execute();
-  if($task['status']!=='reviewed'){$message='Your evaluation has been reviewed using the Employee Performance Appraisal form.';$notify=$conn->prepare("INSERT INTO notifications (user_id,message,activity_type) VALUES (?,?,'evaluation')");$notify->bind_param('is',$task['employee_id'],$message);$notify->execute();}
+  $message='Your Employee Performance Appraisal has been '.($task['status']==='reviewed'?'updated':'completed').'. Open your evaluation to view the latest copy.';$notify=$conn->prepare("INSERT INTO notifications (user_id,message,activity_type) VALUES (?,?,'evaluation')");$notify->bind_param('is',$task['employee_id'],$message);$notify->execute();
   $conn->commit();return $score;
  }catch(Throwable $e){$conn->rollback();throw $e;}
 }
