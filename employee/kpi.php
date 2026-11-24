@@ -28,7 +28,8 @@ $factors = $kpi['factors'];
   --kpi-score-bg: #f8fafc;
   --kpi-chip: #e2e8f0;
   --kpi-progress: #e2e8f0;
-  --kpi-accent: #2563eb;
+  --kpi-accent: #159fe8;
+  --kpi-pie-rest: #f15b5b;
 }
 
 [data-theme="dark"] {
@@ -40,7 +41,8 @@ $factors = $kpi['factors'];
   --kpi-score-bg: #0b1220;
   --kpi-chip: #263244;
   --kpi-progress: #0b1220;
-  --kpi-accent: #60a5fa;
+  --kpi-accent: #159fe8;
+  --kpi-pie-rest: #f15b5b;
 }
 
 .kpi-hero {
@@ -99,6 +101,9 @@ $factors = $kpi['factors'];
 }
 .factor-value { font-size: 30px; font-weight: 800; margin: 14px 0 8px; }
 .factor-card p { color: var(--kpi-muted); font-size: 13px; line-height: 1.45; }
+.factor-card { display:grid; grid-template-columns:minmax(0,1fr) 150px; column-gap:16px; align-items:center; }
+.factor-head,.factor-value,.factor-card p { grid-column:1; }
+.factor-pie { grid-column:2; grid-row:1 / span 4; width:132px; aspect-ratio:1; border-radius:50%; background:conic-gradient(var(--kpi-accent) 0 calc(var(--score) * 1%), var(--kpi-pie-rest) calc(var(--score) * 1%) 100%); justify-self:center; }
 .progress {
   background: var(--kpi-progress);
   border-radius: 999px;
@@ -111,8 +116,24 @@ $factors = $kpi['factors'];
 .kpi-method h2 { font-size:17px; color:var(--kpi-text); margin-bottom:8px; }
 .kpi-method p { font-size:13px; color:var(--kpi-muted); line-height:1.7; margin-top:8px; }
 .factor-card .factor-definition { margin-top:10px; font-size:12px; }
+.kpi-breakdown-open { margin:0 0 18px; padding:11px 16px; border:0; border-radius:8px; background:var(--kpi-accent); color:#fff; font-weight:700; cursor:pointer; }
+.kpi-breakdown-dialog { position:fixed; inset:0; margin:auto; width:min(1080px,calc(100vw - 32px)); max-width:none; max-height:90vh; padding:20px; overflow:auto; border:1px solid var(--kpi-border); border-radius:14px; background:var(--kpi-panel-alt); color:var(--kpi-text); }
+.kpi-breakdown-dialog::backdrop { background:rgba(15,23,42,.58); }
+.kpi-breakdown-dialog-head { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px; }
+.kpi-breakdown-dialog-head h2 { font-size:20px; }
+.kpi-breakdown-close { border:1px solid var(--kpi-border); border-radius:8px; padding:8px 12px; background:var(--kpi-panel); color:var(--kpi-text); cursor:pointer; }
+.kpi-breakdown-dialog .factor-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.kpi-breakdown-dialog .factor-card { grid-template-columns:minmax(0,1fr) 132px; gap:8px 14px; padding:14px; }
+.kpi-breakdown-dialog .factor-head { grid-column:1/-1; min-height:34px; }
+.kpi-breakdown-dialog .factor-head h3 { font-size:14px; }
+.kpi-breakdown-dialog .factor-value { margin:0; font-size:26px; }
+.kpi-breakdown-dialog .factor-pie { grid-column:2; grid-row:2/4; width:120px; }
+.kpi-breakdown-dialog .factor-card p { font-size:12px; line-height:1.4; margin:0; }
+.kpi-breakdown-dialog .factor-card .factor-definition { grid-column:1/-1; margin-top:2px; font-size:11px; }
 @media (max-width: 780px) {
   .kpi-hero { grid-template-columns: 1fr; }
+  .kpi-breakdown-dialog { padding:14px; }
+  .kpi-breakdown-dialog .factor-grid { grid-template-columns:1fr; }
 }
 </style>
 </head>
@@ -158,6 +179,9 @@ $factors = $kpi['factors'];
   </div>
 
   <section class="kpi-method" aria-label="How performance is measured"><h2>How your score is calculated</h2><p>Reviewed work quality: 40%; task completion: 25%; attendance reliability: 20%; on-time delivery: 15%. The overall score starts at zero and adds each measure multiplied by its fixed weight. Missing measures contribute zero points; available weights never expand. For example, 100% attendance with no work data earns 20% overall. Coverage shows how much of the assessment has recorded data.</p><p>Ratings: Excellent 85–100%; On Track 70–84.9%; Needs Support 50–69.9%; At Risk below 50%. Missing measures count as zero; no records produce 0% overall. Future pending tasks are excluded until due or submitted. Overdue unsubmitted tasks count against completion and timeliness.</p></section>
+  <button type="button" class="kpi-breakdown-open" data-open-kpi-breakdown>View KPI breakdown</button>
+  <dialog class="kpi-breakdown-dialog" data-kpi-breakdown aria-labelledby="kpi-breakdown-title">
+    <div class="kpi-breakdown-dialog-head"><h2 id="kpi-breakdown-title">Performance breakdown</h2><button type="button" class="kpi-breakdown-close" data-close-kpi-breakdown>Close</button></div>
   <div class="factor-grid">
     <?php foreach ($factors as $factor): ?>
       <?php
@@ -172,12 +196,19 @@ $factors = $kpi['factors'];
         <div class="factor-value <?= $displayScore === null ? 'muted' : htmlspecialchars(scoreColorClass($displayScore)); ?>">
           <?= number_format($displayScore ?? 0.0, 1); ?>%<?php if($displayScore===null): ?> <small>(no data)</small><?php endif; ?>
         </div>
+        <div class="factor-pie" style="--score: <?= $displayScore ?? 0 ?>" data-score="<?= $displayScore === null ? '—' : number_format($displayScore,1).'%' ?>" aria-label="<?= $displayScore === null ? 'No data' : number_format($displayScore,1).' percent' ?>"></div>
         <p><?= htmlspecialchars($factor['detail']); ?></p>
         <p class="factor-definition"><?= htmlspecialchars($factor['definition']); ?></p>
-        <div class="progress"><span style="width: <?= $displayScore === null ? 0 : $displayScore; ?>%;"></span></div>
       </article>
     <?php endforeach; ?>
   </div>
+  </dialog>
 </div>
+<script>
+const kpiBreakdown = document.querySelector('[data-kpi-breakdown]');
+document.querySelector('[data-open-kpi-breakdown]')?.addEventListener('click', () => kpiBreakdown.showModal());
+document.querySelector('[data-close-kpi-breakdown]')?.addEventListener('click', () => kpiBreakdown.close());
+kpiBreakdown?.addEventListener('click', event => { if (event.target === kpiBreakdown) kpiBreakdown.close(); });
+</script>
 </body>
 </html>

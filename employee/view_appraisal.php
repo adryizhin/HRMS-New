@@ -3,7 +3,7 @@ require_once __DIR__.'/../includes/auth_check.php';checkRole(['employee','hr','a
 require_once __DIR__.'/../includes/sidebar.php';require_once __DIR__.'/../includes/task_schema.php';require_once __DIR__.'/../includes/appraisal.php';
 ensureTaskSchema($conn);ensureAppraisalSchema($conn);
 $id=(int)($_GET['id']??0);$user=(int)$_SESSION['user_id'];
-$get=$conn->prepare('SELECT t.*,u.full_name AS employee_name,u.employee_id AS emp_id,e.full_name AS evaluator_name,a.payload FROM task_appraisals a JOIN tasks t ON t.id=a.task_id JOIN users u ON u.id=t.employee_id JOIN users e ON e.id=a.evaluator_id WHERE t.id=? AND t.employee_id=?');
+$get=$conn->prepare('SELECT t.*,u.full_name AS employee_name,u.employee_id AS emp_id,e.full_name AS evaluator_name,a.payload FROM task_appraisals a JOIN tasks t ON t.id=a.task_id JOIN users u ON u.id=t.employee_id JOIN users e ON e.id=a.evaluator_id WHERE t.id=? AND t.employee_id=? ORDER BY a.appraisal_id DESC LIMIT 1');
 $get->bind_param('ii',$id,$user);$get->execute();$task=$get->get_result()->fetch_assoc();if(!$task){http_response_code(404);exit('Appraisal not found.');}
 $data=json_decode($task['payload'],true);$readOnly=true;$h=static fn($v)=>htmlspecialchars(is_scalar($v)?(string)$v:'',ENT_QUOTES,'UTF-8');
 ?>

@@ -2,9 +2,9 @@
 require_once dirname(__DIR__).'/includes/payslip_page.php';
 require_once dirname(__DIR__).'/includes/promotions.php';
 ensurePayrollProfiles($conn);ensurePromotionSchema($conn);
-verify(payrollCutoff('2026-01-31')===['2026-01-31','2026-02-14'],'Payroll cutoff is exactly 15 inclusive calendar days across month end');
-verify(payrollCutoff('2028-02-20')===['2028-02-20','2028-03-05'],'Payroll cutoff handles leap years');
-verify(payrollCutoff('2026-01-01','end')===['2025-12-18','2026-01-01'],'Selecting cutoff end computes the start date');
+verify(payrollCutoff('2026-01-31')===['2026-01-16','2026-01-30'],'Payroll cutoff selects the second half of the selected month');
+verify(payrollCutoff('2028-02-20')===['2028-02-16','2028-02-29'],'Payroll cutoff handles leap years');
+verify(payrollCutoff('2026-01-15','end')===['2026-01-01','2026-01-15'],'Selecting a cutoff end computes the matching fixed period');
 $blocked=false;try{payrollCutoff('2026-02-30');}catch(InvalidArgumentException $e){$blocked=true;}verify($blocked,'Invalid payroll dates are rejected');
 [$code,$body]=requestFeature('hr','hr/payroll.php?employee_id=3');preg_match('/name="csrf_token" value="([a-f0-9]+)"/',$body,$payrollToken);
 verify($code===200 && str_contains($body,'Staff payroll') && str_contains($body,'Open payroll') && !str_contains($body,'<select id="employee_id"'),'HR payroll uses staff directory instead of Payee selection');
@@ -24,7 +24,7 @@ verify($code===200 && $slip['cutoff_end']==='2026-10-15' && (float)$slip['allowa
 $notifyBefore=(int)$conn->query("SELECT COUNT(*) FROM notifications WHERE user_id=3 AND activity_type='payroll'")->fetch_row()[0];requestFeature('hr','hr/payroll.php',$generate);
 verify((int)$conn->query('SELECT COUNT(*) FROM payslips WHERE user_id=3')->fetch_row()[0]===1 && $notifyBefore===1 && (int)$conn->query("SELECT COUNT(*) FROM notifications WHERE user_id=3 AND activity_type='payroll'")->fetch_row()[0]===1,'Regenerating a cutoff does not duplicate payslips or initial availability alerts');
 [$code,$body]=requestFeature('employee','employee/payroll.php');verify($code===200 && str_contains($body,'View payslip') && str_contains($body,'payslip_id='.$slip['id']),'Employee payroll lists clickable generated payslips');
-[$code,$body]=requestFeature('employee','employee/payroll.php?payslip_id='.$slip['id']);verify($code===200 && str_contains($body,'PHP 1,200.50') && str_contains($body,'Official Salary Breakdown'),'Employee opens saved payroll snapshot including allowance');
+[$code,$body]=requestFeature('employee','employee/payroll.php?payslip_id='.$slip['id']);verify($code===200 && str_contains($body,'PHP 1,200.50') && str_contains($body,'Payslip') && str_contains($body,'Qty / Details'),'Employee opens saved payroll snapshot in the standard payslip layout');
 $conn->query("INSERT INTO payslips(user_id,cutoff_start,cutoff_end,payout_date) VALUES(1,'2026-09-01','2026-09-15','2026-09-16')");$privateSlip=(int)$conn->insert_id;
 [$code,$body]=requestFeature('employee','employee/payroll.php?payslip_id='.$privateSlip);verify($code===404 && str_contains($body,'Payslip not found for your account.'),'Employee cannot open another account payslip');
 $updated=$allowance;$updated['allowance_amount']='1600.00';requestFeature('hr','hr/payroll.php',$updated);

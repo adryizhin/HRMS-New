@@ -21,6 +21,21 @@ function ensureAppraisalSchema(mysqli $conn): void {
  FOREIGN KEY(employee_id) REFERENCES users(id) ON DELETE CASCADE,
  FOREIGN KEY(evaluator_id) REFERENCES users(id) ON DELETE CASCADE
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
+ $columns=$conn->query("SHOW COLUMNS FROM task_appraisals LIKE 'appraisal_id'");
+ if($columns && !$columns->num_rows){
+  $indexes=$conn->query('SHOW INDEX FROM task_appraisals');
+  $alter=[];$hasTaskLookup=false;
+  foreach($indexes as $index){
+   if($index['Column_name']==='task_id'&&(int)$index['Non_unique']===1)$hasTaskLookup=true;
+   if($index['Column_name']==='task_id'&&(int)$index['Non_unique']===0){
+    if($index['Key_name']==='PRIMARY')$alter[]='DROP PRIMARY KEY';
+    else $alter[]='DROP INDEX `'.str_replace('`','``',$index['Key_name']).'`';
+   }
+  }
+  if(!$hasTaskLookup)$conn->query('CREATE INDEX appraisal_task_lookup ON task_appraisals (task_id)');
+  $alter[]='ADD appraisal_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST';
+  $conn->query('ALTER TABLE task_appraisals '.implode(', ',$alter));
+ }
  $column=$conn->query("SHOW COLUMNS FROM tasks LIKE 'hr_score'")->fetch_assoc();
  if(strtolower($column['Type'])!=='decimal(5,2)')$conn->query('ALTER TABLE tasks MODIFY hr_score DECIMAL(5,2) NULL');
  $done=true;
@@ -59,7 +74,7 @@ function appraisalFeedback(array $data): string {
  $parts=[];foreach(['strengths'=>'Strengths','weaknesses'=>'Weaknesses','recommendations'=>'Recommendations to improve performance','potential'=>'Comments and estimate of potential'] as $key=>$title)if($data[$key]!=='')$parts[]=$title.":\n".$data[$key];
  return implode("\n\n",$parts);
 }
-function saveTaskAppraisal(mysqli $conn,int $taskId,int $evaluator,array $input): float {
+function saveTaskAppraisal(mysqli $conn,int $taskId,int $evaluator,array $input): int {
  ensureAppraisalSchema($conn);$validated=validateAppraisal($input);$data=$validated['data'];$score=$validated['score'];
  $payload=json_encode($data,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE);$feedback=appraisalFeedback($data);
  $conn->begin_transaction();
@@ -67,10 +82,11 @@ function saveTaskAppraisal(mysqli $conn,int $taskId,int $evaluator,array $input)
   $get=$conn->prepare('SELECT employee_id,status,submission_file FROM tasks WHERE id=? AND hr_id=? FOR UPDATE');$get->bind_param('ii',$taskId,$evaluator);$get->execute();$task=$get->get_result()->fetch_assoc();
   if(!$task)throw new InvalidArgumentException('This evaluation is unavailable or assigned to another reviewer.');
   if(!$task['submission_file'])throw new InvalidArgumentException('A submitted evaluation is required before saving the final appraisal.');
-  $save=$conn->prepare('INSERT INTO task_appraisals (task_id,employee_id,evaluator_id,payload,total_score) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE employee_id=VALUES(employee_id),evaluator_id=VALUES(evaluator_id),payload=VALUES(payload),total_score=VALUES(total_score)');
+  $save=$conn->prepare('INSERT INTO task_appraisals (task_id,employee_id,evaluator_id,payload,total_score) VALUES (?,?,?,?,?)');
   $save->bind_param('iiisd',$taskId,$task['employee_id'],$evaluator,$payload,$score);$save->execute();
+  $savedId=$conn->prepare('SELECT appraisal_id FROM task_appraisals WHERE task_id=? ORDER BY appraisal_id DESC LIMIT 1');$savedId->bind_param('i',$taskId);$savedId->execute();$appraisalId=(int)$savedId->get_result()->fetch_row()[0];
   $update=$conn->prepare("UPDATE tasks SET hr_score=?,hr_feedback=?,status='reviewed' WHERE id=? AND hr_id=?");$update->bind_param('dsii',$score,$feedback,$taskId,$evaluator);$update->execute();
-  $message='Your Employee Performance Appraisal has been '.($task['status']==='reviewed'?'updated':'completed').'. Open your evaluation to view the latest copy.';$notify=$conn->prepare("INSERT INTO notifications (user_id,message,activity_type) VALUES (?,?,'evaluation')");$notify->bind_param('is',$task['employee_id'],$message);$notify->execute();
-  $conn->commit();return $score;
+  $message='A new Employee Performance Appraisal has been added to your evaluation. Open your evaluation to view the latest copy.';$notify=$conn->prepare("INSERT INTO notifications (user_id,message,activity_type) VALUES (?,?,'evaluation')");$notify->bind_param('is',$task['employee_id'],$message);$notify->execute();
+  $conn->commit();return $appraisalId;
  }catch(Throwable $e){$conn->rollback();throw $e;}
 }

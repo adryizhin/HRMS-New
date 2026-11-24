@@ -63,12 +63,15 @@ $departments = $conn->query("
 <div class="main">
 <div class="container">
 
-<div class="form-card"><h2>Employee Account Management</h2><p>HR submits employee account requests. Review new requests in <a href="<?= htmlspecialchars(route('admin.account_requests')); ?>">Account Requests</a> before they become active accounts.</p><?php if (!empty($error)): ?><div><?= htmlspecialchars($error); ?></div><?php endif; ?></div>
+<button type="button" class="account-management-trigger" data-open-account-management aria-haspopup="dialog" aria-controls="account-management-dialog"><i class="fa-solid fa-users-gear" aria-hidden="true"></i> Employee Account Management</button>
 
 <!-- TABLE -->
 <div class="table-card">
   <br>
   <h2>Pagecom's Employees List</h2>
+  <label class="employee-search-label" for="employee-account-search"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Search employee accounts</label>
+  <input id="employee-account-search" class="employee-account-search" type="search" placeholder="Search by name, email, role, or department" autocomplete="off">
+  <p id="employee-search-status" class="employee-search-status" aria-live="polite"></p>
   <br>
 
   <?php if (isset($_GET['deleted'])): ?>
@@ -92,7 +95,7 @@ $departments = $conn->query("
       </tr>
 
       <?php while ($row = $users->fetch_assoc()): ?>
-      <tr>
+      <tr class="employee-account-row">
         <td><?= htmlspecialchars($row['full_name']); ?></td>
         <td><?= htmlspecialchars($row['email']); ?></td>
         <td>
@@ -124,6 +127,12 @@ $departments = $conn->query("
 </div>
 </div>
 
+<dialog id="account-management-dialog" class="account-management-dialog" aria-labelledby="account-management-title">
+  <header><h2 id="account-management-title">Employee Account Management</h2><button type="button" data-close-account-management aria-label="Close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></header>
+  <p>HR submits employee account requests. Review new requests before they become active accounts.</p>
+  <a class="account-requests-link" href="<?= htmlspecialchars(route('admin.account_requests')); ?>"><i class="fa-solid fa-inbox" aria-hidden="true"></i> Review Account Requests</a>
+  <?php if (!empty($error)): ?><p class="account-management-error" role="alert"><?= htmlspecialchars($error); ?></p><?php endif; ?>
+</dialog>
 <dialog id="employee-department-dialog" aria-labelledby="department-dialog-heading">
   <header><h2 id="department-dialog-heading">Edit Department</h2><button type="button" data-close-department aria-label="Close department editor"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></header>
   <p id="department-employee-name"></p>
@@ -136,5 +145,19 @@ $departments = $conn->query("
   </form>
 </dialog>
 <script src="<?= htmlspecialchars(app_url('admin/employee_department.js').'?v='.filemtime(__DIR__.'/employee_department.js')); ?>" defer></script>
+<script>
+const accountManagementDialog = document.getElementById('account-management-dialog');
+document.querySelector('[data-open-account-management]')?.addEventListener('click', () => accountManagementDialog.showModal());
+document.querySelector('[data-close-account-management]')?.addEventListener('click', () => accountManagementDialog.close());
+accountManagementDialog?.addEventListener('click', event => { if (event.target === accountManagementDialog) accountManagementDialog.close(); });
+const employeeSearch = document.getElementById('employee-account-search');
+employeeSearch?.addEventListener('input', () => {
+  const query = employeeSearch.value.trim().toLocaleLowerCase();
+  const rows = [...document.querySelectorAll('.employee-account-row')];
+  let visible = 0;
+  rows.forEach(row => { const match = row.innerText.toLocaleLowerCase().includes(query); row.hidden = !match; if (match) visible++; });
+  document.getElementById('employee-search-status').textContent = query ? `${visible} matching account${visible === 1 ? '' : 's'}` : '';
+});
+</script>
 </body>
 </html>

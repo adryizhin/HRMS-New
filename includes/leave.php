@@ -64,7 +64,7 @@ function remainingLeaveDays(mysqli $conn, int $userId, int $year): int
 function submitLeaveRequest(mysqli $conn, int $userId, int $hrId, string $type, string $start, string $end, string $reason, string $key): void
 {
     ensureLeaveSchema($conn);
-    if (!in_array($type, ['Sick Leave', 'Vacation Leave', 'Mandatory Leave', 'Maternity Leave'], true) || trim($reason) === '' || !preg_match('/\A[a-f0-9]{64}\z/', $key)) {
+    if (!in_array($type, ['Sick Leave', 'Vacation Leave', 'Mandatory Leave', 'Maternity Leave', 'Others'], true) || trim($reason) === '' || !preg_match('/\A[a-f0-9]{64}\z/', $key)) {
         throw new InvalidArgumentException('Complete the leave form and reload if the request has expired.');
     }
     $reason = trim($reason);

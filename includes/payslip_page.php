@@ -667,12 +667,37 @@ body {
 .period-selector strong { flex:1 1 180px; text-align:center; font-size:13px; }
 .payslip { overflow:hidden; }
 .payslip-header { padding:26px; }
+.payslip-standard-title { margin-bottom:12px;color:var(--payroll-muted);font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase; }
 .paid-badge { display:inline-flex; align-items:center; gap:6px; font-size:11px; }
 .summary-grid { gap:12px; }
 .metric { display:flex; flex-direction:column; justify-content:center; }
 .metric strong { font-size:clamp(18px,2vw,23px); overflow-wrap:anywhere; }
 .payslip-body { padding:22px; }
 .payslip-footer { flex-wrap:wrap; }
+/* Plain payroll statement layout. */
+.payslip { border:1px solid var(--payroll-line)!important; border-radius:0!important; box-shadow:none!important; background:#fff!important; color:var(--payroll-text)!important; }
+.payslip-header { background:#fff!important; border:0!important; padding:18px 22px 10px!important; }
+.payslip-header .employee-name { color:var(--payroll-text)!important; font-size:20px!important; }
+.payslip-header .summary-grid,.payslip-header .month-pill,.payslip-header .paid-badge { display:none!important; }
+.payslip-header .eyebrow { display:none!important; }
+.payslip-header .employee-name { margin:0 0 8px!important; }
+.payslip-header .subtitle { font-size:13px!important; color:var(--payroll-muted)!important; }
+.payslip-standard-title { margin:0 0 10px!important; font-size:17px!important; font-weight:700!important; letter-spacing:0!important; text-transform:none!important; }
+.payslip-month { margin:0 0 4px;color:#258355;font-size:16px;font-weight:700; }
+.payslip-body { display:block!important; padding:0 22px 12px!important; background:#fff!important; }
+.payslip-body .breakdown { margin:0 0 10px;background:transparent!important; border:0!important; border-radius:0!important; }
+.payslip-body .breakdown-head,.payslip-body .line-item { display:grid;grid-template-columns:minmax(0,1fr) minmax(95px,.45fr) minmax(100px,.55fr);gap:8px;align-items:center; }
+.payslip-body .breakdown-head { background:transparent!important; border-bottom:1px solid var(--payroll-line)!important; }
+.payslip-body .line-item { background:transparent!important; border:0!important; padding:8px!important; }
+.payslip-body .line-item>div { grid-column:1/3; }
+.payslip-body .line-item strong { grid-column:3;text-align:right;font-weight:500!important; }
+.payslip-body .line-item small { display:block;color:var(--payroll-muted)!important; }
+.payslip-totals { margin:0 22px 14px; border-top:1px solid var(--payroll-line); }
+.payslip-totals .line-item { display:grid; grid-template-columns:1fr auto; padding:9px 8px!important; border-bottom:1px solid var(--payroll-line)!important; font-weight:700; }
+.payslip-totals .line-item strong { font-size:14px; }
+.payslip-totals .net-total { font-size:16px; }
+.payslip-footer { border-top:1px solid var(--payroll-line)!important; background:transparent!important; }
+.payslip .metric { border-radius:0!important; box-shadow:none!important; }
 @media(max-width:760px) {
     .main { padding:16px !important; }
     .form-panel { padding:16px; }
@@ -688,6 +713,7 @@ body {
     .period-selector strong { order:-1; flex-basis:100%; }
     .employee-name { overflow-wrap:anywhere; }
 }
+@page { size: 6.5in 8.5in; margin: 0.35in; }
 @media print {
     /* Print only the payroll slip, regardless of shared navigation styles. */
     html body > :not(.main),
@@ -720,13 +746,32 @@ body {
     }
     html body .generator { display:block !important; }
     html body .payslip {
-        border:0;
+        width:100% !important;
+        max-width:none !important;
+        border:1px solid #111827 !important;
         border-radius:0;
         box-shadow:none;
+        background:#fff !important;
+        color:#111 !important;
+        break-inside:avoid;
     }
-    .payslip .line-item { break-inside:avoid; }
-    .payslip .payslip-body { grid-template-columns:1fr 1fr; }
-    .payslip .summary-grid { grid-template-columns:repeat(4, minmax(0, 1fr)); }
+    .payslip .payslip-header { padding:9px 12px 5px !important; background:#fff !important; }
+    .payslip .payslip-standard-title { margin-bottom:5px;padding-bottom:4px;border-bottom:1px solid #111;font-size:10px;letter-spacing:0;color:#111;text-align:center; }
+    .payslip .employee-name { margin:0 0 4px !important; color:#111 !important;font-size:15px !important; }
+    .payslip .subtitle { font-size:9px !important; }
+    .payslip .payslip-body { display:block !important; padding:0 12px 6px !important; background:#fff !important; }
+    .payslip .breakdown { margin-bottom:7px;border:0 !important; border-radius:0 !important; }
+    .payslip .breakdown-head { padding:4px 7px !important; border-bottom:1px solid #111 !important;color:#111 !important; font-size:9px !important; }
+    .payslip .line-item { padding:4px 8px !important; font-size:9px !important; line-height:1.2; break-inside:avoid; }
+    .payslip .line-item.danger { color:#111 !important;background:#fff !important; }
+    .payslip .line-item small { display:none !important; }
+    .payslip .payslip-totals { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 12px; margin:0 12px 6px !important; border-top:1px solid #cbd5e1; }
+    .payslip .payslip-totals .line-item { padding:5px 8px !important; font-size:9px !important; }
+    .payslip .payslip-totals .line-item strong { font-size:10px !important; }
+    .payslip .payslip-totals .net-total { grid-column:1 / -1; font-size:12px !important; }
+    .payslip .payslip-totals .net-total strong { font-size:13px !important; }
+    .payslip .payslip-footer { padding:6px 12px !important; border-top:1px solid #111 !important;color:#111 !important;font-size:8px !important; }
+    .payslip .summary-grid { display:none !important; }
     .payslip .payslip-meta, .payslip .payslip-footer { flex-direction:row; }
 }
 
@@ -803,18 +848,17 @@ body {
                 <div class="empty-note">No payroll slip has been generated by HR for this cut-off.</div>
             <?php else: ?>
                 <div class="payslip-header">
+                    <div class="payslip-standard-title">Payslip</div>
                     <div class="payslip-meta">
                         <div>
                             <div class="eyebrow">
-                                <span>Official Salary Breakdown</span>
+                                <span>Payslip</span>
                                 <span class="paid-badge"><i class="fa-solid fa-circle-check"></i> <?= $savedPayslip?'Generated':'Preview' ?></span>
                             </div>
                             <h2 class="employee-name"><?= htmlspecialchars($employee['full_name']); ?></h2>
+                            <h3 class="payslip-month"><?= date('F Y', strtotime($cutoffEnd)); ?></h3>
                             <p class="subtitle">
-                                <?= strtoupper(htmlspecialchars($employee['role'])); ?>
-                                &nbsp;•&nbsp; <?= htmlspecialchars($employee['department_name'] ?? 'Unassigned Department'); ?>
-                                &nbsp;•&nbsp; Cut-off:
-                                <?= date('M d', strtotime($cutoffStart)); ?> - <?= date('M d, Y', strtotime($cutoffEnd)); ?>
+                                Payroll Period: <?= date('M d, Y', strtotime($cutoffStart)); ?> - <?= date('M d, Y', strtotime($cutoffEnd)); ?>
                             </p>
                         </div>
                         <div class="month-pill">
@@ -850,7 +894,8 @@ body {
                 <div class="payslip-body">
                     <div class="breakdown">
                         <div class="breakdown-head">
-                            <span>Earnings & Allowances</span>
+                            <span>Earnings</span>
+                            <span>Qty / Details</span>
                             <span>Amount</span>
                         </div>
                         <div class="line-item">
@@ -892,7 +937,8 @@ body {
 
                     <div class="breakdown">
                         <div class="breakdown-head">
-                            <span>Deductions & Taxes</span>
+                            <span>Deductions</span>
+                            <span>Qty / Details</span>
                             <span>Amount</span>
                         </div>
                         <div class="line-item danger">
@@ -947,6 +993,13 @@ body {
                     </div>
                 </div>
 
+                <div class="payslip-totals">
+                    <div class="line-item"><span>Total Earnings</span><strong><?= money($grossPay); ?></strong></div>
+                    <div class="line-item"><span>Total Deductions</span><strong><?= money($totalDeductions); ?></strong></div>
+                    <div class="line-item"><span>Gross Pay</span><strong><?= money($grossPay); ?></strong></div>
+                    <div class="line-item"><span>Taxable Income</span><strong><?= money(max(0, $grossPay - $requiredDeductions)); ?></strong></div>
+                    <div class="line-item net-total"><span>Net Pay</span><strong><?= money($netPay); ?></strong></div>
+                </div>
                 <div class="payslip-footer">
                     <span><i class="fa-solid fa-shield-halved"></i> Pagecom HRIS generated payroll summary</span>
                     <span>Payee ID: <?= htmlspecialchars($employee['employee_id'] ?? 'N/A'); ?></span>

@@ -42,8 +42,8 @@
                 <a href="<?= htmlspecialchars(app_url('hr/view_submission.php')); ?>?id=<?= $task['id'] ?>" class="btn-view">
                     <i class="fa-solid fa-eye"></i> View
                 </a>
-                <a href="<?= htmlspecialchars(app_url('hr/score_submission.php')); ?>?id=<?= $task['id'] ?>" class="btn-score">
-                    <i class="fa-solid fa-star"></i> <?= $task['hr_score'] !== null ? 'Edit Appraisal' : 'Appraise' ?>
+                <a href="<?= htmlspecialchars(app_url('hr/score_submission.php')); ?>?id=<?= $task['id'] ?><?= $task['hr_score'] !== null ? '&amp;new=1' : '' ?>" class="btn-score">
+                    <i class="fa-solid fa-star"></i> <?= $task['hr_score'] !== null ? 'Add Appraisal' : 'Appraise' ?>
                 </a>
             </div>
         </div>

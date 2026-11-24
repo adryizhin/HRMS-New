@@ -95,7 +95,7 @@ try {
         verify($code === 200 && !str_contains($body, 'class="sidebar"') && str_contains($body, '12:00 AM'), "$role print view renders report without navigation");
         [$code, $body] = requestFeature($role, "$role/attendance.php?search=Admin%20Feature");
         verify($code === 200, "$role attendance search renders");
-        if ($role === 'employee') verify(str_contains($body,'No attendance records match'), 'Employee cannot search another staff member attendance');
+        if ($role === 'employee') verify(str_contains($body,'My attendance calendar') && !str_contains($body,'<td>Admin Feature Person</td>'), 'Employee attendance stays private when another staff member is searched');
         else verify(str_contains($body, '<td>Admin Feature Person</td>') && !str_contains($body, '<td>Employee Feature Person</td>'), "$role attendance filters by staff name");
     }
     $conn->query("INSERT INTO departments (name) VALUES ('Research 100% Team')");

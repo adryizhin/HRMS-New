@@ -16,7 +16,7 @@ const {chromium}=require('playwright'),path=require('path');
     for(const selector of ['.sidebar','.mobile-header','.activity-desktop-tools','.form-panel','.topbar','#chatAvatar','#chatBox']){
      if(await page.locator(selector).count()&&await page.locator(selector).first().isVisible())throw Error(role+' prints '+selector);
     }
-    if(!await page.locator('.payslip').isVisible()||!(await page.locator('.payslip').innerText()).includes('Official Salary Breakdown'))throw Error(role+' payslip missing');
+    if(!await page.locator('.payslip').isVisible()||!(await page.locator('.payslip').innerText()).includes('Payslip'))throw Error(role+' payslip missing');
     const layout=await page.locator('.main').evaluate(el=>({margin:getComputedStyle(el).marginLeft,padding:getComputedStyle(el).padding,background:getComputedStyle(document.body).backgroundColor}));
     if(layout.margin!=='0px'||layout.padding!=='0px'||layout.background!=='rgb(255, 255, 255)')throw Error('Print layout incorrect '+JSON.stringify(layout));
    }
