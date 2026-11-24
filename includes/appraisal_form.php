@@ -10,7 +10,7 @@ $scale=[4=>'Outstanding',3=>'Above Average',2=>'Average',1=>'Below Average'];
 <p class="appraisal-context"><?= $h($task['title']) ?> · <?= $h($task['emp_id']?:'No employee ID') ?></p>
 <?php if(!$readOnly && $task['submission_file']): ?><a class="appraisal-submission" href="<?= $h(app_url('uploads/submissions/'.basename($task['submission_file']))) ?>" target="_blank" rel="noopener"><i class="fa-solid fa-file-lines" aria-hidden="true"></i> Open submitted work</a><?php endif ?>
 <form method="post" id="appraisal-form">
-<?php if(!$readOnly): ?><input type="hidden" name="csrf_token" value="<?= $h($_SESSION['appraisal_csrf']) ?>"><?php endif ?>
+<?php if(!$readOnly): ?><input type="hidden" name="csrf_token" value="<?= $h($_SESSION['appraisal_csrf']) ?>"><input type="hidden" name="submission_key" value="<?= $h($_SESSION['appraisal_submission_key']) ?>"><?php endif ?>
 <fieldset class="appraisal-fields" <?= $readOnly?'disabled':'' ?>><legend>Employee and appraisal details</legend>
 <div class="appraisal-field"><label for="employee_name">Name of employee</label><input id="employee_name" value="<?= $h($task['employee_name']) ?>" readonly></div>
 <?php $inputField('date_hired','Date hired','date');$inputField('position','Position','text',true);$inputField('department','Department','text',true);$inputField('period_start','Appraised period - from','date',true);$inputField('period_end','Appraised period - to','date',true);$inputField('accomplished_date','Date accomplished','date',true);$inputField('regularization_date','Date of regularization','date'); ?>

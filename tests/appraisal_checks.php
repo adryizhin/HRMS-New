@@ -23,9 +23,9 @@ $fixture='appraisal_test_'.bin2hex(random_bytes(8)).'.txt';$path=dirname(__DIR__
 try{
  $insert=$conn->prepare("INSERT INTO tasks(employee_id,hr_id,title,deadline,submission_file,submitted_at,status,created_at) VALUES(3,2,'Appraisal feature fixture','2026-01-31',?,'2026-01-30 12:00:00','submitted','2026-01-01')");$insert->bind_param('s',$fixture);$insert->execute();$taskId=(int)$conn->insert_id;
  [$code,$body]=requestFeature('hr','hr/score_submission.php?id='.$taskId);
- preg_match('/name="csrf_token" value="([a-f0-9]+)"/',$body,$token);
+ preg_match('/name="csrf_token" value="([a-f0-9]+)"/',$body,$token);preg_match('/name="submission_key" value="([a-f0-9]+)"/',$body,$submissionKey);
  verify($code===200 && isset($token[1]) && str_contains($body,'VI. Attendance') && str_contains($body,'Employee’s Future Development'),'HR opens all sections of the supplied appraisal form');
- $form['csrf_token']=$token[1];$form['hr_score']=100;$form['strengths']='<script>unsafe</script>';
+ $form['csrf_token']=$token[1];$form['submission_key']=$submissionKey[1];$form['hr_score']=100;$form['strengths']='<script>unsafe</script>';
  [$code,$body]=requestFeature('hr','hr/score_submission.php?id='.$taskId,array_replace($form,['csrf_token'=>'bad']));
  verify($code===400 && $conn->query('SELECT hr_score FROM tasks WHERE id='.$taskId)->fetch_row()[0]===null,'Appraisal save requires CSRF and preserves existing score on failure');
  [$code,$body]=requestFeature('hr','hr/score_submission.php?id='.$taskId,array_replace($form,['ratings'=>[]]));
@@ -37,10 +37,9 @@ try{
  $payload=json_decode($stored['payload'],true);
  verify($payload['ratings']['loyalty']===1 && $payload['recommendations']===$base['recommendations'] && (int)$stored['evaluator_id']===2,'Appraisal stores individual ratings, narrative fields and actual evaluator');
  verify((int)$conn->query("SELECT COUNT(*) FROM notifications WHERE user_id=3 AND activity_type='evaluation'")->fetch_row()[0]===$notificationsBefore+1,'First completed appraisal creates one employee notification');
- $form['ratings']=array_fill_keys($keys,3);requestFeature('hr','hr/score_submission.php?id='.$taskId.'&new=1',$form);
+ $form['ratings']=array_fill_keys($keys,3);[$code,$body]=requestFeature('hr','hr/score_submission.php?id='.$taskId.'&new=1');preg_match('/name="submission_key" value="([a-f0-9]+)"/',$body,$nextSubmissionKey);$form['submission_key']=$nextSubmissionKey[1];[$code,$body]=requestFeature('hr','hr/score_submission.php?id='.$taskId.'&new=1',$form);
  $latest=$conn->query('SELECT appraisal_id,total_score FROM task_appraisals WHERE task_id='.$taskId.' ORDER BY appraisal_id DESC LIMIT 1')->fetch_row();
  $firstCopy=$conn->query('SELECT total_score FROM task_appraisals WHERE task_id='.$taskId.' ORDER BY appraisal_id ASC LIMIT 1')->fetch_row();
- echo 'APPRAISAL_DEBUG '.json_encode(['kpi'=>(float)$conn->query('SELECT hr_score FROM tasks WHERE id='.$taskId)->fetch_row()[0],'latest'=>$latest,'first'=>$firstCopy[0],'count'=>$conn->query('SELECT COUNT(*) FROM task_appraisals WHERE task_id='.$taskId)->fetch_row()[0],'scorePage'=>str_contains($body,'75.00'),'notice'=>str_contains($body,'Appraisal saved as a new record'),'history'=>str_contains($body,'Saved appraisals'),'title'=>substr(strip_tags($body),0,250)]).PHP_EOL;
  verify((float)$conn->query('SELECT hr_score FROM tasks WHERE id='.$taskId)->fetch_row()[0]===75.0 && (float)$latest[1]===75.0 && (float)$firstCopy[0]===88.75 && (int)$conn->query('SELECT COUNT(*) FROM task_appraisals WHERE task_id='.$taskId)->fetch_row()[0]===2 && str_contains($body,'75.00') && str_contains($body,'Appraisal saved as a new record') && (int)$conn->query("SELECT COUNT(*) FROM notifications WHERE user_id=3 AND activity_type='evaluation'")->fetch_row()[0]===$notificationsBefore+2,'Adding an appraisal preserves the earlier copy and displays the newly saved appraisal');
  [$code,$body]=requestFeature('employee','employee/view_appraisal.php?id='.$taskId);
  verify($code===200 && str_contains($body,'&lt;script&gt;unsafe&lt;/script&gt;') && str_contains($body,'disabled') && !str_contains($body,'> Save appraisal'),'Employee can read own full appraisal with escaped comments and no edit controls');
@@ -52,7 +51,7 @@ try{
  requestFeature('otheradmin','login/login_process.php',['email'=>'appraiser-admin@feature.example','password'=>'TemporaryFeaturePassword!']);
  [$code]=requestFeature('otheradmin','hr/score_submission.php?id='.$taskId);verify($code===403,'Ordinary administrators cannot use System Administrator appraisal privileges');
  $conn->query("INSERT INTO tasks(employee_id,hr_id,title,deadline,submission_file,submitted_at,status,created_at) VALUES(2,1,'System HR appraisal fixture','2026-01-31','".$conn->real_escape_string($fixture)."','2026-01-30 12:00:00','submitted','2026-01-01')");$adminTask=(int)$conn->insert_id;
- [$code,$body]=requestFeature('admin','hr/score_submission.php?id='.$adminTask);preg_match('/name="csrf_token" value="([a-f0-9]+)"/',$body,$adminToken);$adminForm=$form;$adminForm['csrf_token']=$adminToken[1];
+ [$code,$body]=requestFeature('admin','hr/score_submission.php?id='.$adminTask);preg_match('/name="csrf_token" value="([a-f0-9]+)"/',$body,$adminToken);preg_match('/name="submission_key" value="([a-f0-9]+)"/',$body,$adminSubmissionKey);$adminForm=$form;$adminForm['csrf_token']=$adminToken[1];$adminForm['submission_key']=$adminSubmissionKey[1];
  [$code,$body]=requestFeature('admin','hr/score_submission.php?id='.$adminTask,$adminForm);
  verify($code===200 && (float)$conn->query('SELECT hr_score FROM tasks WHERE id='.$adminTask)->fetch_row()[0]===75.0,'System Administrator uses the appraisal form for assigned Human Resource staff');
  if(getenv('HRMS_APPRAISAL_BROWSER')==='1'){

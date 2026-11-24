@@ -70,6 +70,7 @@ $systemLogs = $result ? $result->fetch_assoc()['total'] : 0;
 
 <link rel="stylesheet" href="dashboard_widgets.css?v=<?= filemtime(__DIR__ . '/dashboard_widgets.css') ?>">
 <link rel="stylesheet" href="../admin/chat.css?v=<?= filemtime(__DIR__ . '/../admin/chat.css') ?>">
+<style>.evaluation-search-label{display:block;margin:10px 0 5px;color:var(--muted);font-size:12px;font-weight:600}.evaluation-search{box-sizing:border-box;width:100%;padding:9px 11px;margin-bottom:9px;border:1px solid var(--border-color,var(--sidebar-border));border-radius:8px;background:var(--card-bg);color:var(--text-color)}.employee-option[hidden],.task-card[hidden]{display:none!important}</style>
 </head>
 
 <body>
@@ -167,6 +168,9 @@ $systemLogs = $result ? $result->fetch_assoc()['total'] : 0;
           <button type="button" class="select-all app-button secondary" onclick="toggleEmployees()">Select All</button>
         </div>
 
+        <label class="evaluation-search-label" for="evaluation-recipient-search">Search recipients</label>
+        <input id="evaluation-recipient-search" class="evaluation-search" type="search" placeholder="Search name, employee ID or department" autocomplete="off">
+
         <div class="employee-picker">
           <?php if ($employees && $employees->num_rows > 0): ?>
             <?php while ($employee = $employees->fetch_assoc()): ?>
@@ -199,6 +203,9 @@ $systemLogs = $result ? $result->fetch_assoc()['total'] : 0;
 
 <details class="sent-tasks">
   <summary><i class="fa-solid fa-list-check" aria-hidden="true"></i> Sent Evaluations</summary>
+
+  <label class="evaluation-search-label" for="sent-evaluation-search">Search sent evaluations</label>
+  <input id="sent-evaluation-search" class="evaluation-search" type="search" placeholder="Search title or instructions" autocomplete="off">
 
   <div class="task-grid">
     <?php if ($taskBatches && $taskBatches->num_rows > 0): ?>
@@ -246,5 +253,5 @@ $systemLogs = $result ? $result->fetch_assoc()['total'] : 0;
 
 
 
-<script>let employeesSelected=false; function toggleEmployees(){employeesSelected=!employeesSelected;document.querySelectorAll('input[name="employee_ids[]"]').forEach(box=>box.checked=employeesSelected);}</script>
+<script>let employeesSelected=false; function toggleEmployees(){employeesSelected=!employeesSelected;document.querySelectorAll('input[name="employee_ids[]"]').forEach(box=>{if(box.closest('.employee-option').hidden===false)box.checked=employeesSelected;});}const normalize=s=>s.trim().toLocaleLowerCase();document.getElementById('evaluation-recipient-search')?.addEventListener('input',e=>{const q=normalize(e.target.value);document.querySelectorAll('.employee-option').forEach(row=>row.hidden=!row.textContent.toLocaleLowerCase().includes(q));});document.getElementById('sent-evaluation-search')?.addEventListener('input',e=>{const q=normalize(e.target.value);document.querySelectorAll('.sent-tasks .task-card').forEach(card=>card.hidden=!card.textContent.toLocaleLowerCase().includes(q));});</script>
 </body></html>

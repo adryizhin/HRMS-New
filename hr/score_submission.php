@@ -10,6 +10,7 @@ $get=$conn->prepare('SELECT t.*,u.full_name AS employee_name,u.employee_id AS em
 $get->bind_param('ii',$taskId,$evaluator);$get->execute();$task=$get->get_result()->fetch_assoc();
 if(!$task){http_response_code(404);exit('Task not found or unauthorized.');}
 $_SESSION['appraisal_csrf']??=bin2hex(random_bytes(32));
+$_SESSION['appraisal_submission_key']??=bin2hex(random_bytes(32));
 $saved=$conn->prepare('SELECT * FROM task_appraisals WHERE task_id=? ORDER BY appraisal_id DESC LIMIT 1');$saved->bind_param('i',$taskId);$saved->execute();$latestAppraisal=$saved->get_result()->fetch_assoc();
 $appraisalId=(int)($_GET['appraisal_id']??0);$appraisal=$latestAppraisal;
 if($appraisalId>0){$selected=$conn->prepare('SELECT * FROM task_appraisals WHERE task_id=? AND appraisal_id=? LIMIT 1');$selected->bind_param('ii',$taskId,$appraisalId);$selected->execute();$appraisal=$selected->get_result()->fetch_assoc();if(!$appraisal){http_response_code(404);exit('Appraisal not found.');}}
@@ -22,9 +23,11 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  $data=$_POST;
  try{
   if(!is_string($_POST['csrf_token']??null)||!hash_equals($_SESSION['appraisal_csrf'],$_POST['csrf_token'])){http_response_code(400);throw new InvalidArgumentException('Reload the appraisal form and try again.');}
+  if(!is_string($_POST['submission_key']??null)||!hash_equals($_SESSION['appraisal_submission_key'],$_POST['submission_key']))throw new InvalidArgumentException('This appraisal was already saved. Review the saved copy below.');
   $newAppraisalId=saveTaskAppraisal($conn,$taskId,$evaluator,$_POST);
+  $_SESSION['appraisal_submission_key']=bin2hex(random_bytes(32));
   $_SESSION['appraisal_notice']='Appraisal saved as a new record. Earlier appraisals remain unchanged.';
-  header('Location: score_submission.php?id='.$taskId);exit;
+  header('Location: score_submission.php?id='.$taskId.'&appraisal_id='.$newAppraisalId,true,303);exit;
  }catch(InvalidArgumentException $e){$error=$e->getMessage();}
  catch(Throwable $e){$error='Unable to save the appraisal. No score was changed. Please try again.';}
 }
